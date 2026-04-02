@@ -81,3 +81,5 @@ G:\CroMap\CroMap\obj\Debug\net9.0\refint\CroMap.dll
 G:\CroMap\CroMap\obj\Debug\net9.0\CroMap.pdb
 G:\CroMap\CroMap\obj\Debug\net9.0\CroMap.genruntimeconfig.cache
 G:\CroMap\CroMap\obj\Debug\net9.0\ref\CroMap.dll
+G:\CroMap\CroMap\obj\Debug\net9.0\CroMap.sourcelink.json
+G:\CroMap\CroMap\bin\Debug\net9.0\CroMap.staticwebassets.runtime.json

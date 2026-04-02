@@ -34,6 +34,13 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<IVideoRepository, VideoRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
+builder.Services.AddScoped<ProfileRepository>();
+builder.Services.AddScoped<StoryRepository>();
+builder.Services.AddScoped<FollowRepository>();
+builder.Services.AddScoped<SavedVideoRepository>();
+builder.Services.AddScoped<WishlistRepository>();
+builder.Services.AddScoped<GoldenFriendRepository>();
+builder.Services.AddScoped<MediaRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -52,6 +59,9 @@ if (app.Environment.IsDevelopment())
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles();
+
 app.MapControllers();
 
 app.Run("http://0.0.0.0:7089");

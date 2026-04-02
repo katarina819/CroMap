@@ -3,24 +3,144 @@
   "WorkspaceRootPath": "G:\\CroMap\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\modelsdto\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\wishlistrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\wishlistrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\wishlistvideo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\wishlistvideo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\mediarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\mediarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\profilerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\profilerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\profile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\profile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\goldenfriendrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\goldenfriendrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\modelsdto\\videouploadrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\videouploadrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\savedvideorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\savedvideorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\followrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\followrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\storyrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\storyrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\block.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\block.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\follow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\follow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\goldenfriend.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\goldenfriend.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\story.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\story.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\videorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\videorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\modelsdto\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\messagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\messagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\modelsdto\\sendmessagerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\sendmessagerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\modelsdto\\addtowishlistrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\addtowishlistrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\videocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\videocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\messagecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\messagecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\commentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\commentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\ivideorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\ivideorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\video.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\video.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\savedvideo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\savedvideo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\imessagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\imessagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\modelsdto\\liketogglerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\liketogglerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\comment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\comment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\savedvideocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\savedvideocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\likecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\likecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\modelsdto\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -35,88 +155,12 @@
       "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\cromap.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\videocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\videocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\videorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\videorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\messagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\messagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\wishlistrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\wishlistrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\video.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\video.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\messagecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\messagecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\modelsdto\\videouploadrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\videouploadrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\imessagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\imessagerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\modelsdto\\addtowishlistrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\addtowishlistrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\modelsdto\\sendmessagerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\sendmessagerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\wishlistvideo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\wishlistvideo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\commentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\commentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\savedvideocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\savedvideocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\repositories\\ivideorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\ivideorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\controllers\\likecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\likecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\modelsdto\\liketogglerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\liketogglerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\savedvideo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\savedvideo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\comment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\comment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\models\\like.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\models\\like.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|g:\\cromap\\cromap\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -126,7 +170,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Bookmark",
@@ -138,54 +182,54 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "AuthController.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\AuthController.cs",
-              "RelativeDocumentMoniker": "CroMap\\Controllers\\AuthController.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\AuthController.cs",
-              "RelativeToolTip": "CroMap\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAAMwAAAAAAAAAAAAwwOIAAAA9AAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "MediaRepository.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\MediaRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\MediaRepository.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\MediaRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\MediaRepository.cs",
+              "ViewState": "AgIAACkAAAAAAAAAAADwvzUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-21T09:37:53.135Z",
+              "WhenOpened": "2026-04-01T23:36:28.969Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "GoldenFriendRepository.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\GoldenFriendRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\GoldenFriendRepository.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\GoldenFriendRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\GoldenFriendRepository.cs",
+              "ViewState": "AgIAACAAAAAAAAAAAADwvzMAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-01T23:35:56.738Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ProfileRepository.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\ProfileRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\ProfileRepository.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\ProfileRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\ProfileRepository.cs",
+              "ViewState": "AgIAAJ8AAAAAAAAAAADwv64AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-01T23:32:04.205Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "LoginDto.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\ModelsDto\\LoginDto.cs",
-              "RelativeDocumentMoniker": "CroMap\\ModelsDto\\LoginDto.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\ModelsDto\\LoginDto.cs",
-              "RelativeToolTip": "CroMap\\ModelsDto\\LoginDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Title": "Profile.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\Profile.cs",
+              "RelativeDocumentMoniker": "CroMap\\Models\\Profile.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Models\\Profile.cs",
+              "RelativeToolTip": "CroMap\\Models\\Profile.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAwwBQAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-21T13:39:24.738Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "UserDto.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\ModelsDto\\UserDto.cs",
-              "RelativeDocumentMoniker": "CroMap\\ModelsDto\\UserDto.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\ModelsDto\\UserDto.cs",
-              "RelativeToolTip": "CroMap\\ModelsDto\\UserDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-21T12:06:00.033Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "CroMap.csproj",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\CroMap.csproj",
-              "RelativeDocumentMoniker": "CroMap\\CroMap.csproj",
-              "ToolTip": "G:\\CroMap\\CroMap\\CroMap.csproj",
-              "RelativeToolTip": "CroMap\\CroMap.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-03-21T09:36:26.037Z",
+              "WhenOpened": "2026-04-01T23:29:15.083Z",
               "EditorCaption": ""
             },
             {
@@ -196,144 +240,157 @@
               "RelativeDocumentMoniker": "CroMap\\Program.cs",
               "ToolTip": "G:\\CroMap\\CroMap\\Program.cs",
               "RelativeToolTip": "CroMap\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAACkAAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-21T09:38:07.121Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "DatabaseConnection.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Data\\DatabaseConnection.cs",
-              "RelativeDocumentMoniker": "CroMap\\Data\\DatabaseConnection.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Data\\DatabaseConnection.cs",
-              "RelativeToolTip": "CroMap\\Data\\DatabaseConnection.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T18:39:29.426Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "User.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\User.cs",
-              "RelativeDocumentMoniker": "CroMap\\Models\\User.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Models\\User.cs",
-              "RelativeToolTip": "CroMap\\Models\\User.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-21T09:36:52.769Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "UserRepository.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\UserRepository.cs",
-              "RelativeDocumentMoniker": "CroMap\\Repositories\\UserRepository.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\UserRepository.cs",
-              "RelativeToolTip": "CroMap\\Repositories\\UserRepository.cs",
-              "ViewState": "AgIAAGkAAAAAAAAAAAAowIUAAAAxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-21T09:37:23.165Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "VideoController.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\VideoController.cs",
-              "RelativeDocumentMoniker": "CroMap\\Controllers\\VideoController.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\VideoController.cs",
-              "RelativeToolTip": "CroMap\\Controllers\\VideoController.cs",
-              "ViewState": "AgIAAGcAAAAAAAAAAAAwwI0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T17:44:38.34Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "MessageController.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\MessageController.cs",
-              "RelativeDocumentMoniker": "CroMap\\Controllers\\MessageController.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\MessageController.cs",
-              "RelativeToolTip": "CroMap\\Controllers\\MessageController.cs",
-              "ViewState": "AgIAAEoAAAAAAAAAAAAwwF4AAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T18:09:35.656Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "VideoRepository.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\VideoRepository.cs",
-              "RelativeDocumentMoniker": "CroMap\\Repositories\\VideoRepository.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\VideoRepository.cs",
-              "RelativeToolTip": "CroMap\\Repositories\\VideoRepository.cs",
-              "ViewState": "AgIAAGQAAAAAAAAAAAAAwGoAAAA2AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T17:57:30.361Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "Video.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\Video.cs",
-              "RelativeDocumentMoniker": "CroMap\\Models\\Video.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Models\\Video.cs",
-              "RelativeToolTip": "CroMap\\Models\\Video.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAApAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T17:52:53.399Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "MessageRepository.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\MessageRepository.cs",
-              "RelativeDocumentMoniker": "CroMap\\Repositories\\MessageRepository.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\MessageRepository.cs",
-              "RelativeToolTip": "CroMap\\Repositories\\MessageRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T18:08:10.776Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 0,
               "Title": "WishlistRepository.cs",
               "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\WishlistRepository.cs",
               "RelativeDocumentMoniker": "CroMap\\Repositories\\WishlistRepository.cs",
               "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\WishlistRepository.cs",
               "RelativeToolTip": "CroMap\\Repositories\\WishlistRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAGQAAAAAAAAAAADwv3IAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-30T18:09:08.979Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "IMessageRepository.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\IMessageRepository.cs",
-              "RelativeDocumentMoniker": "CroMap\\Repositories\\IMessageRepository.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\IMessageRepository.cs",
-              "RelativeToolTip": "CroMap\\Repositories\\IMessageRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAFAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "WishlistVideo.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\WishlistVideo.cs",
+              "RelativeDocumentMoniker": "CroMap\\Models\\WishlistVideo.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Models\\WishlistVideo.cs",
+              "RelativeToolTip": "CroMap\\Models\\WishlistVideo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T18:07:45.621Z",
+              "WhenOpened": "2026-03-30T18:05:20.572Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 8,
+              "Title": "SavedVideoRepository.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\SavedVideoRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\SavedVideoRepository.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\SavedVideoRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\SavedVideoRepository.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAADwvyUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-01T23:34:16.151Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "FollowRepository.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\FollowRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\FollowRepository.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\FollowRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\FollowRepository.cs",
+              "ViewState": "AgIAAD4AAAAAAAAAAAAwwGMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-01T23:33:28.624Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "StoryRepository.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\StoryRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\StoryRepository.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\StoryRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\StoryRepository.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAgwF4AAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-01T23:32:43.938Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Block.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\Block.cs",
+              "RelativeDocumentMoniker": "CroMap\\Models\\Block.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Models\\Block.cs",
+              "RelativeToolTip": "CroMap\\Models\\Block.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-01T23:31:31.076Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "VideoUploadRequest.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\ModelsDto\\VideoUploadRequest.cs",
+              "RelativeDocumentMoniker": "CroMap\\ModelsDto\\VideoUploadRequest.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\ModelsDto\\VideoUploadRequest.cs",
+              "RelativeToolTip": "CroMap\\ModelsDto\\VideoUploadRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T17:55:04.755Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Follow.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\Follow.cs",
+              "RelativeDocumentMoniker": "CroMap\\Models\\Follow.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Models\\Follow.cs",
+              "RelativeToolTip": "CroMap\\Models\\Follow.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-01T23:31:01.14Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "GoldenFriend.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\GoldenFriend.cs",
+              "RelativeDocumentMoniker": "CroMap\\Models\\GoldenFriend.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Models\\GoldenFriend.cs",
+              "RelativeToolTip": "CroMap\\Models\\GoldenFriend.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-01T23:30:35.532Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Story.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\Story.cs",
+              "RelativeDocumentMoniker": "CroMap\\Models\\Story.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Models\\Story.cs",
+              "RelativeToolTip": "CroMap\\Models\\Story.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-01T23:29:56.218Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "VideoController.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\VideoController.cs",
+              "RelativeDocumentMoniker": "CroMap\\Controllers\\VideoController.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\VideoController.cs",
+              "RelativeToolTip": "CroMap\\Controllers\\VideoController.cs",
+              "ViewState": "AgIAAGcAAAAAAAAAAAAwwHoAAAA4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T17:44:38.34Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
               "Title": "AddToWishlistRequest.cs",
               "DocumentMoniker": "G:\\CroMap\\CroMap\\ModelsDto\\AddToWishlistRequest.cs",
               "RelativeDocumentMoniker": "CroMap\\ModelsDto\\AddToWishlistRequest.cs",
@@ -346,7 +403,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 18,
               "Title": "SendMessageRequest.cs",
               "DocumentMoniker": "G:\\CroMap\\CroMap\\ModelsDto\\SendMessageRequest.cs",
               "RelativeDocumentMoniker": "CroMap\\ModelsDto\\SendMessageRequest.cs",
@@ -359,150 +416,59 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "WishlistVideo.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\WishlistVideo.cs",
-              "RelativeDocumentMoniker": "CroMap\\Models\\WishlistVideo.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Models\\WishlistVideo.cs",
-              "RelativeToolTip": "CroMap\\Models\\WishlistVideo.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAuAAAAAAAAAA==",
+              "DocumentIndex": 15,
+              "Title": "VideoRepository.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\VideoRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\VideoRepository.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\VideoRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\VideoRepository.cs",
+              "ViewState": "AgIAAOQAAAAAAAAAAAAowPkAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T18:05:20.572Z",
+              "WhenOpened": "2026-03-30T17:57:30.361Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "VideoUploadRequest.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\ModelsDto\\VideoUploadRequest.cs",
-              "RelativeDocumentMoniker": "CroMap\\ModelsDto\\VideoUploadRequest.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\ModelsDto\\VideoUploadRequest.cs",
-              "RelativeToolTip": "CroMap\\ModelsDto\\VideoUploadRequest.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "DocumentIndex": 17,
+              "Title": "MessageRepository.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\MessageRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\MessageRepository.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\MessageRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\MessageRepository.cs",
+              "ViewState": "AgIAAE4AAAAAAAAAAAAowGIAAABEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T17:55:04.755Z",
+              "WhenOpened": "2026-03-30T18:08:10.776Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "CommentController.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\CommentController.cs",
-              "RelativeDocumentMoniker": "CroMap\\Controllers\\CommentController.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\CommentController.cs",
-              "RelativeToolTip": "CroMap\\Controllers\\CommentController.cs",
-              "ViewState": "AgIAABoAAAAAAAAAAADwvyoAAAArAAAAAAAAAA==",
+              "DocumentIndex": 16,
+              "Title": "UserDto.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\ModelsDto\\UserDto.cs",
+              "RelativeDocumentMoniker": "CroMap\\ModelsDto\\UserDto.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\ModelsDto\\UserDto.cs",
+              "RelativeToolTip": "CroMap\\ModelsDto\\UserDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T18:00:01.955Z",
+              "WhenOpened": "2026-03-21T12:06:00.033Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 21,
-              "Title": "SavedVideoController.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\SavedVideoController.cs",
-              "RelativeDocumentMoniker": "CroMap\\Controllers\\SavedVideoController.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\SavedVideoController.cs",
-              "RelativeToolTip": "CroMap\\Controllers\\SavedVideoController.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAADwvxMAAAAAAAAAAAAAAA==",
+              "Title": "MessageController.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\MessageController.cs",
+              "RelativeDocumentMoniker": "CroMap\\Controllers\\MessageController.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\MessageController.cs",
+              "RelativeToolTip": "CroMap\\Controllers\\MessageController.cs",
+              "ViewState": "AgIAAEwAAAAAAAAAAAAowGIAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T17:59:36.613Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "IVideoRepository.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\IVideoRepository.cs",
-              "RelativeDocumentMoniker": "CroMap\\Repositories\\IVideoRepository.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\IVideoRepository.cs",
-              "RelativeToolTip": "CroMap\\Repositories\\IVideoRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAA8AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T17:58:59.836Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "LikeController.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\LikeController.cs",
-              "RelativeDocumentMoniker": "CroMap\\Controllers\\LikeController.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\LikeController.cs",
-              "RelativeToolTip": "CroMap\\Controllers\\LikeController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAADwvxQAAAAmAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T17:58:20.35Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\appsettings.json",
-              "RelativeDocumentMoniker": "CroMap\\appsettings.json",
-              "ToolTip": "G:\\CroMap\\CroMap\\appsettings.json",
-              "RelativeToolTip": "CroMap\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-03-21T09:38:44.275Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 24,
-              "Title": "LikeToggleRequest.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\ModelsDto\\LikeToggleRequest.cs",
-              "RelativeDocumentMoniker": "CroMap\\ModelsDto\\LikeToggleRequest.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\ModelsDto\\LikeToggleRequest.cs",
-              "RelativeToolTip": "CroMap\\ModelsDto\\LikeToggleRequest.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T17:55:30.957Z",
+              "WhenOpened": "2026-03-30T18:09:35.656Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 25,
-              "Title": "SavedVideo.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\SavedVideo.cs",
-              "RelativeDocumentMoniker": "CroMap\\Models\\SavedVideo.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Models\\SavedVideo.cs",
-              "RelativeToolTip": "CroMap\\Models\\SavedVideo.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T17:54:15.259Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 26,
-              "Title": "Comment.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\Comment.cs",
-              "RelativeDocumentMoniker": "CroMap\\Models\\Comment.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Models\\Comment.cs",
-              "RelativeToolTip": "CroMap\\Models\\Comment.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T17:53:50.783Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 27,
-              "Title": "Like.cs",
-              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\Like.cs",
-              "RelativeDocumentMoniker": "CroMap\\Models\\Like.cs",
-              "ToolTip": "G:\\CroMap\\CroMap\\Models\\Like.cs",
-              "RelativeToolTip": "CroMap\\Models\\Like.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-30T17:53:22.453Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 28,
               "Title": "launchSettings.json",
               "DocumentMoniker": "G:\\CroMap\\CroMap\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "CroMap\\Properties\\launchSettings.json",
@@ -510,8 +476,212 @@
               "RelativeToolTip": "CroMap\\Properties\\launchSettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-03-21T22:06:38.773Z",
+              "WhenOpened": "2026-03-21T22:06:38.773Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "IVideoRepository.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\IVideoRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\IVideoRepository.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\IVideoRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\IVideoRepository.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAA/wBcAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T17:58:59.836Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "UserRepository.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\UserRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\UserRepository.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\UserRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\UserRepository.cs",
+              "ViewState": "AgIAAGkAAAAAAAAAAAAowHkAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-21T09:37:23.165Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "CommentController.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\CommentController.cs",
+              "RelativeDocumentMoniker": "CroMap\\Controllers\\CommentController.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\CommentController.cs",
+              "RelativeToolTip": "CroMap\\Controllers\\CommentController.cs",
+              "ViewState": "AgIAACgAAAAAAAAAAAAuwDYAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T18:00:01.955Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "CroMap\\Controllers\\AuthController.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "CroMap\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAANoAAAAAAAAAAAAAAOoAAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-21T09:37:53.135Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "Video.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\Video.cs",
+              "RelativeDocumentMoniker": "CroMap\\Models\\Video.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Models\\Video.cs",
+              "RelativeToolTip": "CroMap\\Models\\Video.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAUwAsAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T17:52:53.399Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "SavedVideo.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\SavedVideo.cs",
+              "RelativeDocumentMoniker": "CroMap\\Models\\SavedVideo.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Models\\SavedVideo.cs",
+              "RelativeToolTip": "CroMap\\Models\\SavedVideo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T17:54:15.259Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "IMessageRepository.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Repositories\\IMessageRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\IMessageRepository.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Repositories\\IMessageRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\IMessageRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T18:07:45.621Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "LikeToggleRequest.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\ModelsDto\\LikeToggleRequest.cs",
+              "RelativeDocumentMoniker": "CroMap\\ModelsDto\\LikeToggleRequest.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\ModelsDto\\LikeToggleRequest.cs",
+              "RelativeToolTip": "CroMap\\ModelsDto\\LikeToggleRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T17:55:30.957Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "Comment.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\Comment.cs",
+              "RelativeDocumentMoniker": "CroMap\\Models\\Comment.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Models\\Comment.cs",
+              "RelativeToolTip": "CroMap\\Models\\Comment.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T17:53:50.783Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "SavedVideoController.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\SavedVideoController.cs",
+              "RelativeDocumentMoniker": "CroMap\\Controllers\\SavedVideoController.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\SavedVideoController.cs",
+              "RelativeToolTip": "CroMap\\Controllers\\SavedVideoController.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAkwB4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T17:59:36.613Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "LikeController.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Controllers\\LikeController.cs",
+              "RelativeDocumentMoniker": "CroMap\\Controllers\\LikeController.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Controllers\\LikeController.cs",
+              "RelativeToolTip": "CroMap\\Controllers\\LikeController.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAADwvxQAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T17:58:20.35Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "User.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\User.cs",
+              "RelativeDocumentMoniker": "CroMap\\Models\\User.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Models\\User.cs",
+              "RelativeToolTip": "CroMap\\Models\\User.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-21T09:36:52.769Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "DatabaseConnection.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Data\\DatabaseConnection.cs",
+              "RelativeDocumentMoniker": "CroMap\\Data\\DatabaseConnection.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Data\\DatabaseConnection.cs",
+              "RelativeToolTip": "CroMap\\Data\\DatabaseConnection.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T18:39:29.426Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "CroMap.csproj",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\CroMap.csproj",
+              "RelativeDocumentMoniker": "CroMap\\CroMap.csproj",
+              "ToolTip": "G:\\CroMap\\CroMap\\CroMap.csproj",
+              "RelativeToolTip": "CroMap\\CroMap.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-03-21T09:36:26.037Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "LoginDto.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\ModelsDto\\LoginDto.cs",
+              "RelativeDocumentMoniker": "CroMap\\ModelsDto\\LoginDto.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\ModelsDto\\LoginDto.cs",
+              "RelativeToolTip": "CroMap\\ModelsDto\\LoginDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-21T13:39:24.738Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\appsettings.json",
+              "RelativeDocumentMoniker": "CroMap\\appsettings.json",
+              "ToolTip": "G:\\CroMap\\CroMap\\appsettings.json",
+              "RelativeToolTip": "CroMap\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-03-21T09:38:44.275Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 39,
+              "Title": "Like.cs",
+              "DocumentMoniker": "G:\\CroMap\\CroMap\\Models\\Like.cs",
+              "RelativeDocumentMoniker": "CroMap\\Models\\Like.cs",
+              "ToolTip": "G:\\CroMap\\CroMap\\Models\\Like.cs",
+              "RelativeToolTip": "CroMap\\Models\\Like.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-30T17:53:22.453Z"
             }
           ]
         }

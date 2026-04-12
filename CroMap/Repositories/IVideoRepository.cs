@@ -17,11 +17,12 @@ namespace CroMap.Repositories
         Task<bool> IsLikedByUserAsync(int videoId, int userId);
 
         // Save metode
-        Task<bool> ToggleSavedVideoAsync(int videoId, int userId);
+        Task<bool> SaveVideoAsync(int videoId, int userId);
+        Task<bool> UnsaveVideoAsync(int videoId, int userId);
         Task<bool> IsSavedByUserAsync(int videoId, int userId);
 
         // Comment metode
-        Task AddCommentAsync(Comment comment);
+        Task<int> AddCommentAsync(Comment comment);  // Promijeni iz Task u Task<int>
         Task<IEnumerable<Comment>> GetCommentsByVideoIdAsync(int videoId);
         Task<int> GetCommentCountAsync(int videoId);
     }

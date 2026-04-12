@@ -19,16 +19,17 @@ namespace CroMap.Repositories
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-                SELECT 
-                    u.id AS UserId,
-                    u.first_name AS FirstName,
-                    u.last_name AS LastName,
-                    u.username AS Username,
-                    u.avatar AS Avatar
-                FROM golden_friends gf
-                JOIN users u ON gf.friend_id = u.id
-                WHERE gf.user_id = @UserId
-                ORDER BY u.first_name, u.last_name";
+        SELECT 
+            u.id AS UserId,
+            u.first_name AS FirstName,
+            u.last_name AS LastName,
+            u.username AS Username,
+            p.avatar AS Avatar
+        FROM golden_friends gf
+        JOIN users u ON gf.friend_id = u.id
+        LEFT JOIN user_profiles p ON u.id = p.user_id
+        WHERE gf.user_id = @UserId
+        ORDER BY u.first_name, u.last_name";
 
             var friends = await connection.QueryAsync<GoldenFriend>(sql, new { UserId = userId });
             return friends;
@@ -60,12 +61,33 @@ namespace CroMap.Repositories
             var rowsAffected = await connection.ExecuteAsync(sql, new { UserId = userId, FriendId = friendId });
             return rowsAffected > 0;
         }
+
+        public async Task<bool> IsGoldenFriendAsync(int userId, int friendId)
+        {
+            using var connection = _dbConnection.CreateConnection();
+
+            var sql = @"SELECT COUNT(*) 
+                FROM golden_friends 
+                WHERE user_id = @UserId AND friend_id = @FriendId";
+
+            var count = await connection.ExecuteScalarAsync<int>(sql, new
+            {
+                UserId = userId,
+                FriendId = friendId
+            });
+
+            return count > 0;
+        }
     }
 
     public interface IGoldenFriendRepository
     {
         Task<IEnumerable<GoldenFriend>> GetGoldenFriendsAsync(int userId);
+
         Task<bool> AddGoldenFriendAsync(int userId, int friendId);
+
         Task<bool> RemoveGoldenFriendAsync(int userId, int friendId);
+
+        Task<bool> IsGoldenFriendAsync(int userId, int friendId);
     }
 }

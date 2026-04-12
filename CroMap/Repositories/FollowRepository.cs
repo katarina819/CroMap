@@ -45,16 +45,17 @@ namespace CroMap.Repositories
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-                SELECT 
-                    u.id, 
-                    u.first_name AS FirstName, 
-                    u.last_name AS LastName, 
-                    u.username AS Username, 
-                    u.avatar AS Avatar
-                FROM follows f
-                JOIN users u ON f.followed_id = u.id
-                WHERE f.follower_id = @UserId
-                ORDER BY u.first_name, u.last_name";
+        SELECT 
+            u.id,
+            u.first_name AS FirstName,
+            u.last_name AS LastName,
+            u.username AS Username,
+            p.avatar AS Avatar
+        FROM follows f
+        JOIN users u ON f.followed_id = u.id
+        LEFT JOIN user_profiles p ON u.id = p.user_id
+        WHERE f.follower_id = @UserId
+        ORDER BY u.first_name, u.last_name";
 
             var following = await connection.QueryAsync<UserSearchDto>(sql, new { UserId = userId });
             return following;
@@ -86,15 +87,28 @@ namespace CroMap.Repositories
             var count = await connection.ExecuteScalarAsync<int>(sql, new { FollowerId = followerId, FollowedId = followedId });
             return count > 0;
         }
+
+        public async Task<IEnumerable<UserSearchDto>> GetFollowersAsync(int userId)
+        {
+            using var connection = _dbConnection.CreateConnection();
+
+            var sql = @"
+        SELECT 
+            u.id,
+            u.first_name AS FirstName,
+            u.last_name AS LastName,
+            u.username AS Username,
+            p.avatar AS Avatar
+        FROM follows f
+        JOIN users u ON f.follower_id = u.id
+        LEFT JOIN user_profiles p ON u.id = p.user_id
+        WHERE f.followed_id = @UserId
+        ORDER BY u.first_name, u.last_name";
+
+            var followers = await connection.QueryAsync<UserSearchDto>(sql, new { UserId = userId });
+            return followers;
+        }
     }
 
-    public interface IFollowRepository
-    {
-        Task<bool> FollowAsync(int followerId, int followedId);
-        Task<bool> UnfollowAsync(int followerId, int followedId);
-        Task<IEnumerable<UserSearchDto>> GetFollowingAsync(int userId);
-        Task<int> GetFollowersCountAsync(int userId);
-        Task<int> GetFollowingCountAsync(int userId);
-        Task<bool> IsFollowingAsync(int followerId, int followedId);
-    }
+   
 }

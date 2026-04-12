@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "G:\\CroMap\\CroMap\\CroMap.csproj": {}
+    "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\CroMap.csproj": {}
   },
   "projects": {
-    "G:\\CroMap\\CroMap\\CroMap.csproj": {
+    "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\CroMap.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "G:\\CroMap\\CroMap\\CroMap.csproj",
+        "projectUniqueName": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\CroMap.csproj",
         "projectName": "CroMap",
-        "projectPath": "G:\\CroMap\\CroMap\\CroMap.csproj",
+        "projectPath": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\CroMap.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "G:\\CroMap\\CroMap\\obj\\",
+        "outputPath": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

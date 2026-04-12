@@ -25,7 +25,11 @@ select * from messages;
 
 select * from shares;
 
+select * from wishlist_videos;
+
 ALTER TABLE users ADD COLUMN username VARCHAR(20);
+
+ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
 
 ALTER TABLE users
 ALTER COLUMN username SET NOT NULL;
@@ -77,6 +81,7 @@ CREATE TABLE messages (
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE "messages" ADD COLUMN "MediaType" VARCHAR(10), ADD COLUMN "MediaUrl" VARCHAR(500);
 
 CREATE TABLE shares (
     id SERIAL PRIMARY KEY,
@@ -116,6 +121,9 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id)
 );
+
+ALTER TABLE user_profiles
+ADD COLUMN show_username BOOLEAN DEFAULT TRUE;
 
 
 CREATE TABLE IF NOT EXISTS follows (
@@ -165,3 +173,356 @@ CREATE INDEX IF NOT EXISTS idx_golden_friends_user_id ON golden_friends(user_id)
 CREATE INDEX IF NOT EXISTS idx_wishlist_videos_user_id ON wishlist_videos(user_id);
 CREATE INDEX IF NOT EXISTS idx_saved_videos_user_id ON saved_videos(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_profiles_user_id ON user_profiles(user_id);
+
+CREATE TABLE blocks (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    blocked_user_id INT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT unique_block UNIQUE(user_id, blocked_user_id)
+);
+
+CREATE TABLE activity_logs
+(
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    date DATE NOT NULL,
+
+    likes INT DEFAULT 0,
+    comments INT DEFAULT 0,
+    posts INT DEFAULT 0,
+
+    session_minutes INT DEFAULT 0
+);
+
+-- Dodaj kolonu za praćenje pratitelja
+ALTER TABLE activity_logs ADD COLUMN IF NOT EXISTS followers_count INT DEFAULT 0;
+
+-- Dodaj unique constraint za sprječavanje duplikata po danu
+ALTER TABLE activity_logs ADD CONSTRAINT unique_user_date UNIQUE (user_id, date);
+-- Ažuriraj sve video zapise s novom IP adresom
+UPDATE videos 
+SET file_path = REPLACE(file_path, 'http://10.225.64.205:7089', 'http://10.236.214.205:7089')
+WHERE file_path LIKE '%10.225.64.205%';
+
+-- Ažuriraj sve video poruke koje imaju staru IP adresu
+UPDATE messages 
+SET content = REPLACE(content, 'http://10.225.64.205:7089', 'http://10.236.214.205:7089')
+WHERE content LIKE '%__CROMAP_VIDEO__%';
+
+-- Ako imaš story tablicu
+UPDATE stories 
+SET media_url = REPLACE(media_url, 'http://10.225.64.205:7089', 'http://10.236.214.205:7089')
+WHERE media_url LIKE '%10.225.64.205%';
+
+
+-- Ažuriraj avatar URL-ove u user_profiles tablici
+UPDATE user_profiles 
+SET avatar = REPLACE(avatar, 'http://10.225.64.205:7089', 'http://10.236.214.205:7089')
+WHERE avatar LIKE '%10.225.64.205%';
+
+SELECT * FROM activity_logs ORDER BY date DESC;
+
+-- Funkcija koja osigurava da postoji dnevni unos za korisnika
+CREATE OR REPLACE FUNCTION ensure_daily_activity_exists()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Provjeri da li postoji unos za današnji dan
+    IF NOT EXISTS (
+        SELECT 1 FROM activity_logs 
+        WHERE user_id = NEW.user_id AND date = CURRENT_DATE
+    ) THEN
+        -- Ako ne postoji, kreiraj novi unos
+        INSERT INTO activity_logs (user_id, date, likes, comments, posts, session_minutes, followers_count)
+        VALUES (
+            NEW.user_id, 
+            CURRENT_DATE, 
+            0,  -- likes
+            0,  -- comments  
+            0,  -- posts
+            0,  -- session_minutes
+            (SELECT COUNT(*) FROM follows WHERE followed_id = NEW.user_id)  -- followers_count
+        );
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- Trigger koji se aktivira prije INSERT ili UPDATE
+CREATE TRIGGER trigger_ensure_daily_activity
+    BEFORE INSERT OR UPDATE ON activity_logs
+    FOR EACH ROW
+    EXECUTE FUNCTION ensure_daily_activity_exists();
+
+
+-- Funkcija za ažuriranje followers_count kada se promijeni follow
+CREATE OR REPLACE FUNCTION update_followers_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        -- Kada se doda novi pratitelj
+        UPDATE activity_logs 
+        SET followers_count = followers_count + 1
+        WHERE user_id = NEW.followed_id AND date = CURRENT_DATE;
+        
+        -- Ako ne postoji unos za današnji dan, kreiraj ga
+        IF NOT FOUND THEN
+            INSERT INTO activity_logs (user_id, date, likes, comments, posts, session_minutes, followers_count)
+            VALUES (NEW.followed_id, CURRENT_DATE, 0, 0, 0, 0, 1);
+        END IF;
+        
+    ELSIF TG_OP = 'DELETE' THEN
+        -- Kada se ukloni pratitelj
+        UPDATE activity_logs 
+        SET followers_count = followers_count - 1
+        WHERE user_id = OLD.followed_id AND date = CURRENT_DATE;
+    END IF;
+    
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger na follows tablici
+CREATE TRIGGER trigger_update_followers_count
+    AFTER INSERT OR DELETE ON follows
+    FOR EACH ROW
+    EXECUTE FUNCTION update_followers_count();
+
+
+-- Funkcija za automatsko bilježenje lajkova
+CREATE OR REPLACE FUNCTION track_like_activity()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        -- Kada se doda lajk
+        INSERT INTO activity_logs (user_id, date, likes, comments, posts, session_minutes, followers_count)
+        VALUES (NEW.user_id, CURRENT_DATE, 1, 0, 0, 0, 
+            (SELECT COUNT(*) FROM follows WHERE followed_id = NEW.user_id))
+        ON CONFLICT (user_id, date) 
+        DO UPDATE SET likes = activity_logs.likes + 1;
+        
+    ELSIF TG_OP = 'DELETE' THEN
+        -- Kada se ukloni lajk
+        UPDATE activity_logs 
+        SET likes = likes - 1
+        WHERE user_id = OLD.user_id AND date = CURRENT_DATE;
+    END IF;
+    
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger na likes tablici
+CREATE TRIGGER trigger_track_likes
+    AFTER INSERT OR DELETE ON likes
+    FOR EACH ROW
+    EXECUTE FUNCTION track_like_activity();
+
+
+-- Funkcija za automatsko bilježenje komentara
+CREATE OR REPLACE FUNCTION track_comment_activity()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        INSERT INTO activity_logs (user_id, date, likes, comments, posts, session_minutes, followers_count)
+        VALUES (NEW.user_id, CURRENT_DATE, 0, 1, 0, 0, 
+            (SELECT COUNT(*) FROM follows WHERE followed_id = NEW.user_id))
+        ON CONFLICT (user_id, date) 
+        DO UPDATE SET comments = activity_logs.comments + 1;
+        
+    ELSIF TG_OP = 'DELETE' THEN
+        UPDATE activity_logs 
+        SET comments = comments - 1
+        WHERE user_id = OLD.user_id AND date = CURRENT_DATE;
+    END IF;
+    
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger na comments tablici
+CREATE TRIGGER trigger_track_comments
+    AFTER INSERT OR DELETE ON comments
+    FOR EACH ROW
+    EXECUTE FUNCTION track_comment_activity();
+
+
+-- Funkcija za automatsko bilježenje objava
+CREATE OR REPLACE FUNCTION track_post_activity()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        INSERT INTO activity_logs (user_id, date, likes, comments, posts, session_minutes, followers_count)
+        VALUES (NEW.user_id, CURRENT_DATE, 0, 0, 1, 0, 
+            (SELECT COUNT(*) FROM follows WHERE followed_id = NEW.user_id))
+        ON CONFLICT (user_id, date) 
+        DO UPDATE SET posts = activity_logs.posts + 1;
+        
+    ELSIF TG_OP = 'DELETE' THEN
+        UPDATE activity_logs 
+        SET posts = posts - 1
+        WHERE user_id = OLD.user_id AND date = CURRENT_DATE;
+    END IF;
+    
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger na videos tablici
+CREATE TRIGGER trigger_track_posts
+    AFTER INSERT OR DELETE ON videos
+    FOR EACH ROW
+    EXECUTE FUNCTION track_post_activity();
+
+-- Provjeri da su svi dodani triggeri uklonjeni (trebali bi ostati samo RI_ConstraintTrigger)
+SELECT 
+    tgname AS trigger_name,
+    tgrelid::regclass AS table_name
+FROM pg_trigger
+WHERE tgname NOT LIKE 'RI_ConstraintTrigger%'
+ORDER BY tgname;
+
+
+ALTER TABLE videos ADD COLUMN media_type VARCHAR(20) DEFAULT 'video';
+
+-- Provjeri postoji li kolona
+SELECT column_name, data_type 
+FROM information_schema.columns 
+WHERE table_name = 'videos' AND column_name = 'media_type';
+
+-- Ako ne postoji, dodaj je
+ALTER TABLE videos ADD COLUMN media_type VARCHAR(20) DEFAULT 'video';
+
+-- Ažuriraj postojeće redove (slike su one u /images/ folderu)
+UPDATE videos SET media_type = 'image' WHERE file_path LIKE '%/images/%';
+UPDATE videos SET media_type = 'video' WHERE media_type IS NULL;
+
+
+SELECT id, file_path, media_type FROM videos;
+
+-- Postavi media_type na 'image' za sve zapise koji imaju 'images' u file_path
+UPDATE videos 
+SET media_type = 'image' 
+WHERE file_path LIKE '%/images/%';
+
+-- Provjeri rezultat
+SELECT id, file_path, media_type FROM videos;
+
+
+-- Tablica za story lajkove
+CREATE TABLE IF NOT EXISTS story_likes (
+    id SERIAL PRIMARY KEY,
+    story_id INTEGER NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    reaction_type VARCHAR(50) DEFAULT 'like',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(story_id, user_id)
+);
+
+-- Tablica za story komentare
+CREATE TABLE IF NOT EXISTS story_comments (
+    id SERIAL PRIMARY KEY,
+    story_id INTEGER NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tablica za reakcije na komentare
+CREATE TABLE IF NOT EXISTS story_comment_reactions (
+    id SERIAL PRIMARY KEY,
+    comment_id INTEGER NOT NULL REFERENCES story_comments(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    reaction_type VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(comment_id, user_id)
+);
+
+-- Tablica za preglede storyja (već postoji, ali dodajemo indekse)
+CREATE INDEX IF NOT EXISTS idx_story_views_story_id ON story_views(story_id);
+CREATE INDEX IF NOT EXISTS idx_story_views_user_id ON story_views(user_id);
+
+-- Indeksi za nove tablice
+CREATE INDEX IF NOT EXISTS idx_story_likes_story_id ON story_likes(story_id);
+CREATE INDEX IF NOT EXISTS idx_story_comments_story_id ON story_comments(story_id);
+CREATE INDEX IF NOT EXISTS idx_story_comment_reactions_comment_id ON story_comment_reactions(comment_id);
+
+-- Automatsko brisanje isteklih storyjeva (opcionalno - PostgreSQL event trigger)
+-- Može se koristiti cron job ili pg_cron ekstenzija
+
+
+CREATE TABLE IF NOT EXISTS story_views (
+    id SERIAL PRIMARY KEY,
+    story_id INTEGER NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(story_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_story_views_story_id ON story_views(story_id);
+CREATE INDEX IF NOT EXISTS idx_story_views_user_id ON story_views(user_id);
+
+
+-- Provjeri sve story_views zapise
+SELECT * FROM story_views;
+
+-- Provjeri zapise za konkretan story (npr. id=7)
+SELECT * FROM story_views WHERE story_id = 7;
+
+-- Provjeri join s korisnicima
+SELECT 
+    u.id,
+    u.first_name,
+    u.last_name,
+    sv.story_id,
+    sv.viewed_at
+FROM story_views sv
+JOIN users u ON sv.user_id = u.id
+WHERE sv.story_id = 7;
+
+
+-- Ručno dodaj viewer za story 7 (korisnik 8 - Maja)
+INSERT INTO story_views (story_id, user_id, viewed_at)
+VALUES (7, 8, NOW())
+ON CONFLICT (story_id, user_id) DO NOTHING;
+
+-- Provjeri da li je dodano
+SELECT * FROM story_views WHERE story_id = 7;
+
+
+-- Provjeri constraint
+SELECT constraint_name, constraint_type 
+FROM information_schema.table_constraints 
+WHERE table_name = 'story_views';
+
+-- Ako treba, obriši i ponovno kreiraj
+ALTER TABLE story_views DROP CONSTRAINT IF EXISTS story_views_story_id_user_id_key;
+ALTER TABLE story_views ADD CONSTRAINT story_views_story_id_user_id_key UNIQUE(story_id, user_id);
+
+
+
+-- Provjeri aktivne storyje
+SELECT 
+    id, 
+    user_id, 
+    expires_at, 
+    NOW() as current_time,
+    CASE WHEN expires_at > NOW() THEN 'Active' ELSE 'Expired' END as status
+FROM stories 
+WHERE user_id = 1  -- ili koji god korisnik
+ORDER BY created_at DESC;
+
+
+
+-- Provjeri da li korisnik 8 ima aktivni story
+SELECT 
+    id, 
+    user_id, 
+    expires_at, 
+    NOW() as current_time,
+    CASE WHEN expires_at > NOW() THEN 'Active' ELSE 'Expired' END as status
+FROM stories 
+WHERE user_id = 8;

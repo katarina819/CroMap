@@ -1,5 +1,161 @@
 [
   {
+    "ContainingType": "CroMap.Controllers.ActivityController",
+    "Method": "GetDailyStats",
+    "RelativePath": "api/activity/daily",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "days",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.ActivityController",
+    "Method": "GetStats",
+    "RelativePath": "api/activity/stats",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "period",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.ActivityController",
+    "Method": "TrackComment",
+    "RelativePath": "api/activity/track/comment",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.ActivityController",
+    "Method": "TrackFollowers",
+    "RelativePath": "api/activity/track/followers",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CroMap.Controllers.TrackFollowersRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.ActivityController",
+    "Method": "TrackLike",
+    "RelativePath": "api/activity/track/like",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.ActivityController",
+    "Method": "TrackPost",
+    "RelativePath": "api/activity/track/post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.ActivityController",
+    "Method": "TrackSession",
+    "RelativePath": "api/activity/track/session",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CroMap.Controllers.TrackSessionRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.AdminController",
+    "Method": "GetSummaryStats",
+    "RelativePath": "api/admin/stats/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.AdminController",
+    "Method": "GetAllUsers",
+    "RelativePath": "api/admin/users",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.AdminController",
+    "Method": "GetUserActivity",
+    "RelativePath": "api/admin/users/{userId}/activity",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "period",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.AdminController",
+    "Method": "GetUserDailyActivity",
+    "RelativePath": "api/admin/users/{userId}/daily-activity",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "days",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "CroMap.Controllers.AuthController",
     "Method": "Login",
     "RelativePath": "api/auth/login",
@@ -16,6 +172,67 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "CroMap.Controllers.ProfileController",
+    "Method": "GetMyProfile",
+    "RelativePath": "api/auth/my-profile",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.ProfileController",
+    "Method": "UploadProfilePhoto",
+    "RelativePath": "api/auth/profile-photo",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ContentType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ContentDisposition",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Headers",
+        "Type": "Microsoft.AspNetCore.Http.IHeaderDictionary",
+        "IsRequired": false
+      },
+      {
+        "Name": "Length",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "FileName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.ProfileController",
+    "Method": "DeleteProfilePhoto",
+    "RelativePath": "api/auth/profile-photo",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "CroMap.Controllers.AuthController",
     "Method": "Register",
     "RelativePath": "api/auth/register",
@@ -26,6 +243,22 @@
       {
         "Name": "userDto",
         "Type": "UserDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.ProfileController",
+    "Method": "UpdateSettings",
+    "RelativePath": "api/auth/settings",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CroMap.Models.UpdateSettingsRequest",
         "IsRequired": true
       }
     ],
@@ -95,6 +328,64 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "CroMap.Controllers.BlockController",
+    "Method": "BlockUser",
+    "RelativePath": "api/block/block/{userId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.BlockController",
+    "Method": "GetBlockedUsers",
+    "RelativePath": "api/block/blocked-users",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.BlockController",
+    "Method": "IsBlocked",
+    "RelativePath": "api/block/is-blocked/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.BlockController",
+    "Method": "UnblockUser",
+    "RelativePath": "api/block/unblock/{userId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "CroMap.Controllers.CommentController",
     "Method": "AddComment",
     "RelativePath": "api/Comment",
@@ -135,6 +426,176 @@
         "StatusCode": 200
       }
     ]
+  },
+  {
+    "ContainingType": "CroMap.Controllers.FollowController",
+    "Method": "FollowUser",
+    "RelativePath": "api/Follow/{userId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.FollowController",
+    "Method": "UnfollowUser",
+    "RelativePath": "api/Follow/{userId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.FollowController",
+    "Method": "GetFollowCounts",
+    "RelativePath": "api/Follow/counts/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.FollowController",
+    "Method": "GetFollowers",
+    "RelativePath": "api/Follow/followers/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.FollowController",
+    "Method": "GetFollowing",
+    "RelativePath": "api/Follow/following/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.FollowController",
+    "Method": "IsFollowing",
+    "RelativePath": "api/Follow/is-following/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.GoldenFriendsController",
+    "Method": "GetMyGoldenFriends",
+    "RelativePath": "api/golden-friends",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.GoldenFriendsController",
+    "Method": "GetGoldenFriends",
+    "RelativePath": "api/golden-friends/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.GoldenFriendsController",
+    "Method": "AddGoldenFriend",
+    "RelativePath": "api/golden-friends/add/{friendId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "friendId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.GoldenFriendsController",
+    "Method": "IsGoldenFriend",
+    "RelativePath": "api/golden-friends/is-golden/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.GoldenFriendsController",
+    "Method": "RemoveGoldenFriend",
+    "RelativePath": "api/golden-friends/remove/{friendId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "friendId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   },
   {
     "ContainingType": "CroMap.Controllers.LikeController",
@@ -247,17 +708,307 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "CroMap.Controllers.SavedVideoController",
-    "Method": "ToggleSavedVideo",
-    "RelativePath": "api/SavedVideo/toggle",
+    "ContainingType": "SavedVideoController",
+    "Method": "GetMySavedVideos",
+    "RelativePath": "api/SavedVideo/my-saved",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SavedVideoController",
+    "Method": "SaveVideo",
+    "RelativePath": "api/SavedVideo/save",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "request",
-        "Type": "CroMap.ModelsDto.SavedVideoToggleRequest",
+        "Type": "SaveVideoRequest",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SavedVideoController",
+    "Method": "UnsaveVideo",
+    "RelativePath": "api/SavedVideo/unsave",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "videoId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "GetStories",
+    "RelativePath": "api/Story",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "DeleteStory",
+    "RelativePath": "api/Story/{storyId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "storyId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "DeleteComment",
+    "RelativePath": "api/Story/comment/{commentId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "commentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "AddComment",
+    "RelativePath": "api/Story/comment/{storyId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "storyId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "CroMap.Controllers.AddCommentRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "ReactToComment",
+    "RelativePath": "api/Story/comment/react/{commentId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "commentId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "CroMap.Controllers.ReactToCommentRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "GetComments",
+    "RelativePath": "api/Story/comments/{storyId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "storyId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "HasActiveStory",
+    "RelativePath": "api/Story/has-story/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "LikeStory",
+    "RelativePath": "api/Story/like/{storyId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "storyId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "CroMap.Controllers.LikeStoryRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "UnlikeStory",
+    "RelativePath": "api/Story/like/{storyId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "storyId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "GetStoryLikes",
+    "RelativePath": "api/Story/likes/{storyId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "storyId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "MarkStoryAsViewed",
+    "RelativePath": "api/Story/mark-viewed/{storyId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "storyId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "TestAddViewer",
+    "RelativePath": "api/Story/test-add-viewer",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "UploadStory",
+    "RelativePath": "api/Story/upload",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CroMap.ModelsDto.UploadStoryRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "HasUnviewedStories",
+    "RelativePath": "api/Story/user/{userId}/has-unviewed",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.StoryController",
+    "Method": "GetStoryViewers",
+    "RelativePath": "api/Story/viewers/{storyId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "storyId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.UploadController",
+    "Method": "UploadMedia",
+    "RelativePath": "api/Upload/media",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "file",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -358,6 +1109,16 @@
   },
   {
     "ContainingType": "CroMap.Controllers.VideoController",
+    "Method": "FixVideoUrls",
+    "RelativePath": "api/Video/fix-video-urls",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.VideoController",
     "Method": "UploadVideo",
     "RelativePath": "api/Video/upload",
     "HttpMethod": "POST",
@@ -365,12 +1126,12 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "Title",
-        "Type": "System.String",
+        "Name": "Video",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
         "IsRequired": false
       },
       {
-        "Name": "Description",
+        "Name": "Title",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -380,13 +1141,18 @@
         "IsRequired": false
       },
       {
+        "Name": "Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
         "Name": "UserId",
         "Type": "System.Int32",
         "IsRequired": false
       },
       {
-        "Name": "Video",
-        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "Name": "MediaType",
+        "Type": "System.String",
         "IsRequired": false
       }
     ],
@@ -419,25 +1185,25 @@
     ]
   },
   {
-    "ContainingType": "CroMap.Controllers.WishlistController",
+    "ContainingType": "CroMap.Controllers.WishlistVideoController",
     "Method": "AddToWishlist",
-    "RelativePath": "api/Wishlist/add",
+    "RelativePath": "api/WishlistVideo/add",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "request",
-        "Type": "CroMap.Models.AddToWishlistRequest",
+        "Type": "CroMap.Controllers.AddToWishlistRequest",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "CroMap.Controllers.WishlistController",
+    "ContainingType": "CroMap.Controllers.WishlistVideoController",
     "Method": "IsInWishlist",
-    "RelativePath": "api/Wishlist/check/{videoId}",
+    "RelativePath": "api/WishlistVideo/check/{videoId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -451,9 +1217,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "CroMap.Controllers.WishlistController",
+    "ContainingType": "CroMap.Controllers.WishlistVideoController",
     "Method": "GetMyWishlist",
-    "RelativePath": "api/Wishlist/my-wishlist",
+    "RelativePath": "api/WishlistVideo/my-wishlist",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -461,25 +1227,30 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "CroMap.Controllers.WishlistController",
+    "ContainingType": "CroMap.Controllers.WishlistVideoController",
     "Method": "RemoveFromWishlist",
-    "RelativePath": "api/Wishlist/remove/{videoId}",
+    "RelativePath": "api/WishlistVideo/remove",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
         "Name": "videoId",
         "Type": "System.Int32",
-        "IsRequired": true
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "CroMap.Controllers.WishlistController",
-    "Method": "UpdateNotes",
-    "RelativePath": "api/Wishlist/update-notes/{videoId}",
+    "ContainingType": "CroMap.Controllers.WishlistVideoController",
+    "Method": "UpdateWishlistItem",
+    "RelativePath": "api/WishlistVideo/update/{videoId}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -490,8 +1261,8 @@
         "IsRequired": true
       },
       {
-        "Name": "notes",
-        "Type": "System.String",
+        "Name": "request",
+        "Type": "CroMap.Controllers.UpdateWishlistRequest",
         "IsRequired": true
       }
     ],

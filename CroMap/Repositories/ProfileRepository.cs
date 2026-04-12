@@ -20,39 +20,41 @@ namespace CroMap.Repositories
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-                SELECT 
-                    u.id AS Id,
-                    u.first_name AS FirstName, 
-                    u.last_name AS LastName, 
-                    u.username AS Username,
-                    COALESCE(p.avatar, '') AS Avatar,
-                    COALESCE(p.is_public, true) AS IsPublic,
-                    p.screen_time_limit_minutes AS ScreenTimeLimitMinutes,
-                    (SELECT COUNT(*) FROM follows WHERE followed_id = u.id) AS FollowersCount,
-                    (SELECT COUNT(*) FROM follows WHERE follower_id = u.id) AS FollowingCount
-                FROM users u
-                LEFT JOIN user_profiles p ON u.id = p.user_id
-                WHERE u.id = @UserId";
+    SELECT 
+        u.id AS Id,
+        u.first_name AS FirstName, 
+        u.last_name AS LastName, 
+        u.username AS Username,
+        COALESCE(p.avatar, '') AS Avatar,
+        COALESCE(p.is_public, true) AS IsPublic,
+        COALESCE(p.show_username, true) AS ShowUsername,
+        p.screen_time_limit_minutes AS ScreenTimeLimitMinutes,
+        (SELECT COUNT(*) FROM follows WHERE followed_id = u.id) AS FollowersCount,
+        (SELECT COUNT(*) FROM follows WHERE follower_id = u.id) AS FollowingCount
+    FROM users u
+    LEFT JOIN user_profiles p ON u.id = p.user_id
+    WHERE u.id = @UserId";
 
             var profile = await connection.QueryFirstOrDefaultAsync<ProfileDto>(sql, new { UserId = userId });
             return profile;
         }
 
+        
         public async Task<IEnumerable<UserSearchDto>> GetAllUsersAsync(int currentUserId)
         {
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-                SELECT 
-                    u.id, 
-                    u.first_name AS FirstName, 
-                    u.last_name AS LastName, 
-                    u.username AS Username, 
-                    p.avatar AS Avatar
-                FROM users u
-                LEFT JOIN user_profiles p ON u.id = p.user_id
-                WHERE u.id != @CurrentUserId
-                ORDER BY u.first_name, u.last_name";
+        SELECT 
+            u.id, 
+            u.first_name AS FirstName, 
+            u.last_name AS LastName, 
+            u.username AS Username, 
+            p.avatar AS Avatar
+        FROM users u
+        LEFT JOIN user_profiles p ON u.id = p.user_id
+        WHERE u.id != @CurrentUserId
+        ORDER BY u.first_name, u.last_name";
 
             var users = await connection.QueryAsync<UserSearchDto>(sql, new { CurrentUserId = currentUserId });
             return users;
@@ -94,26 +96,29 @@ namespace CroMap.Repositories
             return rowsAffected > 0;
         }
 
-        public async Task<bool> UpdateSettingsAsync(int userId, bool isPublic, int screenTimeLimitMinutes)
+        public async Task<bool> UpdateSettingsAsync(int userId, bool isPublic, bool showUsername, int screenTimeLimitMinutes)
         {
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-                INSERT INTO user_profiles (user_id, is_public, screen_time_limit_minutes, updated_at)
-                VALUES (@UserId, @IsPublic, @ScreenTimeLimit, @UpdatedAt)
-                ON CONFLICT (user_id) 
-                DO UPDATE SET 
-                    is_public = @IsPublic, 
-                    screen_time_limit_minutes = @ScreenTimeLimit,
-                    updated_at = @UpdatedAt";
+        INSERT INTO user_profiles (user_id, is_public, show_username, screen_time_limit_minutes, updated_at)
+        VALUES (@UserId, @IsPublic, @ShowUsername, @ScreenTimeLimit, @UpdatedAt)
+        ON CONFLICT (user_id) 
+        DO UPDATE SET 
+            is_public = @IsPublic,
+            show_username = @ShowUsername,
+            screen_time_limit_minutes = @ScreenTimeLimit,
+            updated_at = @UpdatedAt";
 
             var rowsAffected = await connection.ExecuteAsync(sql, new
             {
                 UserId = userId,
                 IsPublic = isPublic,
+                ShowUsername = showUsername,
                 ScreenTimeLimit = screenTimeLimitMinutes == 0 ? (int?)null : screenTimeLimitMinutes,
                 UpdatedAt = DateTime.UtcNow
             });
+
             return rowsAffected > 0;
         }
 
@@ -179,7 +184,7 @@ namespace CroMap.Repositories
         Task<IEnumerable<UserSearchDto>> GetAllUsersAsync(int currentUserId);
         Task<bool> UpdateAvatarAsync(int userId, string avatarUrl);
         Task<bool> DeleteAvatarAsync(int userId);
-        Task<bool> UpdateSettingsAsync(int userId, bool isPublic, int screenTimeLimitMinutes);
+        Task<bool> UpdateSettingsAsync(int userId, bool isPublic, bool showUsername, int screenTimeLimitMinutes);
         Task<bool> IsUsernameAvailableAsync(string username, int? excludeUserId = null);
         Task<bool> UpdateUsernameAsync(int userId, string username);
         Task<bool> InitializeProfileAsync(int userId);

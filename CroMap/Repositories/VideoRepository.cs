@@ -19,29 +19,29 @@ namespace CroMap.Repositories
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-                SELECT 
-                    v.*,
-                    u.username as UserName,
-                    COALESCE(lc.like_count, 0) as LikeCount,
-                    COALESCE(cc.comment_count, 0) as CommentCount,
-                    CASE WHEN ul.user_id IS NOT NULL THEN true ELSE false END as IsLiked,
-                    CASE WHEN sv.user_id IS NOT NULL THEN true ELSE false END as IsSaved,
-                    CASE WHEN v.user_id = @CurrentUserId THEN true ELSE false END as IsOwner
-                FROM videos v
-                LEFT JOIN users u ON v.user_id = u.id
-                LEFT JOIN (
-                    SELECT video_id, COUNT(*) as like_count
-                    FROM likes
-                    GROUP BY video_id
-                ) lc ON v.id = lc.video_id
-                LEFT JOIN (
-                    SELECT video_id, COUNT(*) as comment_count
-                    FROM comments
-                    GROUP BY video_id
-                ) cc ON v.id = cc.video_id
-                LEFT JOIN likes ul ON v.id = ul.video_id AND ul.user_id = @CurrentUserId
-                LEFT JOIN saved_videos sv ON v.id = sv.video_id AND sv.user_id = @CurrentUserId
-                ORDER BY v.created_at DESC";
+        SELECT 
+            v.*,
+            u.username as UserName,
+            COALESCE(lc.like_count, 0) as LikeCount,
+            COALESCE(cc.comment_count, 0) as CommentCount,
+            CASE WHEN ul.user_id IS NOT NULL THEN true ELSE false END as IsLiked,
+            CASE WHEN sv.user_id IS NOT NULL THEN true ELSE false END as IsSaved,
+            CASE WHEN v.user_id = @CurrentUserId THEN true ELSE false END as IsOwner
+        FROM videos v
+        LEFT JOIN users u ON v.user_id = u.id
+        LEFT JOIN (
+            SELECT video_id, COUNT(*) as like_count
+            FROM likes
+            GROUP BY video_id
+        ) lc ON v.id = lc.video_id
+        LEFT JOIN (
+            SELECT video_id, COUNT(*) as comment_count
+            FROM comments
+            GROUP BY video_id
+        ) cc ON v.id = cc.video_id
+        LEFT JOIN likes ul ON v.id = ul.video_id AND ul.user_id = @CurrentUserId
+        LEFT JOIN saved_videos sv ON v.id = sv.video_id AND sv.user_id = @CurrentUserId
+        ORDER BY v.created_at DESC";
 
             var videos = await connection.QueryAsync<Video>(sql, new { CurrentUserId = currentUserId });
             return videos;
@@ -123,9 +123,9 @@ namespace CroMap.Repositories
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-                INSERT INTO videos (user_id, title, location, additional_description, file_path, created_at)
-                VALUES (@UserId, @Title, @Location, @AdditionalDescription, @FilePath, @CreatedAt)
-                RETURNING id";
+        INSERT INTO videos (user_id, title, location, additional_description, file_path, created_at, media_type)
+        VALUES (@UserId, @Title, @Location, @AdditionalDescription, @FilePath, @CreatedAt, @MediaType)
+        RETURNING id";
 
             video.Id = await connection.ExecuteScalarAsync<int>(sql, video);
         }
@@ -196,25 +196,34 @@ namespace CroMap.Repositories
         }
 
         // SAVE VIDEO METODE
-        public async Task<bool> ToggleSavedVideoAsync(int videoId, int userId)
+        public async Task<bool> SaveVideoAsync(int videoId, int userId)
         {
             using var connection = _dbConnection.CreateConnection();
 
-            var checkSql = "SELECT id FROM saved_videos WHERE video_id = @VideoId AND user_id = @UserId";
-            var existing = await connection.QueryFirstOrDefaultAsync<int?>(checkSql, new { VideoId = videoId, UserId = userId });
+            var sql = @"
+        INSERT INTO saved_videos (video_id, user_id, saved_at)
+        VALUES (@VideoId, @UserId, @SavedAt)
+        ON CONFLICT (user_id, video_id) DO NOTHING";
 
-            if (existing.HasValue)
+            var rowsAffected = await connection.ExecuteAsync(sql, new
             {
-                var deleteSql = "DELETE FROM saved_videos WHERE video_id = @VideoId AND user_id = @UserId";
-                await connection.ExecuteAsync(deleteSql, new { VideoId = videoId, UserId = userId });
-                return false; // unsave
-            }
-            else
-            {
-                var insertSql = "INSERT INTO saved_videos (user_id, video_id, saved_at) VALUES (@UserId, @VideoId, @SavedAt)";
-                await connection.ExecuteAsync(insertSql, new { UserId = userId, VideoId = videoId, SavedAt = DateTime.UtcNow });
-                return true; // save
-            }
+                VideoId = videoId,
+                UserId = userId,
+                SavedAt = DateTime.UtcNow
+            });
+
+            return rowsAffected > 0;
+        }
+
+        public async Task<bool> UnsaveVideoAsync(int videoId, int userId)
+        {
+            using var connection = _dbConnection.CreateConnection();
+
+            var sql = "DELETE FROM saved_videos WHERE video_id = @VideoId AND user_id = @UserId";
+
+            var rowsAffected = await connection.ExecuteAsync(sql, new { VideoId = videoId, UserId = userId });
+
+            return rowsAffected > 0;
         }
 
         public async Task<bool> IsSavedByUserAsync(int videoId, int userId)
@@ -226,17 +235,25 @@ namespace CroMap.Repositories
             return count > 0;
         }
 
-        // COMMENT METODE
-        public async Task AddCommentAsync(Comment comment)
+        
+        public async Task<int> AddCommentAsync(Comment comment)
         {
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-                INSERT INTO comments (user_id, video_id, content, created_at)
-                VALUES (@UserId, @VideoId, @Content, @CreatedAt)
-                RETURNING id";
+        INSERT INTO comments (user_id, video_id, content, created_at)
+        VALUES (@UserId, @VideoId, @Content, @CreatedAt)
+        RETURNING id";
 
-            comment.Id = await connection.ExecuteScalarAsync<int>(sql, comment);
+            var commentId = await connection.ExecuteScalarAsync<int>(sql, new
+            {
+                UserId = comment.UserId,
+                VideoId = comment.VideoId,
+                Content = comment.Content,
+                CreatedAt = comment.CreatedAt
+            });
+
+            return commentId;
         }
 
         public async Task<IEnumerable<Comment>> GetCommentsByVideoIdAsync(int videoId)

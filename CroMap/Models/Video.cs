@@ -11,6 +11,7 @@ namespace CroMap.Models
         public string AdditionalDescription { get; set; }
         public string FilePath { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string MediaType { get; set; } = "video";
 
         // Dodatna polja za frontend
         public string UserName { get; set; }

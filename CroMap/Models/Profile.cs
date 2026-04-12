@@ -28,14 +28,24 @@ namespace CroMap.Models
     public class ProfileDto
     {
         public int Id { get; set; }
+
         public string FirstName { get; set; } = string.Empty;
+
         public string LastName { get; set; } = string.Empty;
+
         public string Username { get; set; } = string.Empty;
-        public string? Avatar { get; set; }
-        public int FollowersCount { get; set; }
-        public int FollowingCount { get; set; }
+
+        public string Avatar { get; set; } = string.Empty;
+
         public bool IsPublic { get; set; }
+
+        public bool ShowUsername { get; set; }
+
         public int? ScreenTimeLimitMinutes { get; set; }
+
+        public int FollowersCount { get; set; }
+
+        public int FollowingCount { get; set; }
     }
 
     public class SettingsDto

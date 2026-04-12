@@ -1,45 +1,57 @@
-﻿using CroMap.Repositories;
+﻿// Controllers/SavedVideoController.cs
+using System.Security.Claims;
+using CroMap.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using CroMap.ModelsDto;
 
-namespace CroMap.Controllers
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class SavedVideoController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
-    public class SavedVideoController : ControllerBase
+    private readonly ISavedVideoRepository _savedVideoRepository;
+
+    public SavedVideoController(ISavedVideoRepository savedVideoRepository)
     {
-        private readonly IVideoRepository _videoRepository;
-
-        public SavedVideoController(IVideoRepository videoRepository)
-        {
-            _videoRepository = videoRepository;
-        }
-
-        private int GetCurrentUserId()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)
-                           ?? User.FindFirst("sub");
-
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-                throw new UnauthorizedAccessException("User not authenticated");
-
-            return userId;
-        }
-
-        [HttpPost("toggle")]
-        public async Task<IActionResult> ToggleSavedVideo([FromBody] SavedVideoToggleRequest request)
-        {
-            var userId = GetCurrentUserId();
-            var isSaved = await _videoRepository.ToggleSavedVideoAsync(request.VideoId, userId);
-
-            return Ok(new
-            {
-                message = isSaved ? "Video saved" : "Video unsaved",
-                isSaved = isSaved
-            });
-        }
+        _savedVideoRepository = savedVideoRepository;
     }
+
+    [HttpGet("my-saved")]
+    public async Task<IActionResult> GetMySavedVideos()
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        var savedVideos = await _savedVideoRepository.GetSavedVideosAsync(userId);
+        return Ok(savedVideos);
+    }
+
+    [HttpPost("save")]
+    public async Task<IActionResult> SaveVideo([FromBody] SaveVideoRequest request)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+        // Provjeri da li već postoji
+        var exists = await _savedVideoRepository.IsVideoSavedAsync(userId, request.VideoId);
+        if (exists)
+            return BadRequest("Video je već spremljen u Box");
+
+        var saved = await _savedVideoRepository.SaveVideoAsync(userId, request.VideoId);
+        return Ok(saved);
+    }
+
+    [HttpDelete("unsave")]
+    public async Task<IActionResult> UnsaveVideo([FromQuery] int videoId, [FromQuery] int userId)
+    {
+        // Verificiraj da je userId isti kao token
+        var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        if (currentUserId != userId)
+            return Unauthorized();
+
+        var result = await _savedVideoRepository.RemoveSavedVideoAsync(videoId, userId);
+        return result ? Ok() : NotFound();
+    }
+}
+
+public class SaveVideoRequest
+{
+    public int VideoId { get; set; }
 }

@@ -43,14 +43,14 @@ namespace CroMap.Controllers
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _videoRepository.AddCommentAsync(comment);
+            var commentId = await _videoRepository.AddCommentAsync(comment);
 
             var commentCount = await _videoRepository.GetCommentCountAsync(request.VideoId);
 
             return Ok(new
             {
                 message = "Comment added successfully",
-                commentId = comment.Id,
+                commentId = commentId,
                 commentCount = commentCount
             });
         }

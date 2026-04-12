@@ -105,17 +105,29 @@ namespace CroMap.Controllers
         public async Task<IActionResult> UploadVideo([FromForm] VideoUploadRequest request)
         {
             if (request == null || string.IsNullOrWhiteSpace(request.Title) || request.Video == null)
-                return BadRequest(new { message = "Invalid video data." });
+                return BadRequest(new { message = "Invalid media data." });
 
             var currentUserId = GetCurrentUserId();
             if (currentUserId != request.UserId)
                 return Unauthorized(new { message = "User ID mismatch." });
 
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "videos");
+            // Odredi upload folder na temelju tipa medija
+            var mediaType = request.MediaType ?? "video";
+            var subFolder = mediaType == "image" ? "images" : "videos";
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", subFolder);
+
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
-            var fileName = $"{Guid.NewGuid()}_{request.Video.FileName}";
+            // Generiraj jedinstveno ime fajla
+            var fileExtension = Path.GetExtension(request.Video.FileName);
+            if (string.IsNullOrEmpty(fileExtension))
+            {
+                // Ako nema ekstenzije, dodaj na temelju tipa
+                fileExtension = mediaType == "image" ? ".jpg" : ".mp4";
+            }
+
+            var fileName = $"{Guid.NewGuid()}_{DateTime.Now.Ticks}{fileExtension}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -123,20 +135,51 @@ namespace CroMap.Controllers
                 await request.Video.CopyToAsync(stream);
             }
 
-            var videoUrl = $"{Request.Scheme}://{Request.Host}/videos/{fileName}";
+            // Generiraj URL za medij
+            var mediaUrl = $"{Request.Scheme}://{Request.Host}/{subFolder}/{fileName}";
 
             var video = new Video
             {
                 Title = request.Title,
                 AdditionalDescription = request.Description ?? "",
                 Location = request.Location ?? "",
-                FilePath = videoUrl,
+                FilePath = mediaUrl,
                 UserId = request.UserId,
                 CreatedAt = DateTime.UtcNow
             };
 
             await _videoRepository.CreateVideoAsync(video);
-            return Ok(new { message = "Video uploaded successfully.", videoUrl, videoId = video.Id });
+
+            return Ok(new
+            {
+                message = $"{mediaType} uploaded successfully.",
+                mediaUrl,
+                videoId = video.Id,
+                mediaType = mediaType
+            });
+        }
+
+        [HttpPost("fix-video-urls")]
+        public async Task<IActionResult> FixVideoUrls()
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "videos");
+            if (!Directory.Exists(uploadsFolder))
+                return NotFound("Videos folder not found");
+
+            var files = Directory.GetFiles(uploadsFolder);
+            var fixedCount = 0;
+
+            foreach (var file in files)
+            {
+                var fileName = Path.GetFileName(file);
+                var correctUrl = $"{Request.Scheme}://{Request.Host}/videos/{fileName}";
+
+                // Ovdje bi trebao ažurirati bazu, ali za sada samo logiraj
+                Console.WriteLine($"File: {fileName} -> URL: {correctUrl}");
+                fixedCount++;
+            }
+
+            return Ok(new { message = $"Found {fixedCount} videos", baseUrl = $"{Request.Scheme}://{Request.Host}" });
         }
     }
 }

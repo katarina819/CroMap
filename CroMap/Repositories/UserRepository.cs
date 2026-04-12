@@ -43,14 +43,29 @@ namespace CroMap.Repositories
         }
 
         // 🔥 DODAJ OVU METODU ZA LOGIN PO USERNAME
+        // 🔥 METODA ZA LOGIN PO USERNAME (ispravljena)
         public async Task<User> LoginByUsernameAsync(string username, string password)
         {
             using var connection = _dbConnection.CreateConnection();
 
             _logger.LogInformation($"🔐 Login attempt - Username: '{username}'");
 
-            // Prvo dohvati korisnika po username-u
-            var sql = "SELECT * FROM users WHERE LOWER(username) = LOWER(@Username)";
+            // 🔥 ISPRAVLJEN SQL - dodan is_admin
+            var sql = @"
+        SELECT 
+            id, 
+            username, 
+            first_name AS FirstName, 
+            last_name AS LastName, 
+            email, 
+            phone, 
+            password_hash AS PasswordHash, 
+            birth_date AS BirthDate, 
+            created_at AS CreatedAt,
+            is_admin AS IsAdmin
+        FROM users 
+        WHERE LOWER(username) = LOWER(@Username)";
+
             var user = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Username = username });
 
             if (user == null)
@@ -59,7 +74,7 @@ namespace CroMap.Repositories
                 return null;
             }
 
-            _logger.LogInformation($"✅ User found: {user.Username}");
+            _logger.LogInformation($"✅ User found: {user.Username} (IsAdmin: {user.IsAdmin})");
 
             // 🔥 VERIFIKACIJA LOZINKE POMOĆU BCrypt
             bool passwordValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
@@ -94,7 +109,21 @@ namespace CroMap.Repositories
         {
             using var connection = _dbConnection.CreateConnection();
 
-            var sql = "SELECT * FROM users ORDER BY id";
+            var sql = @"
+        SELECT 
+            id, 
+            username, 
+            first_name AS FirstName, 
+            last_name AS LastName, 
+            email, 
+            phone, 
+            password_hash AS PasswordHash, 
+            birth_date AS BirthDate, 
+            created_at AS CreatedAt,
+            is_admin AS IsAdmin
+        FROM users 
+        ORDER BY id";
+
             return await connection.QueryAsync<User>(sql);
         }
 
@@ -102,7 +131,22 @@ namespace CroMap.Repositories
         {
             using var connection = _dbConnection.CreateConnection();
 
-            var sql = "SELECT * FROM users WHERE id = @Id";
+            // 🔥 DODAJTE is_admin AS IsAdmin
+            var sql = @"
+        SELECT 
+            id, 
+            username, 
+            first_name AS FirstName, 
+            last_name AS LastName, 
+            email, 
+            phone, 
+            password_hash AS PasswordHash, 
+            birth_date AS BirthDate, 
+            created_at AS CreatedAt,
+            is_admin AS IsAdmin
+        FROM users 
+        WHERE id = @Id";
+
             return await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
         }
 
@@ -137,6 +181,18 @@ namespace CroMap.Repositories
 
             var sql = "DELETE FROM users WHERE id = @Id";
             await connection.ExecuteAsync(sql, new { Id = id });
+        }
+
+        public async Task<string?> GetUserAvatarAsync(int userId)
+        {
+            using var connection = _dbConnection.CreateConnection();
+
+            var sql = @"
+        SELECT avatar 
+        FROM user_profiles 
+        WHERE user_id = @UserId";
+
+            return await connection.QueryFirstOrDefaultAsync<string>(sql, new { UserId = userId });
         }
     }
 }

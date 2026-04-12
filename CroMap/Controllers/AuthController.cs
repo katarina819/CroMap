@@ -5,6 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using CroMap.Data; 
+using Dapper;
 
 namespace CroMap.Controllers
 {
@@ -15,12 +17,14 @@ namespace CroMap.Controllers
         private readonly UserRepository _repo;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AuthController> _logger;
+        private readonly DatabaseConnection _dbConnection;
 
-        public AuthController(UserRepository repo, IConfiguration configuration, ILogger<AuthController> logger)
+        public AuthController(UserRepository repo, IConfiguration configuration, ILogger<AuthController> logger, DatabaseConnection dbConnection)
         {
             _repo = repo;
             _configuration = configuration;
             _logger = logger;
+            _dbConnection = dbConnection;
         }
 
         [HttpPost("register")]
@@ -122,7 +126,21 @@ namespace CroMap.Controllers
         {
             try
             {
-                var users = await _repo.GetAllUsersAsync();
+                // Direktan SQL upit koji uključuje avatar iz user_profiles tablice
+                var sql = @"
+            SELECT 
+                u.id, 
+                u.first_name AS FirstName, 
+                u.last_name AS LastName, 
+                u.username AS Username,
+                p.avatar AS Avatar
+            FROM users u
+            LEFT JOIN user_profiles p ON u.id = p.user_id
+            ORDER BY u.first_name, u.last_name";
+
+                using var connection = _dbConnection.CreateConnection();
+                var users = await connection.QueryAsync(sql);
+
                 return Ok(users);
             }
             catch (Exception ex)
@@ -142,7 +160,17 @@ namespace CroMap.Controllers
                 if (user == null)
                     return NotFound(new { message = "Korisnik nije pronađen" });
 
-                return Ok(user);
+                // Dohvati avatar iz user_profiles
+                var avatar = await _repo.GetUserAvatarAsync(id);
+
+                return Ok(new
+                {
+                    user.Id,
+                    user.FirstName,
+                    user.LastName,
+                    user.Username,
+                    Avatar = avatar
+                });
             }
             catch (Exception ex)
             {
@@ -211,18 +239,29 @@ namespace CroMap.Controllers
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
 
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-                new Claim("firstName", user.FirstName ?? ""),
-                new Claim("lastName", user.LastName ?? "")
-            };
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+        new Claim("firstName", user.FirstName ?? ""),
+        new Claim("lastName", user.LastName ?? "")
+    };
 
             if (!string.IsNullOrEmpty(user.Email))
                 claims.Add(new Claim(ClaimTypes.Email, user.Email));
 
             if (!string.IsNullOrEmpty(user.Phone))
                 claims.Add(new Claim("phone", user.Phone));
+
+            // 🔥 DODAJTE OVO - Admin role
+            if (user.IsAdmin)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+                claims.Add(new Claim("isAdmin", "true"));
+            }
+            else
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "User"));
+            }
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -239,5 +278,7 @@ namespace CroMap.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
+
     }
 }

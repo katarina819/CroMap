@@ -5,6 +5,149 @@
     "version": "1.0"
   },
   "paths": {
+    "/api/activity/stats": {
+      "get": {
+        "tags": [
+          "Activity"
+        ],
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "daily"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/activity/daily": {
+      "get": {
+        "tags": [
+          "Activity"
+        ],
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/activity/track/session": {
+      "post": {
+        "tags": [
+          "Activity"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackSessionRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackSessionRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/activity/track/like": {
+      "post": {
+        "tags": [
+          "Activity"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/activity/track/comment": {
+      "post": {
+        "tags": [
+          "Activity"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/activity/track/post": {
+      "post": {
+        "tags": [
+          "Activity"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/activity/track/followers": {
+      "post": {
+        "tags": [
+          "Activity"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackFollowersRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackFollowersRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackFollowersRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/auth/register": {
       "post": {
         "tags": [
@@ -163,6 +306,87 @@
         }
       }
     },
+    "/api/block/block/{userId}": {
+      "post": {
+        "tags": [
+          "Block"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/block/unblock/{userId}": {
+      "delete": {
+        "tags": [
+          "Block"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/block/blocked-users": {
+      "get": {
+        "tags": [
+          "Block"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/block/is-blocked/{userId}": {
+      "get": {
+        "tags": [
+          "Block"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Comment": {
       "post": {
         "tags": [
@@ -239,6 +463,246 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/Follow/{userId}": {
+      "post": {
+        "tags": [
+          "Follow"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Follow"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Follow/followers/{userId}": {
+      "get": {
+        "tags": [
+          "Follow"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Follow/following/{userId}": {
+      "get": {
+        "tags": [
+          "Follow"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Follow/is-following/{userId}": {
+      "get": {
+        "tags": [
+          "Follow"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Follow/counts/{userId}": {
+      "get": {
+        "tags": [
+          "Follow"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/golden-friends/{userId}": {
+      "get": {
+        "tags": [
+          "GoldenFriends"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/golden-friends/add/{friendId}": {
+      "post": {
+        "tags": [
+          "GoldenFriends"
+        ],
+        "parameters": [
+          {
+            "name": "friendId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/golden-friends/remove/{friendId}": {
+      "delete": {
+        "tags": [
+          "GoldenFriends"
+        ],
+        "parameters": [
+          {
+            "name": "friendId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/golden-friends": {
+      "get": {
+        "tags": [
+          "GoldenFriends"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/golden-friends/is-golden/{userId}": {
+      "get": {
+        "tags": [
+          "GoldenFriends"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -410,7 +874,62 @@
         }
       }
     },
-    "/api/SavedVideo/toggle": {
+    "/api/auth/my-profile": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/settings": {
+      "put": {
+        "tags": [
+          "Profile"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SavedVideo/my-saved": {
+      "get": {
+        "tags": [
+          "SavedVideo"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SavedVideo/save": {
       "post": {
         "tags": [
           "SavedVideo"
@@ -419,21 +938,163 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SavedVideoToggleRequest"
+                "$ref": "#/components/schemas/SaveVideoRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/SavedVideoToggleRequest"
+                "$ref": "#/components/schemas/SaveVideoRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/SavedVideoToggleRequest"
+                "$ref": "#/components/schemas/SaveVideoRequest"
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SavedVideo/unsave": {
+      "delete": {
+        "tags": [
+          "SavedVideo"
+        ],
+        "parameters": [
+          {
+            "name": "videoId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Story/upload": {
+      "post": {
+        "tags": [
+          "Story"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadStoryRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadStoryRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadStoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Story": {
+      "get": {
+        "tags": [
+          "Story"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Story/{storyId}": {
+      "delete": {
+        "tags": [
+          "Story"
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Story/view/{storyId}": {
+      "post": {
+        "tags": [
+          "Story"
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Story/viewers/{storyId}": {
+      "get": {
+        "tags": [
+          "Story"
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -704,10 +1365,34 @@
         }
       }
     },
-    "/api/Wishlist/add": {
+    "/api/Video/fix-video-urls": {
       "post": {
         "tags": [
-          "Wishlist"
+          "Video"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/WishlistVideo/my-wishlist": {
+      "get": {
+        "tags": [
+          "WishlistVideo"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/WishlistVideo/add": {
+      "post": {
+        "tags": [
+          "WishlistVideo"
         ],
         "requestBody": {
           "content": {
@@ -735,10 +1420,40 @@
         }
       }
     },
-    "/api/Wishlist/remove/{videoId}": {
+    "/api/WishlistVideo/remove": {
       "delete": {
         "tags": [
-          "Wishlist"
+          "WishlistVideo"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "videoId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/WishlistVideo/check/{videoId}": {
+      "get": {
+        "tags": [
+          "WishlistVideo"
         ],
         "parameters": [
           {
@@ -758,45 +1473,10 @@
         }
       }
     },
-    "/api/Wishlist/my-wishlist": {
-      "get": {
-        "tags": [
-          "Wishlist"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Wishlist/check/{videoId}": {
-      "get": {
-        "tags": [
-          "Wishlist"
-        ],
-        "parameters": [
-          {
-            "name": "videoId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Wishlist/update-notes/{videoId}": {
+    "/api/WishlistVideo/update/{videoId}": {
       "put": {
         "tags": [
-          "Wishlist"
+          "WishlistVideo"
         ],
         "parameters": [
           {
@@ -813,17 +1493,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/UpdateWishlistRequest"
               }
             },
             "text/json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/UpdateWishlistRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/UpdateWishlistRequest"
               }
             }
           }
@@ -920,7 +1600,7 @@
         },
         "additionalProperties": false
       },
-      "SavedVideoToggleRequest": {
+      "SaveVideoRequest": {
         "type": "object",
         "properties": {
           "videoId": {
@@ -938,6 +1618,70 @@
             "format": "int32"
           },
           "content": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TrackFollowersRequest": {
+        "type": "object",
+        "properties": {
+          "followersCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TrackSessionRequest": {
+        "type": "object",
+        "properties": {
+          "minutes": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateSettingsRequest": {
+        "type": "object",
+        "properties": {
+          "isPublic": {
+            "type": "boolean"
+          },
+          "showUsername": {
+            "type": "boolean"
+          },
+          "screenTimeLimitMinutes": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateWishlistRequest": {
+        "type": "object",
+        "properties": {
+          "isGoing": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UploadStoryRequest": {
+        "type": "object",
+        "properties": {
+          "mediaUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "mediaType": {
             "type": "string",
             "nullable": true
           }
@@ -1041,10 +1785,22 @@
   },
   "tags": [
     {
+      "name": "Activity"
+    },
+    {
       "name": "Auth"
     },
     {
+      "name": "Block"
+    },
+    {
       "name": "Comment"
+    },
+    {
+      "name": "Follow"
+    },
+    {
+      "name": "GoldenFriends"
     },
     {
       "name": "Like"
@@ -1053,13 +1809,19 @@
       "name": "Message"
     },
     {
+      "name": "Profile"
+    },
+    {
       "name": "SavedVideo"
+    },
+    {
+      "name": "Story"
     },
     {
       "name": "Video"
     },
     {
-      "name": "Wishlist"
+      "name": "WishlistVideo"
     }
   ]
 }

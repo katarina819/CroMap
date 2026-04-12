@@ -44,6 +44,53 @@ namespace CroMap.Repositories
             var rowsAffected = await connection.ExecuteAsync(sql, new { VideoId = videoId, UserId = userId });
             return rowsAffected > 0;
         }
+
+        // Dodajte ove metode u SavedVideoRepository
+        public async Task<bool> IsVideoSavedAsync(int userId, int videoId)
+        {
+            using var connection = _dbConnection.CreateConnection();
+            var sql = "SELECT COUNT(*) FROM saved_videos WHERE user_id = @UserId AND video_id = @VideoId";
+            var count = await connection.ExecuteScalarAsync<int>(sql, new { UserId = userId, VideoId = videoId });
+            return count > 0;
+        }
+
+        public async Task<SavedVideoDto> SaveVideoAsync(int userId, int videoId)
+        {
+            using var connection = _dbConnection.CreateConnection();
+
+            var sql = @"
+        INSERT INTO saved_videos (user_id, video_id, saved_at)
+        VALUES (@UserId, @VideoId, @SavedAt)
+        ON CONFLICT (user_id, video_id) DO NOTHING
+        RETURNING id, video_id AS VideoId, saved_at AS SavedAt";
+
+            var result = await connection.QuerySingleOrDefaultAsync<SavedVideoDto>(sql, new
+            {
+                UserId = userId,
+                VideoId = videoId,
+                SavedAt = DateTime.UtcNow
+            });
+
+            if (result != null)
+            {
+                // Dohvati dodatne informacije o videu
+                var videoSql = @"
+            SELECT v.title, v.file_path AS FilePath, u.username AS UserName
+            FROM videos v
+            JOIN users u ON v.user_id = u.id
+            WHERE v.id = @VideoId";
+
+                var videoInfo = await connection.QuerySingleOrDefaultAsync(sql, new { VideoId = videoId });
+                if (videoInfo != null)
+                {
+                    result.Title = videoInfo.title;
+                    result.FilePath = videoInfo.file_path;
+                    result.UserName = videoInfo.username;
+                }
+            }
+
+            return result;
+        }
     }
 
     public class SavedVideoDto
@@ -60,5 +107,7 @@ namespace CroMap.Repositories
     {
         Task<IEnumerable<SavedVideoDto>> GetSavedVideosAsync(int userId);
         Task<bool> RemoveSavedVideoAsync(int videoId, int userId);
+        Task<bool> IsVideoSavedAsync(int userId, int videoId);
+        Task<SavedVideoDto> SaveVideoAsync(int userId, int videoId);
     }
 }

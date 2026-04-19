@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using CroMap.Models;
-using CroMap.Repositories;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CroMap.Data; 
+using CroMap.Models;
+using CroMap.Repositories;
+using CroMap.Services;
 using Dapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CroMap.Controllers
 {
@@ -18,13 +19,18 @@ namespace CroMap.Controllers
         private readonly IConfiguration _configuration;
         private readonly ILogger<AuthController> _logger;
         private readonly DatabaseConnection _dbConnection;
+        private readonly IEmailService _emailService;
+        private readonly PasswordResetRepository _resetRepo;
 
-        public AuthController(UserRepository repo, IConfiguration configuration, ILogger<AuthController> logger, DatabaseConnection dbConnection)
+        public AuthController(UserRepository repo, IConfiguration configuration, ILogger<AuthController> logger, DatabaseConnection dbConnection, IEmailService emailService,
+    PasswordResetRepository resetRepo)
         {
             _repo = repo;
             _configuration = configuration;
             _logger = logger;
             _dbConnection = dbConnection;
+            _emailService = emailService;
+            _resetRepo = resetRepo;
         }
 
         [HttpPost("register")]
@@ -67,21 +73,170 @@ namespace CroMap.Controllers
             try
             {
                 await _repo.RegisterAsync(user);
-                _logger.LogInformation($"✅ User registered: {user.Username}");
+
+                // Pošalji dobrodošlicu ako postoji email
+                if (!string.IsNullOrWhiteSpace(userDto.Email))
+                {
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await _emailService.SendEmailAsync(
+                                userDto.Email,
+                                "Dobrodošli u CroMap! 🗺️",
+                                BuildWelcomeEmail(userDto.FirstName)
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "Welcome email failed, ignoring");
+                        }
+                    });
+                }
+
                 return Ok(new { message = "Registracija uspješna" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Registration error");
-
                 if (ex.Message.Contains("23505") || ex.Message.Contains("duplicate key"))
-                {
-                    return BadRequest(new { message = "Korisničko ime, email ili telefon već postoji" });
-                }
-
-                return BadRequest(new { message = "Greška pri registraciji: " + ex.Message });
+                    return Conflict(new { message = "Korisničko ime, email ili telefon već postoji" });
+                return BadRequest(new { message = "Greška pri registraciji" });
             }
         }
+
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email))
+                return BadRequest(new { message = "Email je obavezan" });
+
+            try
+            {
+                // Pronađi korisnika po emailu
+                using var conn = _dbConnection.CreateConnection();
+                var user = await conn.QueryFirstOrDefaultAsync<User>(
+                    "SELECT id, first_name AS FirstName, email FROM users WHERE LOWER(email) = LOWER(@Email)",
+                    new { dto.Email });
+
+                // Uvijek vrati OK (sigurnost - ne otkrivamo postoji li email)
+                if (user == null)
+                {
+                    _logger.LogInformation($"Password reset requested for non-existent email: {dto.Email}");
+                    return Ok(new { message = "Ako email postoji, poslan je kod za reset" });
+                }
+
+                // Generiraj 6-znamenkasti kod
+                var code = new Random().Next(100000, 999999).ToString();
+
+                await _resetRepo.CreateResetTokenAsync(user.Id, code);
+
+                await _emailService.SendEmailAsync(
+                    user.Email,
+                    "CroMap - Reset lozinke 🔐",
+                    BuildResetEmail(user.FirstName, code)
+                );
+
+                return Ok(new { message = "Ako email postoji, poslan je kod za reset" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ForgotPassword error");
+                return StatusCode(500, new { message = "Greška pri slanju emaila" });
+            }
+        }
+
+        // ─── POTVRDI RESET (provjeri kod + postavi novu lozinku) ────────────
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Code) || string.IsNullOrWhiteSpace(dto.NewPassword))
+                return BadRequest(new { message = "Kod i nova lozinka su obavezni" });
+
+            if (dto.NewPassword.Length < 6)
+                return BadRequest(new { message = "Lozinka mora imati najmanje 6 znakova" });
+
+            try
+            {
+                var (userId, isValid) = await _resetRepo.ValidateTokenAsync(dto.Code);
+
+                if (!isValid)
+                    return BadRequest(new { message = "Kod je neispravan ili je istekao" });
+
+                // Ažuriraj lozinku
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+                using var conn = _dbConnection.CreateConnection();
+                await conn.ExecuteAsync(
+                    "UPDATE users SET password_hash = @Hash WHERE id = @Id",
+                    new { Hash = hashedPassword, Id = userId });
+
+                // Obriši iskorišteni token
+                await _resetRepo.DeleteTokenAsync(dto.Code);
+
+                return Ok(new { message = "Lozinka uspješno promijenjena" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ResetPassword error");
+                return StatusCode(500, new { message = "Greška pri resetiranju lozinke" });
+            }
+        }
+
+        // ─── EMAIL PREDLOŠCI ────────────────────────────────────────────────
+        private string BuildWelcomeEmail(string firstName) => $@"
+<!DOCTYPE html>
+<html>
+<body style='font-family:Arial,sans-serif;background:#f5f5f5;padding:20px'>
+  <div style='max-width:500px;margin:0 auto;background:#fff;border-radius:16px;padding:32px'>
+    <div style='text-align:center;margin-bottom:24px'>
+      <h1 style='color:#667eea;font-size:28px;margin:0'>🗺️ CroMap</h1>
+    </div>
+    <h2 style='color:#333'>Dobrodošli, {firstName}! 👋</h2>
+    <p style='color:#666;line-height:1.6'>
+      Vaša registracija je uspješna. Sada možete istraživati najbolja mjesta u
+      Hrvatskoj, pratiti prijatelje i dijeliti svoje avanture.
+    </p>
+    <div style='background:#f0f0ff;border-radius:12px;padding:16px;margin:20px 0'>
+      <p style='color:#667eea;margin:0;font-weight:bold'>🏖️ Istražite plaže</p>
+      <p style='color:#667eea;margin:0;font-weight:bold'>🍽️ Pronađite restorane</p>
+      <p style='color:#667eea;margin:0;font-weight:bold'>🏰 Otkrijte znamenitosti</p>
+    </div>
+    <p style='color:#999;font-size:12px;text-align:center;margin-top:24px'>
+      © {DateTime.Now.Year} CroMap
+    </p>
+  </div>
+</body>
+</html>";
+
+        private string BuildResetEmail(string firstName, string code) => $@"
+<!DOCTYPE html>
+<html>
+<body style='font-family:Arial,sans-serif;background:#f5f5f5;padding:20px'>
+  <div style='max-width:500px;margin:0 auto;background:#fff;border-radius:16px;padding:32px'>
+    <div style='text-align:center;margin-bottom:24px'>
+      <h1 style='color:#667eea;font-size:28px;margin:0'>🗺️ CroMap</h1>
+    </div>
+    <h2 style='color:#333'>Reset lozinke, {firstName}</h2>
+    <p style='color:#666'>Primili smo zahtjev za reset lozinke. Vaš kod:</p>
+    <div style='text-align:center;margin:24px 0'>
+      <div style='display:inline-block;background:#667eea;color:#fff;
+                  font-size:36px;font-weight:bold;letter-spacing:8px;
+                  padding:16px 32px;border-radius:12px'>
+        {code}
+      </div>
+    </div>
+    <p style='color:#999;font-size:13px'>
+      ⏱️ Kod ističe za <strong>1 sat</strong>.<br>
+      Ako niste zatražili reset, zanemarite ovaj email.
+    </p>
+    <p style='color:#999;font-size:12px;text-align:center;margin-top:24px'>
+      © {DateTime.Now.Year} CroMap
+    </p>
+  </div>
+</body>
+</html>";
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)

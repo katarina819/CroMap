@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using CroMap.Data;
 using CroMap.Repositories;
+using CroMap.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -44,6 +45,8 @@ builder.Services.AddScoped<IBlockRepository, BlockRepository>();
 builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
 builder.Services.AddScoped<MediaRepository>();
 builder.Services.AddScoped<AdminRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<PasswordResetRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

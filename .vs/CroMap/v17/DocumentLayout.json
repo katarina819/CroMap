@@ -3,8 +3,44 @@
   "WorkspaceRootPath": "C:\\Users\\Admin\\Desktop\\CroMap\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\modelsdto\\authdtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\authdtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\repositories\\passwordresetrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\passwordresetrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\services\\emailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\services\\emailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\modelsdto\\groupmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\groupmessagedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\controllers\\messagecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\messagecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\modelsdto\\sendmessagerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\modelsdto\\sendmessagerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\controllers\\activitygroupscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\activitygroupscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,7 +50,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -26,16 +62,125 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AdminController.cs",
-              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\AdminController.cs",
-              "RelativeDocumentMoniker": "CroMap\\Controllers\\AdminController.cs",
-              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\AdminController.cs",
-              "RelativeToolTip": "CroMap\\Controllers\\AdminController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 4,
+              "Title": "PasswordResetRepository.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Repositories\\PasswordResetRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\PasswordResetRepository.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Repositories\\PasswordResetRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\PasswordResetRepository.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAAQwCoAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-14T18:07:05.991Z",
+              "WhenOpened": "2026-04-18T20:00:32.08Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\appsettings.json",
+              "RelativeDocumentMoniker": "CroMap\\appsettings.json",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\appsettings.json",
+              "RelativeToolTip": "CroMap\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-18T18:56:17.21Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "EmailService.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Services\\EmailService.cs",
+              "RelativeDocumentMoniker": "CroMap\\Services\\EmailService.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Services\\EmailService.cs",
+              "RelativeToolTip": "CroMap\\Services\\EmailService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T18:53:30.228Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "GroupMessageDto.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\ModelsDto\\GroupMessageDto.cs",
+              "RelativeDocumentMoniker": "CroMap\\ModelsDto\\GroupMessageDto.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\ModelsDto\\GroupMessageDto.cs",
+              "RelativeToolTip": "CroMap\\ModelsDto\\GroupMessageDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T17:04:59.244Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "SendMessageRequest.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\ModelsDto\\SendMessageRequest.cs",
+              "RelativeDocumentMoniker": "CroMap\\ModelsDto\\SendMessageRequest.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\ModelsDto\\SendMessageRequest.cs",
+              "RelativeToolTip": "CroMap\\ModelsDto\\SendMessageRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T15:53:02.822Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MessageController.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\MessageController.cs",
+              "RelativeDocumentMoniker": "CroMap\\Controllers\\MessageController.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\MessageController.cs",
+              "RelativeToolTip": "CroMap\\Controllers\\MessageController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T15:52:05.268Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "CroMap\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "CroMap\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAJIBAAAAAAAAAAAswKcBAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-17T20:16:42.872Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AuthDtos.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\ModelsDto\\AuthDtos.cs",
+              "RelativeDocumentMoniker": "CroMap\\ModelsDto\\AuthDtos.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\ModelsDto\\AuthDtos.cs",
+              "RelativeToolTip": "CroMap\\ModelsDto\\AuthDtos.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T20:06:35.123Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Program.cs",
+              "RelativeDocumentMoniker": "CroMap\\Program.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Program.cs",
+              "RelativeToolTip": "CroMap\\Program.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAAACsAAABAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T20:06:52.337Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ActivityGroupsController.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\ActivityGroupsController.cs",
+              "RelativeDocumentMoniker": "CroMap\\Controllers\\ActivityGroupsController.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\ActivityGroupsController.cs",
+              "RelativeToolTip": "CroMap\\Controllers\\ActivityGroupsController.cs",
+              "ViewState": "AgIAAGoBAAAAAAAAAAAwwHUBAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T14:26:47.445Z"
             }
           ]
         }

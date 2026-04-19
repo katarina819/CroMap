@@ -526,3 +526,46 @@ SELECT
     CASE WHEN expires_at > NOW() THEN 'Active' ELSE 'Expired' END as status
 FROM stories 
 WHERE user_id = 8;
+
+
+-- Tabela za grupe
+CREATE TABLE IF NOT EXISTS activity_groups (
+    id TEXT PRIMARY KEY,
+    creator_name TEXT NOT NULL,
+    activity TEXT NOT NULL,
+    description TEXT,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
+    location_name TEXT NOT NULL,
+    max_people INTEGER NOT NULL,
+    members TEXT,
+    created_at TIMESTAMP NOT NULL,
+    expires_at TIMESTAMP NOT NULL
+);
+
+-- Tabela za poruke
+CREATE TABLE IF NOT EXISTS group_messages (
+    id TEXT PRIMARY KEY,
+    group_id TEXT NOT NULL,
+    user_name TEXT NOT NULL,
+    text TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (group_id) REFERENCES activity_groups(id) ON DELETE CASCADE
+);
+
+-- Indeksi za brže pretrage
+CREATE INDEX IF NOT EXISTS idx_groups_expires_at ON activity_groups(expires_at);
+CREATE INDEX IF NOT EXISTS idx_messages_group_id ON group_messages(group_id);
+
+-- Pretvori members iz stringa u niz (ako treba)
+UPDATE activity_groups SET members = '{}' WHERE members IS NULL;
+
+
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token VARCHAR(10) NOT NULL UNIQUE,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);

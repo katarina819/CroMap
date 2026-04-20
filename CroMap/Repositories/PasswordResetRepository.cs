@@ -38,21 +38,27 @@ namespace CroMap.Repositories
         {
             using var conn = _db.CreateConnection();
 
-            var result = await conn.QueryFirstOrDefaultAsync<dynamic>(@"
-                SELECT user_id AS UserId, expires_at AS ExpiresAt
-                FROM password_reset_tokens
-                WHERE token = @Token",
+            var result = await conn.QueryFirstOrDefaultAsync<ResetTokenResult>(@"
+        SELECT user_id AS UserId, expires_at AS ExpiresAt
+        FROM password_reset_tokens
+        WHERE token = @Token",
                 new { Token = token });
 
             if (result == null)
                 return (0, false);
 
-            if ((DateTime)result.ExpiresAt < DateTime.UtcNow)
+            if (result.ExpiresAt < DateTime.UtcNow)
                 return (0, false);
 
-            return ((int)result.UserId, true);
+            return (result.UserId, true);
         }
 
+        // Dodaj ovu klasu na dno fajla, unutar namespace-a ali izvan PasswordResetRepository klase
+        public class ResetTokenResult
+        {
+            public int UserId { get; set; }
+            public DateTime ExpiresAt { get; set; }
+        }
         public async Task DeleteTokenAsync(string token)
         {
             using var conn = _db.CreateConnection();

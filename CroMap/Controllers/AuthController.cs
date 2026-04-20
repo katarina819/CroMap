@@ -52,8 +52,10 @@ namespace CroMap.Controllers
             if (string.IsNullOrWhiteSpace(userDto.Password) || userDto.Password.Length < 6)
                 return BadRequest(new { message = "Lozinka mora imati najmanje 6 znakova" });
 
-            if (string.IsNullOrWhiteSpace(userDto.Email) && string.IsNullOrWhiteSpace(userDto.Phone))
-                return BadRequest(new { message = "Email ili telefon su obavezni" });
+            if (string.IsNullOrWhiteSpace(userDto.Email))
+                return BadRequest(new { message = "Email je obavezan" });
+
+            
 
             if (!userDto.BirthDate.HasValue)
                 return BadRequest(new { message = "Datum rođenja je obavezan" });
@@ -64,7 +66,6 @@ namespace CroMap.Controllers
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email,
-                Phone = userDto.Phone,
                 PasswordHash = userDto.Password,  // ← PLAIN TEXT, HASHIRAT ĆE SE U REPOSITORYJU
                 BirthDate = userDto.BirthDate.Value,
                 CreatedAt = DateTime.UtcNow
@@ -114,22 +115,16 @@ namespace CroMap.Controllers
 
             try
             {
-                // Pronađi korisnika po emailu
                 using var conn = _dbConnection.CreateConnection();
+
                 var user = await conn.QueryFirstOrDefaultAsync<User>(
                     "SELECT id, first_name AS FirstName, email FROM users WHERE LOWER(email) = LOWER(@Email)",
                     new { dto.Email });
 
-                // Uvijek vrati OK (sigurnost - ne otkrivamo postoji li email)
                 if (user == null)
-                {
-                    _logger.LogInformation($"Password reset requested for non-existent email: {dto.Email}");
-                    return Ok(new { message = "Ako email postoji, poslan je kod za reset" });
-                }
+                    return NotFound(new { message = "Nije pronađen korisnik s tim emailom" });
 
-                // Generiraj 6-znamenkasti kod
                 var code = new Random().Next(100000, 999999).ToString();
-
                 await _resetRepo.CreateResetTokenAsync(user.Id, code);
 
                 await _emailService.SendEmailAsync(
@@ -138,7 +133,7 @@ namespace CroMap.Controllers
                     BuildResetEmail(user.FirstName, code)
                 );
 
-                return Ok(new { message = "Ako email postoji, poslan je kod za reset" });
+                return Ok(new { message = "Kod poslan na email" });
             }
             catch (Exception ex)
             {
@@ -190,20 +185,27 @@ namespace CroMap.Controllers
 <body style='font-family:Arial,sans-serif;background:#f5f5f5;padding:20px'>
   <div style='max-width:500px;margin:0 auto;background:#fff;border-radius:16px;padding:32px'>
     <div style='text-align:center;margin-bottom:24px'>
-      <h1 style='color:#667eea;font-size:28px;margin:0'>🗺️ CroMap</h1>
+      <h1 style='color:#2D6418;font-size:32px;margin:0;letter-spacing:8px'>VARA</h1>
     </div>
-    <h2 style='color:#333'>Dobrodošli, {firstName}! 👋</h2>
-    <p style='color:#666;line-height:1.6'>
-      Vaša registracija je uspješna. Sada možete istraživati najbolja mjesta u
-      Hrvatskoj, pratiti prijatelje i dijeliti svoje avanture.
+    <h2 style='color:#333;text-align:center'>Dobrodošli, {firstName}! 👋</h2>
+    <p style='color:#666;line-height:1.6;text-align:center'>
+      Vaša registracija je uspješna. Sada možete istraživati najbolja mjesta,
+      pratiti prijatelje i dijeliti svoje avanture.
     </p>
-    <div style='background:#f0f0ff;border-radius:12px;padding:16px;margin:20px 0'>
-      <p style='color:#667eea;margin:0;font-weight:bold'>🏖️ Istražite plaže</p>
-      <p style='color:#667eea;margin:0;font-weight:bold'>🍽️ Pronađite restorane</p>
-      <p style='color:#667eea;margin:0;font-weight:bold'>🏰 Otkrijte znamenitosti</p>
+    <div style='background:#f0f7ee;border-radius:12px;padding:16px;margin:20px 0'>
+      <p style='color:#2D6418;margin:0;font-weight:bold'>🏖️ Istražite plaže</p>
+      <p style='color:#2D6418;margin:0;font-weight:bold'>🍽️ Pronađite restorane</p>
+      <p style='color:#2D6418;margin:0;font-weight:bold'>🏰 Otkrijte znamenitosti</p>
+    </div>
+    <div style='text-align:center;margin-top:24px'>
+      <a href='#' style='display:inline-block;background:#2D6418;color:#fff;
+                         font-size:16px;font-weight:700;letter-spacing:1px;
+                         padding:14px 40px;border-radius:12px;text-decoration:none'>
+        Otvori VARA
+      </a>
     </div>
     <p style='color:#999;font-size:12px;text-align:center;margin-top:24px'>
-      © {DateTime.Now.Year} CroMap
+      © {DateTime.Now.Year} VARA
     </p>
   </div>
 </body>
@@ -215,23 +217,23 @@ namespace CroMap.Controllers
 <body style='font-family:Arial,sans-serif;background:#f5f5f5;padding:20px'>
   <div style='max-width:500px;margin:0 auto;background:#fff;border-radius:16px;padding:32px'>
     <div style='text-align:center;margin-bottom:24px'>
-      <h1 style='color:#667eea;font-size:28px;margin:0'>🗺️ CroMap</h1>
+      <h1 style='color:#2D6418;font-size:32px;margin:0;letter-spacing:8px'>VARA</h1>
     </div>
-    <h2 style='color:#333'>Reset lozinke, {firstName}</h2>
-    <p style='color:#666'>Primili smo zahtjev za reset lozinke. Vaš kod:</p>
+    <h2 style='color:#333;text-align:center'>Reset lozinke, {firstName}</h2>
+    <p style='color:#666;text-align:center'>Primili smo zahtjev za reset lozinke. Vaš kod:</p>
     <div style='text-align:center;margin:24px 0'>
-      <div style='display:inline-block;background:#667eea;color:#fff;
+      <div style='display:inline-block;background:#2D6418;color:#fff;
                   font-size:36px;font-weight:bold;letter-spacing:8px;
                   padding:16px 32px;border-radius:12px'>
         {code}
       </div>
     </div>
-    <p style='color:#999;font-size:13px'>
+    <p style='color:#999;font-size:13px;text-align:center'>
       ⏱️ Kod ističe za <strong>1 sat</strong>.<br>
       Ako niste zatražili reset, zanemarite ovaj email.
     </p>
     <p style='color:#999;font-size:12px;text-align:center;margin-top:24px'>
-      © {DateTime.Now.Year} CroMap
+      © {DateTime.Now.Year} VARA
     </p>
   </div>
 </body>
@@ -357,7 +359,7 @@ namespace CroMap.Controllers
                     FirstName = userDto.FirstName,
                     LastName = userDto.LastName,
                     Email = userDto.Email,
-                    Phone = userDto.Phone,
+                    
                     BirthDate = userDto.BirthDate.Value,  // ← KORISTI .Value ZA PRETVORBU
                     CreatedAt = DateTime.UtcNow  // Ovo će se overwrite-ati u bazi, ali dobro je imati
                 };

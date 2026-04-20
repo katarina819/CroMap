@@ -107,6 +107,28 @@ namespace CroMap.Controllers
             }
         }
 
+        // PUT /api/auth/profile-photo/avatar
+        [HttpPut("profile-photo/avatar")]
+        public async Task<IActionResult> SetAvatarType([FromBody] SetAvatarTypeRequest request)
+        {
+            var userId = GetCurrentUserId();
+
+            // Spremi kao poseban identifikator umjesto URL-a
+            var avatarIdentifier = $"avatar:{request.AvatarType}"; // "avatar:male" ili "avatar:female"
+
+            var success = await _profileRepository.UpdateAvatarAsync(userId, avatarIdentifier);
+
+            if (!success)
+                return BadRequest(new { message = "Failed to set avatar" });
+
+            return Ok(new { avatarUrl = avatarIdentifier, message = "Avatar set successfully" });
+        }
+
+        public class SetAvatarTypeRequest
+        {
+            public string AvatarType { get; set; } = string.Empty; // "male" ili "female"
+        }
+
         // DELETE /api/auth/profile-photo
         [HttpDelete("profile-photo")]
         public async Task<IActionResult> DeleteProfilePhoto()

@@ -35,7 +35,7 @@ namespace CroMap.Repositories
                 user.Email,
                 user.Phone,
                 PasswordHash = hashedPassword,  // ← SPREMI HASH
-                user.BirthDate,
+                BirthDate = user.BirthDate.ToDateTime(TimeOnly.MinValue),
                 user.CreatedAt
             });
 
@@ -172,7 +172,16 @@ namespace CroMap.Repositories
                     birth_date = @BirthDate
                 WHERE id = @Id";
 
-            await connection.ExecuteAsync(sql, user);
+            await connection.ExecuteAsync(sql, new
+            {
+                user.Id,
+                user.Username,
+                user.FirstName,
+                user.LastName,
+                user.Email,
+                user.Phone,
+                BirthDate = user.BirthDate.ToDateTime(TimeOnly.MinValue)
+            });
         }
 
         public async Task DeleteUserAsync(int id)

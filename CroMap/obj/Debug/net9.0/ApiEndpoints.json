@@ -375,6 +375,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "CroMap.Controllers.ProfileController",
+    "Method": "SetAvatarType",
+    "RelativePath": "api/auth/profile-photo/avatar",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CroMap.Controllers.ProfileController\u002BSetAvatarTypeRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "CroMap.Controllers.AuthController",
     "Method": "Register",
     "RelativePath": "api/auth/register",

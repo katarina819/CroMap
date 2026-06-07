@@ -80,7 +80,7 @@ namespace CroMap.Repositories
             JOIN users u ON v.user_id = u.id
             WHERE v.id = @VideoId";
 
-                var videoInfo = await connection.QuerySingleOrDefaultAsync(sql, new { VideoId = videoId });
+                var videoInfo = await connection.QuerySingleOrDefaultAsync(videoSql, new { VideoId = videoId });
                 if (videoInfo != null)
                 {
                     result.Title = videoInfo.title;

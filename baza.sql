@@ -569,3 +569,14 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
     expires_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE plan_ratings (
+    id SERIAL PRIMARY KEY,
+    user_name VARCHAR(100) NOT NULL,
+    destination VARCHAR(200) NOT NULL,
+    rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE activity_groups ADD COLUMN IF NOT EXISTS creator_user_id INTEGER;
+ALTER TABLE group_messages ADD COLUMN IF NOT EXISTS user_id INTEGER;

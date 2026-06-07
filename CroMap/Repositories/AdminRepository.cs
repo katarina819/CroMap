@@ -112,6 +112,28 @@ namespace CroMap.Repositories
 
             return await connection.QueryFirstOrDefaultAsync<AdminSummaryDto>(sql);
         }
+
+        // Spremi ocjenu plana
+        public async Task<int> SavePlanRatingAsync(string userName, string destination, int rating)
+        {
+            using var connection = _dbConnection.CreateConnection();
+            var sql = @"
+        INSERT INTO plan_ratings (user_name, destination, rating, created_at)
+        VALUES (@UserName, @Destination, @Rating, NOW())
+        RETURNING id";
+            return await connection.ExecuteScalarAsync<int>(sql, new { UserName = userName, Destination = destination, Rating = rating });
+        }
+
+        // Dohvati sve ocjene planova (za admin)
+        public async Task<IEnumerable<PlanRatingDto>> GetPlanRatingsAsync()
+        {
+            using var connection = _dbConnection.CreateConnection();
+            var sql = @"
+        SELECT id, user_name as UserName, destination, rating, created_at as CreatedAt
+        FROM plan_ratings
+        ORDER BY created_at DESC";
+            return await connection.QueryAsync<PlanRatingDto>(sql);
+        }
     }
 
     public class AdminUserDto
@@ -137,4 +159,22 @@ namespace CroMap.Repositories
         public int TotalComments { get; set; }
         public int TotalMinutes { get; set; }
     }
+
+    public class PlanRatingDto
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Destination { get; set; } = string.Empty;
+        public int Rating { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public class SavePlanRatingRequest
+    {
+        public string UserName { get; set; } = string.Empty;
+        public string Destination { get; set; } = string.Empty;
+        public int Rating { get; set; }
+    }
+
+
 }

@@ -882,6 +882,32 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "CroMap.Controllers.AdminController",
+    "Method": "SavePlanRating",
+    "RelativePath": "api/plan-ratings",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CroMap.Repositories.SavePlanRatingRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.AdminController",
+    "Method": "GetPlanRatings",
+    "RelativePath": "api/plan-ratings",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "SavedVideoController",
     "Method": "GetMySavedVideos",
     "RelativePath": "api/SavedVideo/my-saved",

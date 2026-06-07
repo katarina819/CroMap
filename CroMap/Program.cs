@@ -46,6 +46,7 @@ builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
 builder.Services.AddScoped<MediaRepository>();
 builder.Services.AddScoped<AdminRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IEmailServiceWithInlineImages, EmailService>();
 builder.Services.AddScoped<PasswordResetRepository>();
 
 builder.Services.AddControllers();

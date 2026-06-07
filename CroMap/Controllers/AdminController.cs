@@ -49,5 +49,32 @@ namespace CroMap.Controllers
             var summary = await _adminRepository.GetAdminSummaryAsync();
             return Ok(summary);
         }
+
+        // POST: api/plan-ratings  (korisnik šalje ocjenu — bez admin role)
+        [HttpPost("/api/plan-ratings")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SavePlanRating([FromBody] SavePlanRatingRequest request)
+        {
+            if (request.Rating < 1 || request.Rating > 5)
+                return BadRequest("Ocjena mora biti između 1 i 5.");
+            if (string.IsNullOrWhiteSpace(request.Destination))
+                return BadRequest("Destinacija je obavezna.");
+
+            var id = await _adminRepository.SavePlanRatingAsync(
+                request.UserName ?? "Anonimni korisnik",
+                request.Destination,
+                request.Rating
+            );
+            return StatusCode(201, new { id });
+        }
+
+        // GET: api/plan-ratings  (admin dohvaća sve ocjene)
+        [HttpGet("/api/plan-ratings")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetPlanRatings()
+        {
+            var ratings = await _adminRepository.GetPlanRatingsAsync();
+            return Ok(ratings);
+        }
     }
 }

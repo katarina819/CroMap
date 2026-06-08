@@ -76,5 +76,23 @@ namespace CroMap.Controllers
             var ratings = await _adminRepository.GetPlanRatingsAsync();
             return Ok(ratings);
         }
+
+        [HttpPost("/api/support/report")]
+        [AllowAnonymous]  // ← dodaj ovo, korisnik šalje bez admin role
+        public async Task<IActionResult> SendSupportReport([FromBody] SupportReportRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Message))
+                return BadRequest("Poruka ne smije biti prazna.");
+            await _adminRepository.SaveSupportReportAsync(request);
+            return Ok(new { message = "Report uspješno zaprimljen." });
+        }
+
+        [HttpGet("/api/support/reports")]
+        [Authorize(Roles = "Admin")]  // ← samo admin čita reporte
+        public async Task<IActionResult> GetSupportReports()
+        {
+            var reports = await _adminRepository.GetSupportReportsAsync();
+            return Ok(reports);
+        }
     }
 }

@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\Users\\Admin\\Desktop\\CroMap\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\repositories\\adminrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\adminrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\repositories\\savedvideorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\savedvideorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -17,14 +25,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\repositories\\adminrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\repositories\\adminrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|solutionrelative:cromap\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7456DDA9-FF58-4057-A842-BE861C3AADF4}|CroMap\\CroMap.csproj|c:\\users\\admin\\desktop\\cromap\\cromap\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
@@ -78,7 +78,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Bookmark",
@@ -87,19 +87,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "SavedVideoRepository.cs",
-              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Repositories\\SavedVideoRepository.cs",
-              "RelativeDocumentMoniker": "CroMap\\Repositories\\SavedVideoRepository.cs",
-              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Repositories\\SavedVideoRepository.cs",
-              "RelativeToolTip": "CroMap\\Repositories\\SavedVideoRepository.cs",
-              "ViewState": "AgIAAEgAAAAAAAAAAAAcwF4AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-07T12:59:31.525Z",
-              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -139,7 +126,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "ProfileController.cs",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\ProfileController.cs",
               "RelativeDocumentMoniker": "CroMap\\Controllers\\ProfileController.cs",
@@ -163,19 +150,46 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "AdminRepository.cs",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Repositories\\AdminRepository.cs",
               "RelativeDocumentMoniker": "CroMap\\Repositories\\AdminRepository.cs",
               "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Repositories\\AdminRepository.cs",
               "RelativeToolTip": "CroMap\\Repositories\\AdminRepository.cs",
-              "ViewState": "AgIAABEAAAAAAAAAAAAAACkAAABRAAAAAAAAAA==",
+              "ViewState": "AgIAAIsAAAAAAAAAAAAawJwAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-04T08:36:34.991Z"
+              "WhenOpened": "2026-06-04T08:36:34.991Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "CroMap\\Controllers\\AdminController.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "CroMap\\Controllers\\AdminController.cs",
+              "ViewState": "AgIAAEAAAAAAAAAAAAAgwFQAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-04T08:39:49.804Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SavedVideoRepository.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Repositories\\SavedVideoRepository.cs",
+              "RelativeDocumentMoniker": "CroMap\\Repositories\\SavedVideoRepository.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Repositories\\SavedVideoRepository.cs",
+              "RelativeToolTip": "CroMap\\Repositories\\SavedVideoRepository.cs",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAcwF4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-07T12:59:31.525Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "ActivityGroupsController.cs",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\ActivityGroupsController.cs",
               "RelativeDocumentMoniker": "CroMap\\Controllers\\ActivityGroupsController.cs",
@@ -183,8 +197,7 @@
               "RelativeToolTip": "CroMap\\Controllers\\ActivityGroupsController.cs",
               "ViewState": "AgIAAG4BAAAAAAAAAAAywIEBAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-18T14:26:47.445Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-18T14:26:47.445Z"
             },
             {
               "$type": "Document",
@@ -200,7 +213,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "AuthController.cs",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "CroMap\\Controllers\\AuthController.cs",
@@ -209,18 +222,6 @@
               "ViewState": "AgIAAJkBAAAAAAAAAAAswLQBAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-17T20:16:42.872Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "AdminController.cs",
-              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\AdminController.cs",
-              "RelativeDocumentMoniker": "CroMap\\Controllers\\AdminController.cs",
-              "ToolTip": "C:\\Users\\Admin\\Desktop\\CroMap\\CroMap\\Controllers\\AdminController.cs",
-              "RelativeToolTip": "CroMap\\Controllers\\AdminController.cs",
-              "ViewState": "AgIAADgAAAAAAAAAAAAswE8AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-04T08:39:49.804Z"
             },
             {
               "$type": "Document",

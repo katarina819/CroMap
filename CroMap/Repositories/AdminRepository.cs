@@ -1,5 +1,6 @@
 ﻿using CroMap.Data;
 using Dapper;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace CroMap.Repositories
@@ -134,6 +135,30 @@ namespace CroMap.Repositories
         ORDER BY created_at DESC";
             return await connection.QueryAsync<PlanRatingDto>(sql);
         }
+
+        // Spremi support report
+        public async Task SaveSupportReportAsync(SupportReportRequest req)
+        {
+            using var connection = _dbConnection.CreateConnection();
+            var sql = @"
+        INSERT INTO support_reports (type, message, user_name, username, created_at)
+        VALUES (@Type, @Message, @UserName, @UserUsername, NOW())";
+            await connection.ExecuteAsync(sql, req);
+        }
+
+        // Dohvati sve support reporte (za admin)
+        public async Task<IEnumerable<SupportReportDto>> GetSupportReportsAsync()
+        {
+            using var connection = _dbConnection.CreateConnection();
+            var sql = @"
+        SELECT id, type, message,
+       user_name as UserName,
+       username as UserUsername,
+       created_at as CreatedAt
+FROM support_reports
+ORDER BY created_at DESC";
+            return await connection.QueryAsync<SupportReportDto>(sql);
+        }
     }
 
     public class AdminUserDto
@@ -174,6 +199,24 @@ namespace CroMap.Repositories
         public string UserName { get; set; } = string.Empty;
         public string Destination { get; set; } = string.Empty;
         public int Rating { get; set; }
+    }
+
+    public class SupportReportRequest
+    {
+        public string Type { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public string UserUsername { get; set; } = string.Empty;
+    }
+
+    public class SupportReportDto
+    {
+        public int Id { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public string UserUsername { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
     }
 
 

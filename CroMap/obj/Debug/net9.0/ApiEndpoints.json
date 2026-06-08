@@ -1198,6 +1198,32 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "CroMap.Controllers.AdminController",
+    "Method": "SendSupportReport",
+    "RelativePath": "api/support/report",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CroMap.Repositories.SupportReportRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CroMap.Controllers.AdminController",
+    "Method": "GetSupportReports",
+    "RelativePath": "api/support/reports",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "CroMap.Controllers.UploadController",
     "Method": "UploadMedia",
     "RelativePath": "api/Upload/media",

@@ -41,3 +41,4 @@ wwwroot\images\d7f05faa-4d32-4f53-bd77-91bf7764cb60_639136969319426736.jpeg
 wwwroot\avatars\a03070c2-c9de-404f-9c68-d8fc367c6eed_639137021668976214.jpg
 wwwroot\uploads\stories\838c74df-9c1d-4132-ae04-c2474d6029e2_639137037514462048.jpg
 wwwroot\images\c32a3e1e-c5c8-42e1-b722-c8dc7e28b039_639164368425899579.jpeg
+wwwroot\uploads\stories\7e0122ee-adf2-4dc3-aa12-f5f405fbeede_639164711080462420.jpg

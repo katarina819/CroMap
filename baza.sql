@@ -580,3 +580,12 @@ CREATE TABLE plan_ratings (
 
 ALTER TABLE activity_groups ADD COLUMN IF NOT EXISTS creator_user_id INTEGER;
 ALTER TABLE group_messages ADD COLUMN IF NOT EXISTS user_id INTEGER;
+
+CREATE TABLE support_reports (
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(20) NOT NULL,
+    message TEXT NOT NULL,
+    user_name VARCHAR(100),
+    username VARCHAR(100),
+    created_at TIMESTAMP DEFAULT NOW()
+);

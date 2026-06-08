@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CroMap")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+32e6b2f4f7d77f0c3fad8631f66294220a577c4a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+214a0896fed991093d317d58bb04ecf4d2a76910")]
 [assembly: System.Reflection.AssemblyProductAttribute("CroMap")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CroMap")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

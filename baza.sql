@@ -9,6 +9,8 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+DELETE FROM users;
+
 ALTER TABLE users
 ADD CONSTRAINT email_or_phone_required
 CHECK (email IS NOT NULL OR phone IS NOT NULL);

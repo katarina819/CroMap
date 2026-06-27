@@ -1,6 +1,5 @@
-﻿using System.Net;
-using System.Net.Mail;
-using System.Net.Mime;
+﻿using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace CroMap.Services
 {
@@ -24,53 +23,45 @@ namespace CroMap.Services
             string to, string subject, string htmlBody,
             List<InlineImageAttachment> inlineImages)
         {
-            var smtpHost = _config["Email:SmtpHost"] ?? "smtp.gmail.com";
-            var smtpPort = int.Parse(_config["Email:SmtpPort"] ?? "587");
-            var smtpUser = _config["Email:Username"] ?? "";
-            var smtpPass = _config["Email:Password"] ?? "";
-            var fromEmail = _config["Email:From"] ?? smtpUser;
-            var fromName = _config["Email:FromName"] ?? "VARA";
+            var apiKey = _config["SendGrid__ApiKey"] ?? _config["SendGrid:ApiKey"] ?? "";
+            var fromEmail = _config["Email__From"] ?? _config["Email:From"] ?? "adminvaraapp@gmail.com";
+            var fromName = _config["Email__FromName"] ?? _config["Email:FromName"] ?? "VARA";
 
-            using var client = new SmtpClient(smtpHost, smtpPort)
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress(fromEmail, fromName);
+            var toAddress = new EmailAddress(to);
+
+            var msg = new SendGridMessage
             {
-                EnableSsl = true,
-                Credentials = new NetworkCredential(smtpUser, smtpPass)
+                From = from,
+                Subject = subject,
+                HtmlContent = htmlBody
             };
+            msg.AddTo(toAddress);
 
-            using var message = new MailMessage();
-            message.From = new MailAddress(fromEmail, fromName);
-            message.To.Add(to);
-            message.Subject = subject;
-
-            if (inlineImages.Count == 0)
+            // Inline slike kao attachmenti s Content-ID
+            foreach (var img in inlineImages)
             {
-                message.IsBodyHtml = true;
-                message.Body = htmlBody;
-            }
-            else
-            {
-                // multipart/related - CID inline slike
-                // Gmail prikazuje slike jer su dio emaila (ne eksterni URL)
-                var htmlView = AlternateView.CreateAlternateViewFromString(
-                    htmlBody, null, MediaTypeNames.Text.Html);
-
-                foreach (var img in inlineImages)
+                msg.AddAttachment(new Attachment
                 {
-                    var imageBytes = Convert.FromBase64String(img.Base64Data);
-                    var imageStream = new MemoryStream(imageBytes);
-                    var linkedResource = new LinkedResource(imageStream, img.MimeType)
-                    {
-                        ContentId = img.ContentId,
-                        TransferEncoding = TransferEncoding.Base64
-                    };
-                    htmlView.LinkedResources.Add(linkedResource);
-                }
-
-                message.AlternateViews.Add(htmlView);
+                    Content = img.Base64Data,
+                    Type = img.MimeType,
+                    Filename = img.FileName,
+                    Disposition = "inline",
+                    ContentId = img.ContentId
+                });
             }
 
-            await client.SendMailAsync(message);
-            _logger.LogInformation("Email sent to {To} with subject: {Subject}", to, subject);
+            var response = await client.SendEmailAsync(msg);
+
+            if ((int)response.StatusCode >= 400)
+            {
+                var body = await response.Body.ReadAsStringAsync();
+                _logger.LogError("SendGrid error {Status}: {Body}", response.StatusCode, body);
+                throw new Exception($"SendGrid failed: {response.StatusCode}");
+            }
+
+            _logger.LogInformation("Email sent via SendGrid to {To}", to);
         }
     }
 }

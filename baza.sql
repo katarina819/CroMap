@@ -629,3 +629,48 @@ SELECT id, file_path, media_type FROM videos ORDER BY created_at DESC LIMIT 5;
 UPDATE videos 
 SET media_type = 'image' 
 WHERE file_path LIKE '%.jpeg' OR file_path LIKE '%.jpg' OR file_path LIKE '%.png';
+
+
+
+
+-- Obriši sve duplikate i stare triggere
+DROP TRIGGER IF EXISTS trigger_track_comments ON comments;
+DROP TRIGGER IF EXISTS trigger_ensure_daily_activity_comments ON comments;
+DROP TRIGGER IF EXISTS trigger_track_likes ON likes;
+DROP TRIGGER IF EXISTS trigger_ensure_daily_activity_likes ON likes;
+DROP TRIGGER IF EXISTS trigger_track_story_activity ON stories;
+DROP TRIGGER IF EXISTS trigger_ensure_daily_activity_story ON stories;
+DROP TRIGGER IF EXISTS trigger_track_video_activity ON videos;
+DROP TRIGGER IF EXISTS trigger_ensure_daily_activity_video ON videos;
+DROP TRIGGER IF EXISTS trigger_track_posts ON videos;
+DROP TRIGGER IF EXISTS trigger_update_followers_count ON follows;
+
+-- Postavi čisto, bez duplikata
+CREATE TRIGGER trigger_track_video_activity
+AFTER INSERT ON videos
+FOR EACH ROW EXECUTE FUNCTION track_post_activity();
+
+CREATE TRIGGER trigger_ensure_daily_activity_video
+AFTER INSERT ON videos
+FOR EACH ROW EXECUTE FUNCTION ensure_daily_activity_exists();
+
+CREATE TRIGGER trigger_track_story_activity
+AFTER INSERT ON stories
+FOR EACH ROW EXECUTE FUNCTION track_post_activity();
+
+CREATE TRIGGER trigger_ensure_daily_activity_story
+AFTER INSERT ON stories
+FOR EACH ROW EXECUTE FUNCTION ensure_daily_activity_exists();
+
+CREATE TRIGGER trigger_ensure_daily_activity_likes
+AFTER INSERT ON likes
+FOR EACH ROW EXECUTE FUNCTION ensure_daily_activity_exists();
+
+CREATE TRIGGER trigger_ensure_daily_activity_comments
+AFTER INSERT ON comments
+FOR EACH ROW EXECUTE FUNCTION ensure_daily_activity_exists();
+
+CREATE TRIGGER trigger_update_followers_count
+AFTER INSERT ON follows
+FOR EACH ROW EXECUTE FUNCTION ensure_daily_activity_exists();
+

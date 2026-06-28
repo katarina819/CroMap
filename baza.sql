@@ -621,3 +621,11 @@ CREATE TABLE support_reports (
     username VARCHAR(100),
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+UPDATE videos SET file_path = REPLACE(file_path, 'http://', 'https://');
+
+SELECT id, file_path, media_type FROM videos ORDER BY created_at DESC LIMIT 5;
+
+UPDATE videos 
+SET media_type = 'image' 
+WHERE file_path LIKE '%.jpeg' OR file_path LIKE '%.jpg' OR file_path LIKE '%.png';

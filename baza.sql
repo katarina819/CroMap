@@ -674,3 +674,5 @@ CREATE TRIGGER trigger_update_followers_count
 AFTER INSERT ON follows
 FOR EACH ROW EXECUTE FUNCTION ensure_daily_activity_exists();
 
+
+DROP TRIGGER IF EXISTS trigger_update_followers_count ON follows;

@@ -9,6 +9,36 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Videos
+CREATE TRIGGER trigger_track_video_activity
+AFTER INSERT ON videos
+FOR EACH ROW EXECUTE FUNCTION track_post_activity();
+
+CREATE TRIGGER trigger_ensure_daily_activity_video
+AFTER INSERT ON videos
+FOR EACH ROW EXECUTE FUNCTION ensure_daily_activity_exists();
+
+-- Stories
+CREATE TRIGGER trigger_track_story_activity
+AFTER INSERT ON stories
+FOR EACH ROW EXECUTE FUNCTION track_post_activity();
+
+CREATE TRIGGER trigger_ensure_daily_activity_story
+AFTER INSERT ON stories
+FOR EACH ROW EXECUTE FUNCTION ensure_daily_activity_exists();
+
+-- Likes i comments (bonus)
+CREATE TRIGGER trigger_ensure_daily_activity_likes
+AFTER INSERT ON likes
+FOR EACH ROW EXECUTE FUNCTION ensure_daily_activity_exists();
+
+CREATE TRIGGER trigger_ensure_daily_activity_comments
+AFTER INSERT ON comments
+FOR EACH ROW EXECUTE FUNCTION ensure_daily_activity_exists();
+
+
+SELECT email, password_hash FROM users LIMIT 5;
+select from  users;
 DELETE FROM users;
 
 ALTER TABLE users

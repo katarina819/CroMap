@@ -7,6 +7,12 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration["R2:AccessKeyId"] = Environment.GetEnvironmentVariable("R2_ACCESS_KEY_ID");
+builder.Configuration["R2:SecretAccessKey"] = Environment.GetEnvironmentVariable("R2_SECRET_ACCESS_KEY");
+builder.Configuration["R2:Endpoint"] = Environment.GetEnvironmentVariable("R2_ENDPOINT");
+builder.Configuration["R2:BucketName"] = Environment.GetEnvironmentVariable("R2_BUCKET_NAME");
+builder.Configuration["R2:PublicUrl"] = Environment.GetEnvironmentVariable("R2_PUBLIC_URL");
+
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 // JWT Authentication
@@ -54,6 +60,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();  // ← Bez security definicije
 
 builder.Services.AddCors();
+
+builder.Services.AddScoped<CroMap.Services.IR2StorageService, CroMap.Services.R2StorageService>();
+
+
 
 var app = builder.Build();
 

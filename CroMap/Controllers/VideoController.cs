@@ -1,6 +1,7 @@
 ﻿using CroMap.Models;
 using CroMap.ModelsDto;
 using CroMap.Repositories;
+using CroMap.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -13,10 +14,12 @@ namespace CroMap.Controllers
     public class VideoController : ControllerBase
     {
         private readonly IVideoRepository _videoRepository;
+        private readonly IR2StorageService _storageService;
 
-        public VideoController(IVideoRepository videoRepository)
+        public VideoController(IVideoRepository videoRepository, IR2StorageService storageService)
         {
             _videoRepository = videoRepository;
+            _storageService = storageService;
         }
 
         private int? GetCurrentUserId()
@@ -96,7 +99,17 @@ namespace CroMap.Controllers
             if (!currentUserId.HasValue)
                 return Unauthorized(new { message = "User not authenticated." });
 
+            // Dohvati video prije brisanja da znamo file path za R2 cleanup
+            var video = await _videoRepository.GetVideoByIdAsync(id, currentUserId);
+
             await _videoRepository.DeleteVideoAsync(id, currentUserId.Value);
+
+            // Pokušaj obrisati i fajl s R2 (best effort, ne blokira response)
+            if (video != null && !string.IsNullOrWhiteSpace(video.FilePath))
+            {
+                _ = _storageService.DeleteFileAsync(video.FilePath);
+            }
+
             return Ok(new { message = "Video deleted successfully." });
         }
 
@@ -111,32 +124,27 @@ namespace CroMap.Controllers
             if (currentUserId != request.UserId)
                 return Unauthorized(new { message = "User ID mismatch." });
 
-            // Odredi upload folder na temelju tipa medija
             var mediaType = request.MediaType ?? "video";
             var subFolder = mediaType == "image" ? "images" : "videos";
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", subFolder);
 
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            // Generiraj jedinstveno ime fajla
             var fileExtension = Path.GetExtension(request.Video.FileName);
             if (string.IsNullOrEmpty(fileExtension))
             {
-                // Ako nema ekstenzije, dodaj na temelju tipa
                 fileExtension = mediaType == "image" ? ".jpg" : ".mp4";
             }
 
             var fileName = $"{Guid.NewGuid()}_{DateTime.Now.Ticks}{fileExtension}";
-            var filePath = Path.Combine(uploadsFolder, fileName);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            string mediaUrl;
+            using (var stream = request.Video.OpenReadStream())
             {
-                await request.Video.CopyToAsync(stream);
+                mediaUrl = await _storageService.UploadFileAsync(
+                    stream,
+                    fileName,
+                    request.Video.ContentType,
+                    subFolder
+                );
             }
-
-            // Generiraj URL za medij
-            var mediaUrl = $"{Request.Scheme}://{Request.Host}/{subFolder}/{fileName}";
 
             var video = new Video
             {
@@ -157,29 +165,6 @@ namespace CroMap.Controllers
                 videoId = video.Id,
                 mediaType = mediaType
             });
-        }
-
-        [HttpPost("fix-video-urls")]
-        public async Task<IActionResult> FixVideoUrls()
-        {
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "videos");
-            if (!Directory.Exists(uploadsFolder))
-                return NotFound("Videos folder not found");
-
-            var files = Directory.GetFiles(uploadsFolder);
-            var fixedCount = 0;
-
-            foreach (var file in files)
-            {
-                var fileName = Path.GetFileName(file);
-                var correctUrl = $"{Request.Scheme}://{Request.Host}/videos/{fileName}";
-
-                // Ovdje bi trebao ažurirati bazu, ali za sada samo logiraj
-                Console.WriteLine($"File: {fileName} -> URL: {correctUrl}");
-                fixedCount++;
-            }
-
-            return Ok(new { message = $"Found {fixedCount} videos", baseUrl = $"{Request.Scheme}://{Request.Host}" });
         }
     }
 }

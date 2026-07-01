@@ -61,6 +61,8 @@ builder.Services.AddSwaggerGen();  // ← Bez security definicije
 
 builder.Services.AddCors();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddScoped<CroMap.Services.IR2StorageService, CroMap.Services.R2StorageService>();
 
 

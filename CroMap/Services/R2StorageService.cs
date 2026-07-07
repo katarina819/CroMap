@@ -23,10 +23,20 @@ namespace CroMap.Services
             _bucketName = configuration["R2:BucketName"];
             _publicUrl = configuration["R2:PublicUrl"];
 
+            if (string.IsNullOrWhiteSpace(accessKey) || string.IsNullOrWhiteSpace(secretKey) ||
+       string.IsNullOrWhiteSpace(endpoint) || string.IsNullOrWhiteSpace(_bucketName) ||
+       string.IsNullOrWhiteSpace(_publicUrl))
+            {
+                throw new InvalidOperationException("R2 konfiguracija nedostaje — provjeri env varijable na Renderu.");
+            }
+
+
             var config = new AmazonS3Config
             {
                 ServiceURL = endpoint,
-                ForcePathStyle = true
+                ForcePathStyle = true,
+                RequestChecksumCalculation = Amazon.Runtime.RequestChecksumCalculation.WHEN_REQUIRED,
+                ResponseChecksumValidation = Amazon.Runtime.ResponseChecksumValidation.WHEN_REQUIRED
             };
 
             _s3Client = new AmazonS3Client(accessKey, secretKey, config);
@@ -35,19 +45,25 @@ namespace CroMap.Services
         public async Task<string> UploadFileAsync(Stream fileStream, string fileName, string contentType, string folder)
         {
             var key = $"{folder}/{fileName}";
-
             var request = new PutObjectRequest
             {
                 BucketName = _bucketName,
                 Key = key,
                 InputStream = fileStream,
                 ContentType = contentType,
-                DisablePayloadSigning = true // R2 zahtijeva ovo za neke regije
+                DisablePayloadSigning = true
             };
 
-            await _s3Client.PutObjectAsync(request);
+            try
+            {
+                await _s3Client.PutObjectAsync(request);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"R2 UPLOAD FAILED: {ex.GetType().Name} - {ex.Message}");
+                throw;
+            }
 
-            // Vrati javni URL
             return $"{_publicUrl.TrimEnd('/')}/{key}";
         }
 

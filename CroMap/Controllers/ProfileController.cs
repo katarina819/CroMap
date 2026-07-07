@@ -1,8 +1,9 @@
-﻿using CroMap.Models;
+﻿using System.Security.Claims;
+using CroMap.Models;
 using CroMap.Repositories;
+using CroMap.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace CroMap.Controllers
 {
@@ -12,11 +13,14 @@ namespace CroMap.Controllers
     public class ProfileController : ControllerBase
     {
         private readonly IProfileRepository _profileRepository;
+        private readonly IR2StorageService _storageService;
 
-        public ProfileController(IProfileRepository profileRepository)
+        public ProfileController(IProfileRepository profileRepository, IR2StorageService storageService)
         {
             _profileRepository = profileRepository;
+            _storageService = storageService;
         }
+
 
         private int GetCurrentUserId()
         {
@@ -73,26 +77,23 @@ namespace CroMap.Controllers
 
             try
             {
-                // Kreiraj folder za avatare
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars");
-                if (!Directory.Exists(uploadsFolder))
-                    Directory.CreateDirectory(uploadsFolder);
-
-                // Generiraj unique ime fajla
                 var extension = Path.GetExtension(avatar.FileName);
-                var fileName = $"{Guid.NewGuid()}_{DateTime.Now.Ticks}{extension}";
-                var filePath = Path.Combine(uploadsFolder, fileName);
+                if (string.IsNullOrEmpty(extension))
+                    extension = ".jpg";
 
-                // Spremi fajl
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                var fileName = $"{Guid.NewGuid()}_{DateTime.Now.Ticks}{extension}";
+
+                string avatarUrl;
+                using (var stream = avatar.OpenReadStream())
                 {
-                    await avatar.CopyToAsync(stream);
+                    avatarUrl = await _storageService.UploadFileAsync(
+                        stream,
+                        fileName,
+                        avatar.ContentType,
+                        "avatars"
+                    );
                 }
 
-                // Generiraj URL
-                var avatarUrl = $"{Request.Scheme}://{Request.Host}/avatars/{fileName}";
-
-                // Spremi u bazu
                 var success = await _profileRepository.UpdateAvatarAsync(userId, avatarUrl);
 
                 if (!success)
@@ -106,6 +107,7 @@ namespace CroMap.Controllers
                 return BadRequest(new { message = "Failed to upload avatar" });
             }
         }
+
 
         // PUT /api/auth/profile-photo/avatar
         [HttpPut("profile-photo/avatar")]

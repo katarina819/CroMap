@@ -34,9 +34,7 @@ namespace CroMap.Services
             var config = new AmazonS3Config
             {
                 ServiceURL = endpoint,
-                ForcePathStyle = true,
-                RequestChecksumCalculation = Amazon.Runtime.RequestChecksumCalculation.WHEN_REQUIRED,
-                ResponseChecksumValidation = Amazon.Runtime.ResponseChecksumValidation.WHEN_REQUIRED
+                ForcePathStyle = true
             };
 
             _s3Client = new AmazonS3Client(accessKey, secretKey, config);

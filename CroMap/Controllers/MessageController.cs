@@ -36,25 +36,36 @@ namespace CroMap.Controllers
         {
             var senderId = GetCurrentUserId();
 
-            if (string.IsNullOrWhiteSpace(request.Content))
+            if (request == null || string.IsNullOrWhiteSpace(request.Content))
                 return BadRequest(new { message = "Message content cannot be empty" });
 
-            var message = new Message
-            {
-                SenderId = senderId,
-                ReceiverId = request.ReceiverId,
-                Content = request.Content,
-                IsRead = false,
-                SentAt = DateTime.UtcNow
-            };
+            if (request.ReceiverId <= 0)
+                return BadRequest(new { message = "Invalid receiver" });
 
-            await _messageRepository.SendMessageAsync(message);
-
-            return Ok(new
+            try
             {
-                message = "Message sent successfully",
-                messageId = message.Id
-            });
+                var message = new Message
+                {
+                    SenderId = senderId,
+                    ReceiverId = request.ReceiverId,
+                    Content = request.Content,
+                    IsRead = false,
+                    SentAt = DateTime.UtcNow
+                };
+
+                await _messageRepository.SendMessageAsync(message);
+
+                return Ok(new
+                {
+                    message = "Message sent successfully",
+                    messageId = message.Id
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SendMessage error: {ex.Message}");
+                return StatusCode(500, new { message = "Failed to send message", detail = ex.Message });
+            }
         }
 
         [HttpGet("conversation/{userId}")]

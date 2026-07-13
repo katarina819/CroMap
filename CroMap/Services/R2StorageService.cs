@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime;
+using Amazon.S3;
 using Amazon.S3.Model;
 
 namespace CroMap.Services
@@ -34,7 +35,9 @@ namespace CroMap.Services
             var config = new AmazonS3Config
             {
                 ServiceURL = endpoint,
-                ForcePathStyle = true
+                ForcePathStyle = true,
+                RequestChecksumCalculation = RequestChecksumCalculation.WHEN_REQUIRED,
+                ResponseChecksumValidation = ResponseChecksumValidation.WHEN_REQUIRED
             };
 
             _s3Client = new AmazonS3Client(accessKey, secretKey, config);
@@ -49,7 +52,8 @@ namespace CroMap.Services
                 Key = key,
                 InputStream = fileStream,
                 ContentType = contentType,
-                DisablePayloadSigning = true
+                DisablePayloadSigning = true,
+                DisableDefaultChecksumValidation = true
             };
 
             try

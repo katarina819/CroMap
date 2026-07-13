@@ -34,7 +34,7 @@ namespace CroMap.Controllers
         [HttpPost("send")]
         public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest request)
         {
-            var senderId = GetCurrentUserId();
+            
 
             if (request == null || string.IsNullOrWhiteSpace(request.Content))
                 return BadRequest(new { message = "Message content cannot be empty" });
@@ -44,6 +44,7 @@ namespace CroMap.Controllers
 
             try
             {
+                var senderId = GetCurrentUserId();
                 var message = new Message
                 {
                     SenderId = senderId,

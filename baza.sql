@@ -9,6 +9,8 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+select from  users;
+
 -- Videos
 CREATE TRIGGER trigger_track_video_activity
 AFTER INSERT ON videos

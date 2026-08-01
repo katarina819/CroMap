@@ -9,6 +9,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE users ADD COLUMN language VARCHAR(5) NOT NULL DEFAULT 'hr';
 
 select from  users;
 

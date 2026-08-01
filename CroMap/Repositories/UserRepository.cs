@@ -25,8 +25,8 @@ namespace CroMap.Repositories
                 : BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
 
             var sql = @"
-        INSERT INTO users (username, first_name, last_name, email, phone, password_hash, birth_date, created_at)
-        VALUES (@Username, @FirstName, @LastName, @Email, @Phone, @PasswordHash, @BirthDate, @CreatedAt)";
+        INSERT INTO users (username, first_name, last_name, email, phone, password_hash, birth_date, language, created_at)
+        VALUES (@Username, @FirstName, @LastName, @Email, @Phone, @PasswordHash, @BirthDate, @Language, @CreatedAt)";
 
             await connection.ExecuteAsync(sql, new
             {
@@ -133,6 +133,24 @@ namespace CroMap.Repositories
         ORDER BY id";
 
             return await connection.QueryAsync<User>(sql);
+        }
+
+        public async Task<bool> UsernameExistsAsync(string username)
+        {
+            using var connection = _dbConnection.CreateConnection();
+            var count = await connection.ExecuteScalarAsync<int>(
+                "SELECT COUNT(*) FROM users WHERE LOWER(username) = LOWER(@Username)",
+                new { Username = username });
+            return count > 0;
+        }
+
+        public async Task<bool> EmailExistsAsync(string email)
+        {
+            using var connection = _dbConnection.CreateConnection();
+            var count = await connection.ExecuteScalarAsync<int>(
+                "SELECT COUNT(*) FROM users WHERE LOWER(email) = LOWER(@Email)",
+                new { Email = email });
+            return count > 0;
         }
 
         public async Task<User> GetUserByIdAsync(int id)

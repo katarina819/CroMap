@@ -82,19 +82,28 @@ namespace CroMap.Controllers
         public async Task<IActionResult> Register([FromBody] UserDto userDto)
         {
             if (string.IsNullOrWhiteSpace(userDto.Username))
-                return BadRequest(new { message = "Korisni\u010dko ime je obavezno" });
+                return BadRequest(new { field = "username", code = "required" });
             if (userDto.Username.Length < 3)
-                return BadRequest(new { message = "Korisni\u010dko ime mora imati najmanje 3 znaka" });
+                return BadRequest(new { field = "username", code = "minLength" });
             if (string.IsNullOrWhiteSpace(userDto.FirstName))
-                return BadRequest(new { message = "Ime je obavezno" });
+                return BadRequest(new { field = "firstName", code = "required" });
             if (string.IsNullOrWhiteSpace(userDto.LastName))
-                return BadRequest(new { message = "Prezime je obavezno" });
+                return BadRequest(new { field = "lastName", code = "required" });
             if (string.IsNullOrWhiteSpace(userDto.Password) || userDto.Password.Length < 6)
-                return BadRequest(new { message = "Lozinka mora imati najmanje 6 znakova" });
+                return BadRequest(new { field = "password", code = "minLength" });
             if (string.IsNullOrWhiteSpace(userDto.Email))
-                return BadRequest(new { message = "Email je obavezan" });
+                return BadRequest(new { field = "email", code = "required" });
             if (!userDto.BirthDate.HasValue)
-                return BadRequest(new { message = "Datum ro\u0111enja je obavezan" });
+                return BadRequest(new { field = "birthDate", code = "required" });
+
+            // 🔥 Provjera jedinstvenosti PRIJE inserta — precizna po polju
+            if (await _repo.UsernameExistsAsync(userDto.Username))
+                return Conflict(new { field = "username", code = "taken" });
+
+            if (await _repo.EmailExistsAsync(userDto.Email))
+                return Conflict(new { field = "email", code = "taken" });
+
+            var lang = NormalizeLang(userDto.Language);
 
             var user = new User
             {
@@ -104,6 +113,7 @@ namespace CroMap.Controllers
                 Email = userDto.Email,
                 PasswordHash = userDto.Password,
                 BirthDate = userDto.BirthDate.Value,
+                Language = lang,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -117,10 +127,10 @@ namespace CroMap.Controllers
                         try
                         {
                             await SendEmailWithInlineImages(
-                                userDto.Email,
-                                "Dobrodo\u0161li u VARA! \U0001F5FA\uFE0F",
-                                BuildWelcomeEmail(userDto.FirstName),
-                                GetLogoAttachments()
+                    userDto.Email,
+                    T(lang, "welcomeSubject"),
+                    BuildWelcomeEmail(userDto.FirstName, lang),
+                    GetLogoAttachments()
                             );
                         }
                         catch (Exception ex)
@@ -129,14 +139,15 @@ namespace CroMap.Controllers
                         }
                     });
                 }
-                return Ok(new { message = "Registracija uspje\u0161na" });
+                return Ok(new { message = "Registracija uspješna" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Registration error");
+                // Fallback za race condition (dva zahtjeva istovremeno)
                 if (ex.Message.Contains("23505") || ex.Message.Contains("duplicate key"))
-                    return Conflict(new { message = "Korisni\u010dko ime, email ili telefon ve\u0107 postoji" });
-                return BadRequest(new { message = "Gre\u0161ka pri registraciji" });
+                    return Conflict(new { field = "unknown", code = "taken" });
+                return BadRequest(new { field = "unknown", code = "serverError" });
             }
         }
 
@@ -149,16 +160,18 @@ namespace CroMap.Controllers
             {
                 using var conn = _dbConnection.CreateConnection();
                 var user = await conn.QueryFirstOrDefaultAsync<User>(
-                    "SELECT id, first_name AS FirstName, email FROM users WHERE LOWER(email) = LOWER(@Email)",
+                    "SELECT id, first_name AS FirstName, email, language AS Language FROM users WHERE LOWER(email) = LOWER(@Email)",
                     new { dto.Email });
                 if (user == null)
-                    return NotFound(new { message = "Nije prona\u0111en korisnik s tim emailom" });
+                    return NotFound(new { message = "Nije pronađen korisnik s tim emailom" });
+
+                var lang = NormalizeLang(user.Language);
                 var code = new Random().Next(100000, 999999).ToString();
                 await _resetRepo.CreateResetTokenAsync(user.Id, code);
                 await SendEmailWithInlineImages(
                     user.Email,
-                    "VARA - Reset lozinke \U0001F510",
-                    BuildResetEmail(user.FirstName, code),
+                    T(lang, "resetSubject"),
+                    BuildResetEmail(user.FirstName, code, lang),
                     GetLogoAttachments()
                 );
                 return Ok(new { message = "Kod poslan na email" });
@@ -166,7 +179,7 @@ namespace CroMap.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "ForgotPassword error");
-                return StatusCode(500, new { message = "Gre\u0161ka pri slanju emaila" });
+                return StatusCode(500, new { message = "Greška pri slanju emaila" });
             }
         }
 
@@ -197,7 +210,111 @@ namespace CroMap.Controllers
             }
         }
 
-        private string BuildWelcomeEmail(string firstName) => $@"
+        private static readonly HashSet<string> _supportedLangs = new() { "hr", "en", "it", "de", "fr" };
+
+        private static string NormalizeLang(string? lang) =>
+            !string.IsNullOrWhiteSpace(lang) && _supportedLangs.Contains(lang) ? lang! : "hr";
+
+        private static readonly Dictionary<string, Dictionary<string, string>> _mail = new()
+        {
+            ["hr"] = new()
+            {
+                ["welcomeSubject"] = "Dobrodošli u VARA! 🗺️",
+                ["tagline"] = "Otkrijte svako mjesto",
+                ["welcomeGreeting"] = "Dobrodošli, {0}! 👋",
+                ["welcomeBody"] = "Vaša registracija je uspješna. Sada možete istraživati najljepša mjesta, pratiti prijatelje i dijeliti svoje avanture diljem Hrvatske i šire.",
+                ["bullet1"] = "🏖️ Istražite plaže i nacionalne parkove",
+                ["bullet2"] = "🍽️ Pronađite restorane i kafiće",
+                ["bullet3"] = "🏛 Otkrijte znamenitosti i skrivena mjesta",
+                ["footerNote"] = "Otvorite VARA aplikaciju na svom uređaju za prijavu.",
+                ["copyright"] = "Sva prava pridržana.",
+                ["resetSubject"] = "VARA - Reset lozinke 🔐",
+                ["resetTagline"] = "Sigurnosni kod",
+                ["resetGreeting"] = "Reset lozinke za korisnika {0}",
+                ["resetBody"] = "Primili smo zahtjev za promjenu lozinke vašeg VARA računa. Upotrijebite kod ispod u aplikaciji:",
+                ["resetValid"] = "⏳️ Kod je valjan 1 sat od slanja ovog emaila.",
+                ["resetIgnore"] = "🔒 Ako niste zatražili promjenu lozinke, zanemarite ovaj email — vaš račun je siguran.",
+            },
+            ["en"] = new()
+            {
+                ["welcomeSubject"] = "Welcome to VARA! 🗺️",
+                ["tagline"] = "Discover every place",
+                ["welcomeGreeting"] = "Welcome, {0}! 👋",
+                ["welcomeBody"] = "Your registration was successful. You can now explore the most beautiful places, follow friends, and share your adventures across Croatia and beyond.",
+                ["bullet1"] = "🏖️ Explore beaches and national parks",
+                ["bullet2"] = "🍽️ Find restaurants and cafés",
+                ["bullet3"] = "🏛 Discover landmarks and hidden gems",
+                ["footerNote"] = "Open the VARA app on your device to sign in.",
+                ["copyright"] = "All rights reserved.",
+                ["resetSubject"] = "VARA - Password Reset 🔐",
+                ["resetTagline"] = "Security code",
+                ["resetGreeting"] = "Password reset for {0}",
+                ["resetBody"] = "We received a request to change the password for your VARA account. Use the code below in the app:",
+                ["resetValid"] = "⏳️ The code is valid for 1 hour from when this email was sent.",
+                ["resetIgnore"] = "🔒 If you did not request a password change, ignore this email — your account is safe.",
+            },
+            ["it"] = new()
+            {
+                ["welcomeSubject"] = "Benvenuto/a su VARA! 🗺️",
+                ["tagline"] = "Scopri ogni luogo",
+                ["welcomeGreeting"] = "Benvenuto/a, {0}! 👋",
+                ["welcomeBody"] = "La tua registrazione è andata a buon fine. Ora puoi esplorare i luoghi più belli, seguire gli amici e condividere le tue avventure in Croazia e oltre.",
+                ["bullet1"] = "🏖️ Esplora spiagge e parchi nazionali",
+                ["bullet2"] = "🍽️ Trova ristoranti e caffetterie",
+                ["bullet3"] = "🏛 Scopri monumenti e luoghi nascosti",
+                ["footerNote"] = "Apri l'app VARA sul tuo dispositivo per accedere.",
+                ["copyright"] = "Tutti i diritti riservati.",
+                ["resetSubject"] = "VARA - Reimposta password 🔐",
+                ["resetTagline"] = "Codice di sicurezza",
+                ["resetGreeting"] = "Reimpostazione password per {0}",
+                ["resetBody"] = "Abbiamo ricevuto una richiesta di modifica della password del tuo account VARA. Usa il codice qui sotto nell'app:",
+                ["resetValid"] = "⏳️ Il codice è valido per 1 ora dall'invio di questa email.",
+                ["resetIgnore"] = "🔒 Se non hai richiesto una modifica della password, ignora questa email — il tuo account è al sicuro.",
+            },
+            ["de"] = new()
+            {
+                ["welcomeSubject"] = "Willkommen bei VARA! 🗺️",
+                ["tagline"] = "Entdecke jeden Ort",
+                ["welcomeGreeting"] = "Willkommen, {0}! 👋",
+                ["welcomeBody"] = "Ihre Registrierung war erfolgreich. Jetzt können Sie die schönsten Orte erkunden, Freunden folgen und Ihre Abenteuer in ganz Kroatien und darüber hinaus teilen.",
+                ["bullet1"] = "🏖️ Entdecken Sie Strände und Nationalparks",
+                ["bullet2"] = "🍽️ Finden Sie Restaurants und Cafés",
+                ["bullet3"] = "🏛 Entdecken Sie Sehenswürdigkeiten und versteckte Orte",
+                ["footerNote"] = "Öffnen Sie die VARA-App auf Ihrem Gerät, um sich anzumelden.",
+                ["copyright"] = "Alle Rechte vorbehalten.",
+                ["resetSubject"] = "VARA - Passwort zurücksetzen 🔐",
+                ["resetTagline"] = "Sicherheitscode",
+                ["resetGreeting"] = "Passwort zurücksetzen für {0}",
+                ["resetBody"] = "Wir haben eine Anfrage zur Änderung des Passworts Ihres VARA-Kontos erhalten. Verwenden Sie den folgenden Code in der App:",
+                ["resetValid"] = "⏳️ Der Code ist 1 Stunde ab dem Versand dieser E-Mail gültig.",
+                ["resetIgnore"] = "🔒 Falls Sie keine Passwortänderung angefordert haben, ignorieren Sie diese E-Mail — Ihr Konto ist sicher.",
+            },
+            ["fr"] = new()
+            {
+                ["welcomeSubject"] = "Bienvenue sur VARA ! 🗺️",
+                ["tagline"] = "Découvrez chaque lieu",
+                ["welcomeGreeting"] = "Bienvenue, {0} ! 👋",
+                ["welcomeBody"] = "Votre inscription a réussi. Vous pouvez désormais explorer les plus beaux lieux, suivre vos amis et partager vos aventures à travers la Croatie et au-delà.",
+                ["bullet1"] = "🏖️ Explorez les plages et les parcs nationaux",
+                ["bullet2"] = "🍽️ Trouvez des restaurants et des cafés",
+                ["bullet3"] = "🏛 Découvrez des monuments et des lieux cachés",
+                ["footerNote"] = "Ouvrez l'application VARA sur votre appareil pour vous connecter.",
+                ["copyright"] = "Tous droits réservés.",
+                ["resetSubject"] = "VARA - Réinitialisation du mot de passe 🔐",
+                ["resetTagline"] = "Code de sécurité",
+                ["resetGreeting"] = "Réinitialisation du mot de passe pour {0}",
+                ["resetBody"] = "Nous avons reçu une demande de modification du mot de passe de votre compte VARA. Utilisez le code ci-dessous dans l'application :",
+                ["resetValid"] = "⏳️ Le code est valable 1 heure à compter de l'envoi de cet e-mail.",
+                ["resetIgnore"] = "🔒 Si vous n'avez pas demandé de modification de mot de passe, ignorez cet e-mail — votre compte est en sécurité.",
+            },
+        };
+
+        private static string T(string lang, string key) => _mail[NormalizeLang(lang)][key];
+
+        private string BuildWelcomeEmail(string firstName, string language)
+        {
+            var lang = NormalizeLang(language);
+            return $@"
 <!DOCTYPE html>
 <html>
 <head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'></head>
@@ -207,34 +324,34 @@ namespace CroMap.Controllers
       <table cellpadding='0' cellspacing='0' border='0' width='100%'>
         <tr><td align='center' style='padding-bottom:12px'>{LogoImg(_logo80Cid, 80)}</td></tr>
         <tr><td align='center'><div style='color:#ffffff;font-size:34px;font-weight:900;letter-spacing:12px;padding-left:12px'>VARA</div></td></tr>
-        <tr><td align='center'><div style='color:rgba(200,225,200,0.6);font-size:12px;letter-spacing:3px;text-transform:uppercase;padding-top:4px'>Otkrijte svako mjesto</div></td></tr>
+        <tr><td align='center'><div style='color:rgba(200,225,200,0.6);font-size:12px;letter-spacing:3px;text-transform:uppercase;padding-top:4px'>{T(lang, "tagline")}</div></td></tr>
       </table>
     </div>
     <div style='padding:32px'>
-      <h2 style='color:#1a1a1a;font-size:22px;margin:0 0 12px;font-weight:800'>Dobrodo&#353;li, {firstName}! &#128075;</h2>
-      <p style='color:#555;line-height:1.7;font-size:15px;margin:0 0 24px'>
-        Va&#353;a registracija je uspje&#353;na. Sada mo&#382;ete istra&#382;ivati najljep&#353;a mjesta, pratiti prijatelje i dijeliti svoje avanture diljem Hrvatske i &#353;ire.
-      </p>
+      <h2 style='color:#1a1a1a;font-size:22px;margin:0 0 12px;font-weight:800'>{string.Format(T(lang, "welcomeGreeting"), firstName)}</h2>
+      <p style='color:#555;line-height:1.7;font-size:15px;margin:0 0 24px'>{T(lang, "welcomeBody")}</p>
       <div style='background:#f0f7ee;border-radius:14px;padding:20px;margin-bottom:24px'>
-        <div style='margin-bottom:10px'><span style='color:#2D6418;font-weight:700;font-size:14px'>&#127958;&#65039; Istra&#382;ite pla&#382;e i nacionalne parkove</span></div>
-        <div style='margin-bottom:10px'><span style='color:#2D6418;font-weight:700;font-size:14px'>&#127869;&#65039; Prona&#273;ite restorane i kafi&#263;e</span></div>
-        <div style='margin-bottom:0'><span style='color:#2D6418;font-weight:700;font-size:14px'>&#127968; Otkrijte znamenitosti i skrivena mjesta</span></div>
+        <div style='margin-bottom:10px'><span style='color:#2D6418;font-weight:700;font-size:14px'>{T(lang, "bullet1")}</span></div>
+        <div style='margin-bottom:10px'><span style='color:#2D6418;font-weight:700;font-size:14px'>{T(lang, "bullet2")}</span></div>
+        <div style='margin-bottom:0'><span style='color:#2D6418;font-weight:700;font-size:14px'>{T(lang, "bullet3")}</span></div>
       </div>
-      <p style='color:#888;font-size:13px;text-align:center;margin:0 0 8px'>
-  Otvorite VARA aplikaciju na svom uređaju za prijavu.
-</p>
+      <p style='color:#888;font-size:13px;text-align:center;margin:0 0 8px'>{T(lang, "footerNote")}</p>
     </div>
     <div style='background:#f8f8f8;border-top:1px solid #e8e8e8;padding:16px 32px'>
       <table cellpadding='0' cellspacing='0' border='0' width='100%'>
         <tr><td align='center' style='padding-bottom:8px'>{LogoImg(_logo36Cid, 36)}</td></tr>
-        <tr><td align='center'><span style='color:#aaa;font-size:12px'>&#169; {DateTime.Now.Year} VARA. Sva prava pridr&#382;ana.</span></td></tr>
+        <tr><td align='center'><span style='color:#aaa;font-size:12px'>&#169; {DateTime.Now.Year} VARA. {T(lang, "copyright")}</span></td></tr>
       </table>
     </div>
   </div>
 </body>
 </html>";
+        }
 
-        private string BuildResetEmail(string firstName, string code) => $@"
+        private string BuildResetEmail(string firstName, string code, string language)
+        {
+            var lang = NormalizeLang(language);
+            return $@"
 <!DOCTYPE html>
 <html>
 <head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'></head>
@@ -244,14 +361,12 @@ namespace CroMap.Controllers
       <table cellpadding='0' cellspacing='0' border='0' width='100%'>
         <tr><td align='center' style='padding-bottom:12px'>{LogoImg(_logo80Cid, 80)}</td></tr>
         <tr><td align='center'><div style='color:#ffffff;font-size:34px;font-weight:900;letter-spacing:12px;padding-left:12px'>VARA</div></td></tr>
-        <tr><td align='center'><div style='color:rgba(200,225,200,0.6);font-size:12px;letter-spacing:3px;text-transform:uppercase;padding-top:4px'>Sigurnosni kod</div></td></tr>
+        <tr><td align='center'><div style='color:rgba(200,225,200,0.6);font-size:12px;letter-spacing:3px;text-transform:uppercase;padding-top:4px'>{T(lang, "resetTagline")}</div></td></tr>
       </table>
     </div>
     <div style='padding:32px'>
-      <h2 style='color:#1a1a1a;font-size:20px;margin:0 0 8px;font-weight:800'>Reset lozinke za korisnika {firstName}</h2>
-      <p style='color:#555;line-height:1.7;font-size:15px;margin:0 0 28px'>
-        Primili smo zahtjev za promjenu lozinke va&#353;eg VARA ra&#269;una. Upotrijebite kod ispod u aplikaciji:
-      </p>
+      <h2 style='color:#1a1a1a;font-size:20px;margin:0 0 8px;font-weight:800'>{string.Format(T(lang, "resetGreeting"), firstName)}</h2>
+      <p style='color:#555;line-height:1.7;font-size:15px;margin:0 0 28px'>{T(lang, "resetBody")}</p>
       <table cellpadding='0' cellspacing='0' border='0' width='100%' style='margin-bottom:28px'>
         <tr><td align='center' valign='middle'>
           <table cellpadding='0' cellspacing='0' border='0' style='margin:0 auto'>
@@ -267,20 +382,21 @@ namespace CroMap.Controllers
       </table>
       <div style='background:#fff8e1;border:1px solid #ffe082;border-radius:12px;padding:16px'>
         <p style='color:#795548;font-size:13px;margin:0;line-height:1.6'>
-          &#9203;&#65039; Kod je valjan <strong>1 sat</strong> od slanja ovog emaila.<br>
-          &#128274; Ako niste zatra&#382;ili promjenu lozinke, zanemarite ovaj email &#8212; va&#353; ra&#269;un je siguran.
+          {T(lang, "resetValid")}<br>
+          {T(lang, "resetIgnore")}
         </p>
       </div>
     </div>
     <div style='background:#f8f8f8;border-top:1px solid #e8e8e8;padding:16px 32px'>
       <table cellpadding='0' cellspacing='0' border='0' width='100%'>
         <tr><td align='center' style='padding-bottom:8px'>{LogoImg(_logo36Cid, 36)}</td></tr>
-        <tr><td align='center'><span style='color:#aaa;font-size:12px'>&#169; {DateTime.Now.Year} VARA. Sva prava pridr&#382;ana.</span></td></tr>
+        <tr><td align='center'><span style='color:#aaa;font-size:12px'>&#169; {DateTime.Now.Year} VARA. {T(lang, "copyright")}</span></td></tr>
       </table>
     </div>
   </div>
 </body>
 </html>";
+        }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)

@@ -354,7 +354,17 @@ namespace CroMap.Controllers
             return $@"
 <!DOCTYPE html>
 <html>
-<head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'></head>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<style>
+  @media only screen and (max-width: 420px) {{
+    .vara-content {{ padding: 20px !important; }}
+    .vara-code-box {{ padding: 14px 6px !important; }}
+    .vara-code-cell {{ width: 26px !important; min-width: 26px !important; font-size: 22px !important; padding: 6px 1px !important; }}
+  }}
+</style>
+</head>
 <body style='font-family:Arial,sans-serif;background:#1B3F0E;padding:20px;margin:0'>
   <div style='max-width:520px;margin:0 auto;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.35)'>
     <div style='background:linear-gradient(160deg,#2D6418 0%,#142F09 100%);padding:36px 32px 28px;text-align:center'>
@@ -364,16 +374,16 @@ namespace CroMap.Controllers
         <tr><td align='center'><div style='color:rgba(200,225,200,0.6);font-size:12px;letter-spacing:3px;text-transform:uppercase;padding-top:4px'>{T(lang, "resetTagline")}</div></td></tr>
       </table>
     </div>
-    <div style='padding:32px'>
+    <div class='vara-content' style='padding:32px'>
       <h2 style='color:#1a1a1a;font-size:20px;margin:0 0 8px;font-weight:800'>{string.Format(T(lang, "resetGreeting"), firstName)}</h2>
       <p style='color:#555;line-height:1.7;font-size:15px;margin:0 0 28px'>{T(lang, "resetBody")}</p>
       <table cellpadding='0' cellspacing='0' border='0' width='100%' style='margin-bottom:28px'>
         <tr><td align='center' valign='middle'>
-          <table cellpadding='0' cellspacing='0' border='0' style='margin:0 auto'>
-            <tr><td align='center' valign='middle' style='background:linear-gradient(135deg,#2D6418,#142F09);border-radius:16px;padding:20px 32px'>
+          <table cellpadding='0' cellspacing='0' border='0' style='margin:0 auto;max-width:100%'>
+            <tr><td class='vara-code-box' align='center' valign='middle' style='background:linear-gradient(135deg,#2D6418,#142F09);border-radius:14px;padding:16px 10px'>
               <table cellpadding='0' cellspacing='0' border='0' style='margin:0 auto'>
                 <tr>
-                  {string.Join("", code.Select(c => $"<td width='38' align='center' valign='middle' style='width:38px;min-width:38px;color:#ffffff;font-size:38px;font-weight:900;line-height:1;font-family:Courier New,Courier,monospace;text-align:center;padding:8px 4px'>{c}</td>"))}
+                  {string.Join("", code.Select(c => $"<td class='vara-code-cell' width='30' align='center' valign='middle' style='width:30px;min-width:30px;color:#ffffff;font-size:28px;font-weight:900;line-height:1;font-family:Courier New,Courier,monospace;text-align:center;padding:6px 2px'>{c}</td>"))}
                 </tr>
               </table>
             </td></tr>
@@ -397,6 +407,8 @@ namespace CroMap.Controllers
 </body>
 </html>";
         }
+
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)

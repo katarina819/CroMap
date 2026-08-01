@@ -8,9 +8,11 @@
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public string PasswordHash { get; set; }  
-        public DateOnly BirthDate { get; set; }   
+        public string? PasswordHash { get; set; }
+        public DateOnly? BirthDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsAdmin { get; set; }
+        public string? GoogleId { get; set; }
+        public string AuthProvider { get; set; } = "local";
     }
 }

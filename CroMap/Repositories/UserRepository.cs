@@ -20,12 +20,13 @@ namespace CroMap.Repositories
         {
             using var connection = _dbConnection.CreateConnection();
 
-            // 🔥 HASHIRAJ LOZINKU PRIJE SPREMANJA
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+            var hashedPassword = string.IsNullOrEmpty(user.PasswordHash)
+                ? null
+                : BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
 
             var sql = @"
-                INSERT INTO users (username, first_name, last_name, email, phone, password_hash, birth_date, created_at)
-                VALUES (@Username, @FirstName, @LastName, @Email, @Phone, @PasswordHash, @BirthDate, @CreatedAt)";
+        INSERT INTO users (username, first_name, last_name, email, phone, password_hash, birth_date, created_at)
+        VALUES (@Username, @FirstName, @LastName, @Email, @Phone, @PasswordHash, @BirthDate, @CreatedAt)";
 
             await connection.ExecuteAsync(sql, new
             {
@@ -34,8 +35,10 @@ namespace CroMap.Repositories
                 user.LastName,
                 user.Email,
                 user.Phone,
-                PasswordHash = hashedPassword,  // ← SPREMI HASH
-                BirthDate = user.BirthDate.ToDateTime(TimeOnly.MinValue),
+                PasswordHash = hashedPassword,
+                BirthDate = user.BirthDate.HasValue
+                    ? user.BirthDate.Value.ToDateTime(TimeOnly.MinValue)
+                    : (DateTime?)null,
                 user.CreatedAt
             });
 
@@ -76,7 +79,12 @@ namespace CroMap.Repositories
 
             _logger.LogInformation($"✅ User found: {user.Username} (IsAdmin: {user.IsAdmin})");
 
-            // 🔥 VERIFIKACIJA LOZINKE POMOĆU BCrypt
+            if (string.IsNullOrEmpty(user.PasswordHash))
+            {
+                _logger.LogWarning($"❌ User {username} has no password (Google-only account)");
+                return null;
+            }
+
             bool passwordValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
 
             _logger.LogInformation($"Password verification result: {passwordValid}");
@@ -180,7 +188,9 @@ namespace CroMap.Repositories
                 user.LastName,
                 user.Email,
                 user.Phone,
-                BirthDate = user.BirthDate.ToDateTime(TimeOnly.MinValue)
+                BirthDate = user.BirthDate.HasValue
+    ? user.BirthDate.Value.ToDateTime(TimeOnly.MinValue)
+    : (DateTime?)null,
             });
         }
 

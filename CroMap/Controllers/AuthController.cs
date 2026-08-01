@@ -6,7 +6,9 @@ using CroMap.Models;
 using CroMap.Repositories;
 using CroMap.Services;
 using Dapper;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CroMap.Controllers
@@ -312,6 +314,8 @@ namespace CroMap.Controllers
             }
         }
 
+
+
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
@@ -391,6 +395,136 @@ namespace CroMap.Controllers
             }
         }
 
+        [HttpPost("google")]
+        public async Task<IActionResult> GoogleAuth([FromBody] GoogleAuthDto dto)
+        {
+            GoogleJsonWebSignature.Payload payload;
+            try
+            {
+                payload = await GoogleJsonWebSignature.ValidateAsync(dto.IdToken, new GoogleJsonWebSignature.ValidationSettings
+                {
+                    Audience = new[] { _configuration["Google:WebClientId"] }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Invalid Google token");
+                return Unauthorized(new { message = "Nevažeći Google token" });
+            }
+
+            try
+            {
+                using var connection = _dbConnection.CreateConnection();
+
+                var existingUser = await connection.QueryFirstOrDefaultAsync<User>(@"
+            SELECT 
+                id, username, first_name AS FirstName, last_name AS LastName,
+                email, phone, password_hash AS PasswordHash, birth_date AS BirthDate,
+                created_at AS CreatedAt, is_admin AS IsAdmin, google_id AS GoogleId,
+                auth_provider AS AuthProvider
+            FROM users 
+            WHERE google_id = @GoogleId OR email = @Email",
+                    new { GoogleId = payload.Subject, Email = payload.Email });
+
+                User user;
+                bool needsBirthDate;
+                bool needsPassword;
+
+                if (existingUser != null)
+                {
+                    user = existingUser;
+                    needsBirthDate = !user.BirthDate.HasValue;
+                    needsPassword = string.IsNullOrEmpty(user.PasswordHash); // 🔥 ključna provjera
+
+                    if (string.IsNullOrEmpty(user.GoogleId))
+                    {
+                        await connection.ExecuteAsync(
+                            "UPDATE users SET google_id = @GoogleId, auth_provider = 'google' WHERE id = @Id",
+                            new { GoogleId = payload.Subject, user.Id });
+                    }
+                }
+                else
+                {
+                    var baseUsername = payload.Email.Split('@')[0].ToLower();
+                    var username = baseUsername;
+                    var suffix = 1;
+                    while (await connection.ExecuteScalarAsync<int>(
+                        "SELECT COUNT(*) FROM users WHERE username = @Username", new { Username = username }) > 0)
+                    {
+                        username = $"{baseUsername}{suffix++}";
+                    }
+
+                    var newUserId = await connection.ExecuteScalarAsync<int>(@"
+                INSERT INTO users (first_name, last_name, email, username, password_hash, google_id, auth_provider, birth_date, created_at)
+                VALUES (@FirstName, @LastName, @Email, @Username, NULL, @GoogleId, 'google', NULL, @CreatedAt)
+                RETURNING id",
+                        new
+                        {
+                            FirstName = payload.GivenName ?? "Korisnik",
+                            LastName = payload.FamilyName ?? "",
+                            Email = payload.Email,
+                            Username = username,
+                            GoogleId = payload.Subject,
+                            CreatedAt = DateTime.UtcNow
+                        });
+
+                    user = await connection.QueryFirstAsync<User>(@"
+                SELECT 
+                    id, username, first_name AS FirstName, last_name AS LastName,
+                    email, phone, password_hash AS PasswordHash, birth_date AS BirthDate,
+                    created_at AS CreatedAt, is_admin AS IsAdmin, google_id AS GoogleId,
+                    auth_provider AS AuthProvider
+                FROM users WHERE id = @Id", new { Id = newUserId });
+                    needsBirthDate = true;
+                    needsPassword = true; // 🔥 novi Google korisnik nema lozinku
+                }
+
+                var token = GenerateJwtToken(user);
+                return Ok(new
+                {
+                    token,
+                    userId = user.Id,
+                    username = user.Username,
+                    firstName = user.FirstName,
+                    lastName = user.LastName,
+                    email = user.Email,
+                    needsBirthDate,
+                    needsPassword // 🔥 novo polje
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GoogleAuth error");
+                return StatusCode(500, new { message = "Greška pri Google prijavi" });
+            }
+        }
+        public class GoogleAuthDto
+        {
+            public string IdToken { get; set; } = string.Empty;
+        }
+
+
+        [HttpPut("complete-profile")]
+        [Authorize]
+        public async Task<IActionResult> CompleteProfile([FromBody] CompleteProfileDto dto)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized();
+
+            using var connection = _dbConnection.CreateConnection();
+            await connection.ExecuteAsync(
+                "UPDATE users SET birth_date = @BirthDate WHERE id = @Id",
+                new { BirthDate = dto.BirthDate.ToDateTime(TimeOnly.MinValue), Id = userId });
+
+            return Ok(new { message = "Profil dovršen" });
+        }
+
+        public class CompleteProfileDto
+        {
+            public DateOnly BirthDate { get; set; }
+        }
+
         [HttpDelete("users/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -441,6 +575,39 @@ namespace CroMap.Controllers
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        [HttpPut("set-password")]
+        [Authorize]
+        public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Password) || dto.Password.Length < 6)
+                return BadRequest(new { message = "Lozinka mora imati najmanje 6 znakova" });
+
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized();
+
+            try
+            {
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+                using var connection = _dbConnection.CreateConnection();
+                await connection.ExecuteAsync(
+                    "UPDATE users SET password_hash = @Hash WHERE id = @Id",
+                    new { Hash = hashedPassword, Id = userId });
+
+                return Ok(new { message = "Lozinka postavljena" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "SetPassword error");
+                return StatusCode(500, new { message = "Greška pri postavljanju lozinke" });
+            }
+        }
+
+        public class SetPasswordDto
+        {
+            public string Password { get; set; } = string.Empty;
         }
     }
 }

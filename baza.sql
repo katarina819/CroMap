@@ -10,7 +10,7 @@ CREATE TABLE users (
 );
 
 ALTER TABLE users ADD COLUMN language VARCHAR(5) NOT NULL DEFAULT 'hr';
-
+ALTER TABLE users ADD COLUMN IF NOT EXISTS language VARCHAR(5) DEFAULT 'hr';
 select from  users;
 
 -- Videos

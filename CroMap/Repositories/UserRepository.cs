@@ -39,6 +39,7 @@ namespace CroMap.Repositories
                 BirthDate = user.BirthDate.HasValue
                     ? user.BirthDate.Value.ToDateTime(TimeOnly.MinValue)
                     : (DateTime?)null,
+                Language = user.Language ?? "hr",   // 👈 DODANO
                 user.CreatedAt
             });
 

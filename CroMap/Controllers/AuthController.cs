@@ -705,6 +705,28 @@ namespace CroMap.Controllers
             return tokenHandler.WriteToken(token);
         }
 
+        [HttpPut("language")]
+        [Authorize]
+        public async Task<IActionResult> UpdateLanguage([FromBody] UpdateLanguageDto dto)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized();
+
+            var lang = NormalizeLang(dto.Language);
+            using var connection = _dbConnection.CreateConnection();
+            await connection.ExecuteAsync(
+                "UPDATE users SET language = @Language WHERE id = @Id",
+                new { Language = lang, Id = userId });
+
+            return Ok(new { message = "Jezik ažuriran" });
+        }
+
+        public class UpdateLanguageDto
+        {
+            public string Language { get; set; } = string.Empty;
+        }
+
         [HttpPut("set-password")]
         [Authorize]
         public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto dto)

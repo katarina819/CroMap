@@ -212,8 +212,13 @@ namespace CroMap.Controllers
 
         private static readonly HashSet<string> _supportedLangs = new() { "hr", "en", "it", "de", "fr" };
 
-        private static string NormalizeLang(string? lang) =>
-            !string.IsNullOrWhiteSpace(lang) && _supportedLangs.Contains(lang) ? lang! : "hr";
+        private static string NormalizeLang(string? lang)
+        {
+            if (string.IsNullOrWhiteSpace(lang))
+                return "hr";
+            var code = lang.Split('-', '_')[0].ToLowerInvariant();
+            return _supportedLangs.Contains(code) ? code : "hr";
+        }
 
         private static readonly Dictionary<string, Dictionary<string, string>> _mail = new()
         {
@@ -583,18 +588,19 @@ namespace CroMap.Controllers
                     }
 
                     var newUserId = await connection.ExecuteScalarAsync<int>(@"
-                INSERT INTO users (first_name, last_name, email, username, password_hash, google_id, auth_provider, birth_date, created_at)
-                VALUES (@FirstName, @LastName, @Email, @Username, NULL, @GoogleId, 'google', NULL, @CreatedAt)
-                RETURNING id",
-                        new
-                        {
-                            FirstName = payload.GivenName ?? "Korisnik",
-                            LastName = payload.FamilyName ?? "",
-                            Email = payload.Email,
-                            Username = username,
-                            GoogleId = payload.Subject,
-                            CreatedAt = DateTime.UtcNow
-                        });
+    INSERT INTO users (first_name, last_name, email, username, password_hash, google_id, auth_provider, birth_date, language, created_at)
+    VALUES (@FirstName, @LastName, @Email, @Username, NULL, @GoogleId, 'google', NULL, @Language, @CreatedAt)
+    RETURNING id",
+    new
+    {
+        FirstName = payload.GivenName ?? "Korisnik",
+        LastName = payload.FamilyName ?? "",
+        Email = payload.Email,
+        Username = username,
+        GoogleId = payload.Subject,
+        Language = NormalizeLang(Request.Headers["Accept-Language"].FirstOrDefault()),
+        CreatedAt = DateTime.UtcNow
+    });
 
                     user = await connection.QueryFirstAsync<User>(@"
                 SELECT 
@@ -629,6 +635,7 @@ namespace CroMap.Controllers
         public class GoogleAuthDto
         {
             public string IdToken { get; set; } = string.Empty;
+            public string? Language { get; set; }
         }
 
 

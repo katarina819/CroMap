@@ -689,3 +689,19 @@ ALTER TABLE users ADD COLUMN google_id VARCHAR(255) UNIQUE;
 ALTER TABLE users ADD COLUMN auth_provider VARCHAR(20) DEFAULT 'local';
 
 ALTER TABLE users ALTER COLUMN birth_date DROP NOT NULL;
+
+-- ─── Follow requests (potvrda praćenja za privatne profile) ──────────────────
+-- Kad je ciljani korisnik privatan (user_profiles.is_public = false), klik na
+-- "Prati" više ne upisuje odmah u "follows" nego stvara zahtjev ovdje; tek
+-- kad ciljani korisnik prihvati, red se briše odavde i pravi "follows" zapis
+-- se kreira (vidi FollowRepository.AcceptFollowRequestAsync).
+CREATE TABLE IF NOT EXISTS follow_requests (
+    id SERIAL PRIMARY KEY,
+    requester_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    target_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(requester_id, target_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_follow_requests_requester_id ON follow_requests(requester_id);
+CREATE INDEX IF NOT EXISTS idx_follow_requests_target_id ON follow_requests(target_id);

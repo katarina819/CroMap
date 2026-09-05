@@ -575,14 +575,22 @@ namespace CroMap.Controllers
             {
                 using var connection = _dbConnection.CreateConnection();
 
+                // LOWER() na oba stupca je nužan — email se kod obične
+                // registracije sprema točno kako je korisnik utipkao (bez
+                // lowercasinga), a Google uvijek vraća email u lowercase
+                // obliku. Bez ovoga bi "Karmela@Gmail.com" (ručna
+                // registracija) i "karmela@gmail.com" (Google) bili
+                // tretirani kao DVA različita korisnika — što je točno
+                // stvaralo duple račune (isti čovjek s dva različita
+                // korisnička imena, npr. "karmela" i "karmela0123").
                 var existingUser = await connection.QueryFirstOrDefaultAsync<User>(@"
-            SELECT 
+            SELECT
                 id, username, first_name AS FirstName, last_name AS LastName,
                 email, phone, password_hash AS PasswordHash, birth_date AS BirthDate,
                 created_at AS CreatedAt, is_admin AS IsAdmin, google_id AS GoogleId,
                 auth_provider AS AuthProvider
-            FROM users 
-            WHERE google_id = @GoogleId OR email = @Email",
+            FROM users
+            WHERE google_id = @GoogleId OR LOWER(email) = LOWER(@Email)",
                     new { GoogleId = payload.Subject, Email = payload.Email });
 
                 User user;

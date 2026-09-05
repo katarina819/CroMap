@@ -110,18 +110,24 @@ builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-    // Opći limit za sve rute, po IP adresi. Namjerno velikodušan (300/min)
-    // jer isti pipeline poslužuje i statične datoteke (avatari, thumbnaili,
-    // videi) — jedan ekran zna napraviti desetke takvih zahtjeva odjednom;
-    // "auth" politika ispod je stroža jer je to stvarna meta botova.
+    // Opći limit za sve rute, po IP adresi. Podignuto s 300 na 900/min —
+    // 300 se pokazalo prenisko: sam popis razgovora (getConversations) radi
+    // zaseban fetch avatara i poruka PO KONTAKTU, pa je korisnik s tridesetak
+    // pratitelja/praćenih, uz osvježavanje popisa svakih par sekundi, sam
+    // znao potrošiti većinu budžeta — pa su nasumične druge akcije (follow,
+    // slanje poruke) dobivale 429 "previše zahtjeva", što se u appu vidjelo
+    // kao slučajan "failed to send". Mali QueueLimit dodatno ublažava
+    // kratke naglе udare (npr. kad se ekran tek otvori i odjednom povuče
+    // više resursa) tako da par zahtjeva pričeka umjesto da odmah padne.
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
         RateLimitPartition.GetFixedWindowLimiter(
             partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             factory: _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 300,
+                PermitLimit = 900,
                 Window = TimeSpan.FromMinutes(1),
-                QueueLimit = 0,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 10,
             }));
 
     // Stroži limit specifično za registraciju i prijavu — najčešća meta

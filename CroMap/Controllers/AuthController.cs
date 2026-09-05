@@ -9,6 +9,7 @@ using Dapper;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CroMap.Controllers
@@ -79,6 +80,7 @@ namespace CroMap.Controllers
         }
 
         [HttpPost("register")]
+        [EnableRateLimiting("auth")]
         public async Task<IActionResult> Register([FromBody] UserDto userDto)
         {
             if (string.IsNullOrWhiteSpace(userDto.Username))
@@ -152,6 +154,7 @@ namespace CroMap.Controllers
         }
 
         [HttpPost("forgot-password")]
+        [EnableRateLimiting("auth")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Email))
@@ -162,19 +165,23 @@ namespace CroMap.Controllers
                 var user = await conn.QueryFirstOrDefaultAsync<User>(
                     "SELECT id, first_name AS FirstName, email, language AS Language FROM users WHERE LOWER(email) = LOWER(@Email)",
                     new { dto.Email });
-                if (user == null)
-                    return NotFound(new { message = "Nije pronađen korisnik s tim emailom" });
 
-                var lang = NormalizeLang(user.Language);
-                var code = new Random().Next(100000, 999999).ToString();
-                await _resetRepo.CreateResetTokenAsync(user.Id, code);
-                await SendEmailWithInlineImages(
-                    user.Email,
-                    T(lang, "resetSubject"),
-                    BuildResetEmail(user.FirstName, code, lang),
-                    GetLogoAttachments()
-                );
-                return Ok(new { message = "Kod poslan na email" });
+                // Namjerno isti odgovor postoji li email ili ne (spriječi
+                // "user enumeration" — prije je 404 na nepostojeći email
+                // otkrivao je li netko registriran s tim emailom).
+                if (user != null)
+                {
+                    var lang = NormalizeLang(user.Language);
+                    var code = new Random().Next(100000, 999999).ToString();
+                    await _resetRepo.CreateResetTokenAsync(user.Id, code);
+                    await SendEmailWithInlineImages(
+                        user.Email,
+                        T(lang, "resetSubject"),
+                        BuildResetEmail(user.FirstName, code, lang),
+                        GetLogoAttachments()
+                    );
+                }
+                return Ok(new { message = "Ako email postoji, kod je poslan" });
             }
             catch (Exception ex)
             {
@@ -184,6 +191,7 @@ namespace CroMap.Controllers
         }
 
         [HttpPost("reset-password")]
+        [EnableRateLimiting("auth")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Code) || string.IsNullOrWhiteSpace(dto.NewPassword))
@@ -416,6 +424,7 @@ namespace CroMap.Controllers
 
 
         [HttpPost("login")]
+        [EnableRateLimiting("auth")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             try
@@ -449,6 +458,9 @@ namespace CroMap.Controllers
 
 
 
+        // Ranije bez [Authorize] — cijeli popis korisnika (ime, prezime,
+        // korisničko ime) mogao je scrapati bilo tko bez prijave.
+        [Authorize]
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
@@ -479,6 +491,10 @@ namespace CroMap.Controllers
             }
         }
 
+        // Ranije bez [Authorize] — dopuštalo je anonimno nabrajanje
+        // korisničkih ID-eva (1, 2, 3, ...) i njihovih imena/korisničkih
+        // imena bez ikakve prijave.
+        [Authorize]
         [HttpGet("users/{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -497,11 +513,21 @@ namespace CroMap.Controllers
             }
         }
 
+        // Ranije bez [Authorize] i bez provjere vlasništva — bilo tko je
+        // mogao poslati PUT s proizvoljnim ID-em i prepisati ime, korisničko
+        // ime pa i EMAIL bilo kojeg korisnika (npr. na svoj email, pa potom
+        // resetirati lozinku putem "zaboravljene lozinke" — potpuno
+        // preuzimanje tuđeg računa bez ijedne lozinke).
+        [Authorize]
         [HttpPut("users/{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDto userDto)
         {
             try
             {
+                var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+                if (currentUserId != id)
+                    return Forbid();
+
                 if (string.IsNullOrWhiteSpace(userDto.FirstName))
                     return BadRequest(new { message = "Ime je obavezno" });
                 if (string.IsNullOrWhiteSpace(userDto.LastName))

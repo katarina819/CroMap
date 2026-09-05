@@ -4,11 +4,29 @@ using CroMap.Data;
 using CroMap.Repositories;
 using CroMap.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Kestrel's default request-body limit is ~28.6 MB (30_000_000 bytes) —
+// far below what a real phone video needs. A 30-60s clip at typical
+// camera bitrates is easily 60-150 MB, so uploads over that size were
+// being rejected/reset before the request even reached the controller,
+// showing up in the app as a generic "upload failed" error. Raised to
+// 300 MB, matching the video/image size caps already enforced in code.
+const long MaxUploadBytes = 300L * 1024 * 1024;
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = MaxUploadBytes;
+});
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = MaxUploadBytes;
+});
 
 builder.Configuration["R2:AccessKeyId"] = Environment.GetEnvironmentVariable("R2_ACCESS_KEY_ID");
 builder.Configuration["R2:SecretAccessKey"] = Environment.GetEnvironmentVariable("R2_SECRET_ACCESS_KEY");

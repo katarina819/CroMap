@@ -20,34 +20,46 @@ namespace CroMap.Repositories
 
             string groupBy;
             string dateFormat;
+            string lookback;
 
+            // Lookback prozor mora rasti s periodom — prije je uvijek bio
+            // fiksiran na 30 dana, pa je "mjesečni" prikaz grupiran po
+            // DATE_TRUNC('month', ...) u praksi gotovo uvijek pokazivao samo
+            // tekući (djelomični) mjesec, nikad stvarnu mjesečnu povijest.
             switch (period)
             {
                 case "weekly":
                     groupBy = "DATE_TRUNC('week', date)";
                     dateFormat = "YYYY-MM-DD";
+                    lookback = "'90 days'";
                     break;
                 case "monthly":
                     groupBy = "DATE_TRUNC('month', date)";
                     dateFormat = "YYYY-MM";
+                    lookback = "'365 days'";
                     break;
                 default: // daily
                     groupBy = "date";
                     dateFormat = "YYYY-MM-DD";
+                    lookback = "'30 days'";
                     break;
             }
 
+            // FollowersCount koristi zadnju poznatu vrijednost unutar perioda
+            // (po datumu), ne MAX — MAX bi znao pokazati "vršni" broj pratitelja
+            // čak i nakon što su neki otpratili, što je zavaravajuće za
+            // "trenutno stanje" na kraju tjedna/mjeseca.
             var sql = $@"
-                SELECT 
+                SELECT
                     TO_CHAR({groupBy}, '{dateFormat}') AS Date,
                     SUM(session_minutes) AS SessionMinutes,
                     SUM(likes) AS Likes,
                     SUM(comments) AS Comments,
                     SUM(posts) AS Posts,
-                    MAX(followers_count) AS FollowersCount
+                    (ARRAY_AGG(followers_count ORDER BY date DESC))[1] AS FollowersCount
                 FROM activity_logs
                 WHERE user_id = @UserId
-                AND date >= CURRENT_DATE - INTERVAL '30 days'
+                AND date >= CURRENT_DATE - INTERVAL {lookback}
                 GROUP BY {groupBy}
                 ORDER BY {groupBy} DESC";
 
@@ -55,7 +67,6 @@ namespace CroMap.Repositories
             return stats;
         }
 
-        // Ažuriraj ili kreiraj dnevnu aktivnost
         // Ažuriraj ili kreiraj dnevnu aktivnost
         public async Task UpdateDailyActivity(int userId, string actionType, int value = 1)
         {
@@ -71,62 +82,35 @@ namespace CroMap.Repositories
                 _ => throw new ArgumentException("Invalid action type")
             };
 
-            // Prvo pokušaj update
-            var updateSql = $@"
-UPDATE activity_logs 
-SET {columnName} = {columnName} + @Value
-WHERE user_id = @UserId AND date = CURRENT_DATE";
-
-            var rowsAffected = await connection.ExecuteAsync(updateSql, new { UserId = userId, Value = value });
-
-            // Ako nema redova za update, onda insert
-            if (rowsAffected == 0)
+            // Atomični upsert umjesto "provjeri pa update/insert" — stari kod je
+            // prvo pokušao UPDATE, i ako 0 redaka pogođeno, radio INSERT. Kad bi
+            // dva zahtjeva za istog korisnika stigla gotovo istovremeno (npr.
+            // brzi dupli tap), oba su znala vidjeti "nema retka" i pokušati
+            // INSERT, pa bi jedan pao na unique(user_id, date) constraintu i
+            // taj brojač bio izgubljen. INSERT ... ON CONFLICT je atoman pa se
+            // to više ne može dogoditi.
+            var columnInsertValues = new Dictionary<string, string>
             {
-                // 🔥 ISPRAVKA: Ne navodi sve stupce, neka baza koristi DEFAULT vrijednosti
-                var insertSql = @"
-INSERT INTO activity_logs (user_id, date, likes, comments, posts, session_minutes, followers_count)
-VALUES (@UserId, CURRENT_DATE, 0, 0, 0, 0, 
-    (SELECT COUNT(*) FROM follows WHERE followed_id = @UserId))";
+                ["likes"] = "0",
+                ["comments"] = "0",
+                ["posts"] = "0",
+                ["session_minutes"] = "0",
+                ["followers_count"] = "(SELECT COUNT(*) FROM follows WHERE followed_id = @UserId)",
+            };
+            columnInsertValues[columnName] = "@Value";
 
-                // Ako trebaš dodati specifičnu vrijednost za stupac koji se ažurira:
-                if (columnName == "likes")
-                {
-                    insertSql = @"
+            var sql = $@"
 INSERT INTO activity_logs (user_id, date, likes, comments, posts, session_minutes, followers_count)
-VALUES (@UserId, CURRENT_DATE, @Value, 0, 0, 0, 
-    (SELECT COUNT(*) FROM follows WHERE followed_id = @UserId))";
-                }
-                else if (columnName == "comments")
-                {
-                    insertSql = @"
-INSERT INTO activity_logs (user_id, date, likes, comments, posts, session_minutes, followers_count)
-VALUES (@UserId, CURRENT_DATE, 0, @Value, 0, 0, 
-    (SELECT COUNT(*) FROM follows WHERE followed_id = @UserId))";
-                }
-                else if (columnName == "posts")
-                {
-                    insertSql = @"
-INSERT INTO activity_logs (user_id, date, likes, comments, posts, session_minutes, followers_count)
-VALUES (@UserId, CURRENT_DATE, 0, 0, @Value, 0, 
-    (SELECT COUNT(*) FROM follows WHERE followed_id = @UserId))";
-                }
-                else if (columnName == "session_minutes")
-                {
-                    insertSql = @"
-INSERT INTO activity_logs (user_id, date, likes, comments, posts, session_minutes, followers_count)
-VALUES (@UserId, CURRENT_DATE, 0, 0, 0, @Value, 
-    (SELECT COUNT(*) FROM follows WHERE followed_id = @UserId))";
-                }
-                else
-                {
-                    // Za ostale (followers_count, itd.)
-                    insertSql = $@"
-INSERT INTO activity_logs (user_id, date, likes, comments, posts, session_minutes, followers_count)
-VALUES (@UserId, CURRENT_DATE, 0, 0, 0, 0, @Value)";
-                }
+VALUES (@UserId, CURRENT_DATE,
+    {columnInsertValues["likes"]},
+    {columnInsertValues["comments"]},
+    {columnInsertValues["posts"]},
+    {columnInsertValues["session_minutes"]},
+    {columnInsertValues["followers_count"]})
+ON CONFLICT (user_id, date)
+DO UPDATE SET {columnName} = activity_logs.{columnName} + @Value";
 
-                await connection.ExecuteAsync(insertSql, new { UserId = userId, Value = value });
-            }
+            await connection.ExecuteAsync(sql, new { UserId = userId, Value = value });
         }
 
         // Zabilježi sesiju (vrijeme provedeno u aplikaciji)

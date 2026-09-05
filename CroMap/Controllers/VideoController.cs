@@ -33,12 +33,15 @@ namespace CroMap.Controllers
             return null;
         }
 
-        // GET: api/video
+        // GET: api/video?page=1&pageSize=15
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Video>>> GetAllVideos()
+        public async Task<ActionResult<IEnumerable<Video>>> GetAllVideos(
+            [FromQuery] int page = 1, [FromQuery] int pageSize = 15)
         {
             var currentUserId = GetCurrentUserId();
-            var videos = await _videoRepository.GetAllVideosAsync(currentUserId);
+            pageSize = Math.Clamp(pageSize, 1, 50);
+            page = Math.Max(page, 1);
+            var videos = await _videoRepository.GetAllVideosAsync(currentUserId, page, pageSize);
             return Ok(videos);
         }
 

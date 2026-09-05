@@ -48,7 +48,9 @@ namespace CroMap.Controllers
                 {
                     displayName = r.DisplayName,
                     lat = r.Lat,
-                    lon = r.Lon
+                    lon = r.Lon,
+                    osmClass = r.Class,
+                    osmType = r.Type
                 }).ToList();
 
                 return Ok(suggestions);
@@ -70,5 +72,11 @@ namespace CroMap.Controllers
 
         [JsonPropertyName("lon")]
         public string Lon { get; set; } = "";
+
+        [JsonPropertyName("class")]
+        public string Class { get; set; } = "";
+
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = "";
     }
 }

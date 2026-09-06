@@ -27,6 +27,9 @@ namespace CroMap.Repositories
         SELECT
             v.*,
             u.username as UserName,
+            u.first_name as UserFirstName,
+            u.last_name as UserLastName,
+            COALESCE(p.avatar, '') as UserAvatar,
             COALESCE(lc.like_count, 0) as LikeCount,
             COALESCE(cc.comment_count, 0) as CommentCount,
             CASE WHEN ul.user_id IS NOT NULL THEN true ELSE false END as IsLiked,
@@ -34,6 +37,7 @@ namespace CroMap.Repositories
             CASE WHEN v.user_id = @CurrentUserId THEN true ELSE false END as IsOwner
         FROM videos v
         LEFT JOIN users u ON v.user_id = u.id
+        LEFT JOIN user_profiles p ON p.user_id = v.user_id
         LEFT JOIN (
             SELECT video_id, COUNT(*) as like_count
             FROM likes
@@ -63,6 +67,9 @@ namespace CroMap.Repositories
                 SELECT 
                     v.*,
                     u.username as UserName,
+                    u.first_name as UserFirstName,
+                    u.last_name as UserLastName,
+                    COALESCE(p.avatar, '') as UserAvatar,
                     COALESCE(lc.like_count, 0) as LikeCount,
                     COALESCE(cc.comment_count, 0) as CommentCount,
                     CASE WHEN ul.user_id IS NOT NULL THEN true ELSE false END as IsLiked,
@@ -70,6 +77,7 @@ namespace CroMap.Repositories
                     CASE WHEN v.user_id = @CurrentUserId THEN true ELSE false END as IsOwner
                 FROM videos v
                 LEFT JOIN users u ON v.user_id = u.id
+                LEFT JOIN user_profiles p ON p.user_id = v.user_id
                 LEFT JOIN (
                     SELECT video_id, COUNT(*) as like_count
                     FROM likes
@@ -98,6 +106,9 @@ namespace CroMap.Repositories
         SELECT 
             v.*,
             u.username as UserName,
+            u.first_name as UserFirstName,
+            u.last_name as UserLastName,
+            COALESCE(p.avatar, '') as UserAvatar,
             COALESCE(lc.like_count, 0) as LikeCount,
             COALESCE(cc.comment_count, 0) as CommentCount,
             CASE WHEN ul.user_id IS NOT NULL THEN true ELSE false END as IsLiked,
@@ -106,6 +117,7 @@ namespace CroMap.Repositories
             CASE WHEN v.user_id = @CurrentUserId THEN true ELSE false END as IsOwner
         FROM videos v
         LEFT JOIN users u ON v.user_id = u.id
+        LEFT JOIN user_profiles p ON p.user_id = v.user_id
         LEFT JOIN (
             SELECT video_id, COUNT(*) as like_count
             FROM likes

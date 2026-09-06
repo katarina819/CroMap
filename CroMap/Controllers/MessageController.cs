@@ -69,6 +69,17 @@ namespace CroMap.Controllers
             }
         }
 
+        // Popis razgovora s kojima korisnik STVARNO ima razmijenjene poruke.
+        // Vraća zadnju poruku, vrijeme i broj nepročitanih u jednom upitu, pa
+        // aplikacija više ne mora sama slagati popis iz pratitelja/praćenih.
+        [HttpGet("conversations")]
+        public async Task<IActionResult> GetConversations()
+        {
+            var userId = GetCurrentUserId();
+            var conversations = await _messageRepository.GetConversationsAsync(userId);
+            return Ok(conversations);
+        }
+
         [HttpGet("conversation/{userId}")]
         public async Task<IActionResult> GetConversation(int userId)
         {

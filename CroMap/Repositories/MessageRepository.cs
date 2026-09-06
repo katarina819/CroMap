@@ -27,6 +27,57 @@ namespace CroMap.Repositories
             return message;
         }
 
+        // Popis razgovora — SAMO korisnici s kojima stvarno postoji razmijenjena
+        // poruka. Aplikacija je ovaj popis dosad gradila sama: dohvatila bi sve
+        // koje korisnik prati i sve koji prate njega, pa za SVAKOG od njih još
+        // dva zahtjeva (profil za avatar + cijeli razgovor da vidi zadnju
+        // poruku). Zbog toga su se u porukama pojavljivali i ljudi s kojima
+        // nikad nije razmijenjena nijedna poruka, a ekran je za tridesetak
+        // kontakata radio šezdesetak zahtjeva pri svakom osvježavanju (što je
+        // znalo potrošiti i limit zahtjeva pa bi druge akcije dobile 429).
+        // Ovdje sve to radi jedan upit.
+        public async Task<IEnumerable<ConversationDto>> GetConversationsAsync(int userId)
+        {
+            using var connection = _dbConnection.CreateConnection();
+
+            var sql = @"
+                WITH partners AS (
+                    SELECT
+                        CASE WHEN m.sender_id = @UserId THEN m.receiver_id ELSE m.sender_id END AS other_id,
+                        MAX(m.sent_at) AS last_sent_at
+                    FROM messages m
+                    WHERE m.sender_id = @UserId OR m.receiver_id = @UserId
+                    GROUP BY 1
+                )
+                SELECT
+                    u.id                       AS UserId,
+                    u.first_name               AS FirstName,
+                    u.last_name                AS LastName,
+                    u.username                 AS Username,
+                    COALESCE(p.avatar, '')     AS Avatar,
+                    COALESCE(last_msg.content, '') AS LastMessage,
+                    last_msg.sender_id         AS LastMessageSenderId,
+                    partners.last_sent_at      AS Timestamp,
+                    (SELECT COUNT(*) FROM messages um
+                      WHERE um.sender_id = u.id
+                        AND um.receiver_id = @UserId
+                        AND um.is_read = false)::int AS UnreadCount
+                FROM partners
+                JOIN users u ON u.id = partners.other_id
+                LEFT JOIN user_profiles p ON p.user_id = u.id
+                LEFT JOIN LATERAL (
+                    SELECT m2.content, m2.sender_id
+                    FROM messages m2
+                    WHERE (m2.sender_id = @UserId AND m2.receiver_id = u.id)
+                       OR (m2.sender_id = u.id AND m2.receiver_id = @UserId)
+                    ORDER BY m2.sent_at DESC
+                    LIMIT 1
+                ) last_msg ON true
+                ORDER BY partners.last_sent_at DESC";
+
+            return await connection.QueryAsync<ConversationDto>(sql, new { UserId = userId });
+        }
+
         public async Task<IEnumerable<Message>> GetConversationAsync(int userId1, int userId2)
         {
             using var connection = _dbConnection.CreateConnection();
@@ -111,5 +162,18 @@ namespace CroMap.Repositories
             var rowsAffected = await connection.ExecuteAsync(sql, new { MessageId = messageId, UserId = userId });
             return rowsAffected > 0;
         }
+    }
+
+    public class ConversationDto
+    {
+        public int UserId { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string Avatar { get; set; } = string.Empty;
+        public string LastMessage { get; set; } = string.Empty;
+        public int LastMessageSenderId { get; set; }
+        public DateTime Timestamp { get; set; }
+        public int UnreadCount { get; set; }
     }
 }

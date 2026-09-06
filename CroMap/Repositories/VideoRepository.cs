@@ -14,12 +14,17 @@ namespace CroMap.Repositories
             _dbConnection = dbConnection;
         }
 
-        public async Task<IEnumerable<Video>> GetAllVideosAsync(int? currentUserId)
+        public async Task<IEnumerable<Video>> GetAllVideosAsync(int? currentUserId, int page = 1, int pageSize = 15)
         {
             using var connection = _dbConnection.CreateConnection();
 
+            // Paginirano — prije se cijela tablica videa vraćala u jednom
+            // odgovoru na svako otvaranje feeda, što je postajalo sve sporije
+            // (i teže za memoriju na klijentu) kako je raslo videa.
+            var offset = (Math.Max(page, 1) - 1) * pageSize;
+
             var sql = @"
-        SELECT 
+        SELECT
             v.*,
             u.username as UserName,
             COALESCE(lc.like_count, 0) as LikeCount,
@@ -41,9 +46,12 @@ namespace CroMap.Repositories
         ) cc ON v.id = cc.video_id
         LEFT JOIN likes ul ON v.id = ul.video_id AND ul.user_id = @CurrentUserId
         LEFT JOIN saved_videos sv ON v.id = sv.video_id AND sv.user_id = @CurrentUserId
-        ORDER BY v.created_at DESC";
+        ORDER BY v.created_at DESC
+        LIMIT @PageSize OFFSET @Offset";
 
-            var videos = await connection.QueryAsync<Video>(sql, new { CurrentUserId = currentUserId });
+            var videos = await connection.QueryAsync<Video>(
+                sql,
+                new { CurrentUserId = currentUserId, PageSize = pageSize, Offset = offset });
             return videos;
         }
 

@@ -4,7 +4,7 @@ namespace CroMap.Repositories
 {
     public interface IVideoRepository
     {
-        Task<IEnumerable<Video>> GetAllVideosAsync(int? currentUserId);
+        Task<IEnumerable<Video>> GetAllVideosAsync(int? currentUserId, int page = 1, int pageSize = 15);
         Task<Video> GetVideoByIdAsync(int id, int? currentUserId);
         Task<IEnumerable<Video>> GetVideosByUserAsync(int userId, int? currentUserId);
         Task CreateVideoAsync(Video video);

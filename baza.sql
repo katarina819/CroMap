@@ -689,3 +689,49 @@ ALTER TABLE users ADD COLUMN google_id VARCHAR(255) UNIQUE;
 ALTER TABLE users ADD COLUMN auth_provider VARCHAR(20) DEFAULT 'local';
 
 ALTER TABLE users ALTER COLUMN birth_date DROP NOT NULL;
+
+-- ─── Follow requests (potvrda praćenja za privatne profile) ──────────────────
+-- Kad je ciljani korisnik privatan (user_profiles.is_public = false), klik na
+-- "Prati" više ne upisuje odmah u "follows" nego stvara zahtjev ovdje; tek
+-- kad ciljani korisnik prihvati, red se briše odavde i pravi "follows" zapis
+-- se kreira (vidi FollowRepository.AcceptFollowRequestAsync).
+CREATE TABLE IF NOT EXISTS follow_requests (
+    id SERIAL PRIMARY KEY,
+    requester_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    target_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(requester_id, target_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_follow_requests_requester_id ON follow_requests(requester_id);
+CREATE INDEX IF NOT EXISTS idx_follow_requests_target_id ON follow_requests(target_id);
+
+-- ─── Popravak: "čišćenje triggera" gore (oko retka 643-685) je greškom
+-- izbrisalo i pratitelje i lajkove/komentare iz activity_logs praćenja ──
+-- Redoslijed gore je bio: DROP ispravnog trigger_update_followers_count →
+-- ponovno stvoren ali POGREŠNO vezan na ensure_daily_activity_exists()
+-- (koja samo osigurava da red postoji za danas, ne zbraja ništa) → pa čak
+-- i TAJ pogrešan trigger ponovno obrisan — na kraju NIJEDAN trigger ne
+-- ažurira activity_logs.followers_count kad netko zaprati/otprati. Isto
+-- "čišćenje" je obrisalo trigger_track_likes i trigger_track_comments
+-- (koji stvarno zbrajaju likes/comments) i vratilo samo njihove
+-- "ensure_exists" parnjake, koji ne zbrajaju ništa. Rezultat: aktivnost
+-- (dnevna/tjedna/mjesečna) je uvijek pokazivala 0 pratitelja, i lajkovi/
+-- komentari se više uopće nisu brojali u activity_logs.
+DROP TRIGGER IF EXISTS trigger_update_followers_count ON follows;
+CREATE TRIGGER trigger_update_followers_count
+    AFTER INSERT OR DELETE ON follows
+    FOR EACH ROW
+    EXECUTE FUNCTION update_followers_count();
+
+DROP TRIGGER IF EXISTS trigger_track_likes ON likes;
+CREATE TRIGGER trigger_track_likes
+    AFTER INSERT OR DELETE ON likes
+    FOR EACH ROW
+    EXECUTE FUNCTION track_like_activity();
+
+DROP TRIGGER IF EXISTS trigger_track_comments ON comments;
+CREATE TRIGGER trigger_track_comments
+    AFTER INSERT OR DELETE ON comments
+    FOR EACH ROW
+    EXECUTE FUNCTION track_comment_activity();

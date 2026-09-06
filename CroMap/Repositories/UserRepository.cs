@@ -100,20 +100,6 @@ namespace CroMap.Repositories
             return null;
         }
 
-        // Opcionalno: zadrži i staru metodu za backward compatibility
-        public async Task<User> LoginAsync(string username, string password)
-        {
-            using var connection = _dbConnection.CreateConnection();
-
-            var sql = @"
-                SELECT * FROM users 
-                WHERE (email = @Username OR phone = @Username) 
-                AND password_hash = @Password";
-
-            var user = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Username = username, Password = password });
-            return user;
-        }
-
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
             using var connection = _dbConnection.CreateConnection();

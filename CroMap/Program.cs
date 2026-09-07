@@ -54,6 +54,16 @@ if (string.IsNullOrWhiteSpace(jwtKey) || Encoding.UTF8.GetByteCount(jwtKey) < 32
 }
 var key = Encoding.UTF8.GetBytes(jwtKey);
 
+// Isto vrijedi za bazu: bez connection stringa aplikacija ne može ništa, pa je
+// bolje da padne pri pokretanju (vidljivo u logu deploya) nego da svaki zahtjev
+// puca na prvom pristupu bazi.
+if (string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("DefaultConnection")))
+{
+    throw new InvalidOperationException(
+        "ConnectionStrings:DefaultConnection nije postavljen. Postavi varijablu " +
+        "okoline ConnectionStrings__DefaultConnection.");
+}
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

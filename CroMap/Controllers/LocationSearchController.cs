@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -6,6 +7,12 @@ namespace CroMap.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    // Ovaj endpoint je posrednik prema Nominatimu (OpenStreetMap). Dok je bio
+    // otvoren, svatko ga je mogao koristiti kao besplatan geokoder na naš
+    // račun — a Nominatim ima strogu politiku korištenja i blokira IP koji je
+    // preoptereti, čime bi pretraživanje lokacija prestalo raditi svim
+    // korisnicima aplikacije.
+    [Authorize]
     public class LocationSearchController : ControllerBase
     {
         private readonly IHttpClientFactory _httpClientFactory;

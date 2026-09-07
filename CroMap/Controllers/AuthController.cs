@@ -172,7 +172,12 @@ namespace CroMap.Controllers
                 if (user != null)
                 {
                     var lang = NormalizeLang(user.Language);
-                    var code = new Random().Next(100000, 999999).ToString();
+                    // RandomNumberGenerator umjesto Random: Random nije
+                    // kriptografski generator i njegov se niz može rekonstruirati
+                    // iz nekoliko viđenih izlaza (a napadač ih može naručiti
+                    // koliko želi tražeći resetiranje za vlastiti račun).
+                    var code = System.Security.Cryptography.RandomNumberGenerator
+                        .GetInt32(100000, 1000000).ToString();
                     await _resetRepo.CreateResetTokenAsync(user.Id, code);
                     await SendEmailWithInlineImages(
                         user.Email,
@@ -196,11 +201,15 @@ namespace CroMap.Controllers
         {
             if (string.IsNullOrWhiteSpace(dto.Code) || string.IsNullOrWhiteSpace(dto.NewPassword))
                 return BadRequest(new { message = "Kod i nova lozinka su obavezni" });
+            if (string.IsNullOrWhiteSpace(dto.Email))
+                return BadRequest(new { message = "Email je obavezan" });
             if (dto.NewPassword.Length < 6)
                 return BadRequest(new { message = "Lozinka mora imati najmanje 6 znakova" });
             try
             {
-                var (userId, isValid) = await _resetRepo.ValidateTokenAsync(dto.Code);
+                // Kod se provjerava uz e-mail: dosad je vrijedio bilo koji živi
+                // kod, bez obzira kojem korisniku pripada.
+                var (userId, isValid) = await _resetRepo.ValidateTokenAsync(dto.Code, dto.Email);
                 if (!isValid)
                     return BadRequest(new { message = "Kod je neispravan ili je istekao" });
                 var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
@@ -712,7 +721,10 @@ namespace CroMap.Controllers
         private string GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+            // UTF8, jednako kao pri provjeri tokena u Program.cs. ASCII bi svaki
+            // znak izvan ASCII-ja u ključu pretvorio u "?", pa bi potpisivanje i
+            // provjera koristili različite bajtove.
+            var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!);
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),

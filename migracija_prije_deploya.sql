@@ -32,6 +32,17 @@ CREATE INDEX IF NOT EXISTS idx_follow_requests_requester_id
 CREATE INDEX IF NOT EXISTS idx_follow_requests_target_id
     ON follow_requests(target_id);
 
+-- ----------------------------------------------------------------------------
+--  Brojač pogrešnih pokušaja za kod za resetiranje lozinke.
+--
+--  Kod je šesteroznamenkast i dosad se provjeravao bez ikakvog ograničenja
+--  broja pokušaja, pa se prostor od 900.000 kombinacija mogao pretraživati sve
+--  dok se ne pogodi. Nakon 5 promašaja kod se sada poništava i mora se
+--  zatražiti novi (PasswordResetRepository.ValidateTokenAsync).
+-- ----------------------------------------------------------------------------
+ALTER TABLE password_reset_tokens
+    ADD COLUMN IF NOT EXISTS attempts INTEGER NOT NULL DEFAULT 0;
+
 COMMIT;
 
 -- ─── Provjera nakon pokretanja ──────────────────────────────────────────────

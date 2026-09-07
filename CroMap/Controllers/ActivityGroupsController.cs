@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using System.Security.Claims;
 using Dapper;
@@ -7,6 +8,14 @@ namespace CroMap.Controllers
 {
     [ApiController]
     [Route("api/activity-groups")]
+    // Cijeli je kontroler ranije bio anoniman, a identitet se čitao iz tijela
+    // zahtjeva ("userName", "creatorName"). To je značilo da je bilo tko, bez
+    // ijednog tokena, mogao: kreirati grupe u tuđe ime, izbaciti bilo kojeg
+    // člana iz bilo koje grupe, čitati i pisati u tuđe grupne razgovore, te —
+    // najgore — obrisati bilo čiju grupu, jer je provjera vlasništva bila
+    // usporedba s imenom iz query stringa, a imena kreatora javno vraća
+    // GET /api/activity-groups. Sada je identitet isključivo iz JWT-a.
+    [Authorize]
     public class ActivityGroupsController : ControllerBase
     {
         private readonly string _connectionString;
@@ -14,6 +23,29 @@ namespace CroMap.Controllers
         public ActivityGroupsController(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
+
+        /// <summary>Id prijavljenog korisnika iz tokena; null ako ga nema.</summary>
+        private int? CurrentUserId
+        {
+            get
+            {
+                var raw = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                return int.TryParse(raw, out var id) ? (int?)id : null;
+            }
+        }
+
+        /// <summary>
+        /// Ime pod kojim se korisnik vodi u grupama. Čita se iz baze, ne iz
+        /// zahtjeva — klijent više ne može tvrditi da je netko drugi. Format je
+        /// isti kao dosad ("Ime Prezime"), pa postojeći zapisi ostaju valjani.
+        /// </summary>
+        private static async Task<string?> GetDisplayNameAsync(NpgsqlConnection connection, int userId)
+        {
+            var name = await connection.QueryFirstOrDefaultAsync<string>(
+                "SELECT TRIM(COALESCE(first_name, '') || ' ' || COALESCE(last_name, '')) FROM users WHERE id = @Id",
+                new { Id = userId });
+            return string.IsNullOrWhiteSpace(name) ? null : name;
         }
 
         // GET: api/activity-groups - Dohvati sve aktivne grupe
@@ -75,15 +107,26 @@ namespace CroMap.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateGroup([FromBody] CreateGroupRequest request)
         {
-            // NOVO: dohvati userId iz JWT
-            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int? creatorUserId = int.TryParse(userIdStr, out int uid) ? uid : null;
+            var creatorUserId = CurrentUserId;
+            if (creatorUserId is null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(request.Activity))
+                return BadRequest(new { error = "Aktivnost je obavezna" });
+            if (request.Activity.Length > 100 || (request.Description?.Length ?? 0) > 1000
+                || (request.LocationName?.Length ?? 0) > 200)
+                return BadRequest(new { error = "Predugačak unos" });
+            if (request.MaxPeople < 2 || request.MaxPeople > 100)
+                return BadRequest(new { error = "Broj sudionika mora biti između 2 i 100" });
 
             var groupId = Guid.NewGuid().ToString();
             var now = DateTime.UtcNow;
 
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
+
+            // Ime kreatora dolazi iz baze, ne iz request.CreatorName.
+            var creatorName = await GetDisplayNameAsync(connection, creatorUserId.Value);
+            if (creatorName is null) return Unauthorized();
 
             // NOVO: spremi creator_user_id
             var sql = @"
@@ -97,14 +140,14 @@ namespace CroMap.Controllers
             await connection.ExecuteAsync(sql, new
             {
                 Id = groupId,
-                request.CreatorName,
+                CreatorName = creatorName,
                 request.Activity,
                 Description = request.Description ?? "",
                 request.Latitude,
                 request.Longitude,
                 request.LocationName,
                 request.MaxPeople,
-                Members = request.CreatorName,
+                Members = creatorName,
                 CreatedAt = now,
                 ExpiresAt = now.AddHours(48),
                 CreatorUserId = creatorUserId // NOVO
@@ -123,8 +166,8 @@ namespace CroMap.Controllers
                 group = new
                 {
                     Id = groupId,
-                    request.CreatorName,
-                    CreatorUserId = creatorUserId, // NOVO
+                    CreatorName = creatorName,
+                    CreatorUserId = creatorUserId,
                     CreatorAvatar = creatorAvatar, // NOVO
                     request.Activity,
                     request.Description,
@@ -134,7 +177,7 @@ namespace CroMap.Controllers
                     request.MaxPeople,
                     CreatedAt = now,
                     ExpiresAt = now.AddHours(48),
-                    Members = new[] { request.CreatorName },
+                    Members = new[] { creatorName },
                     MemberCount = 1
                 }
             });
@@ -144,12 +187,19 @@ namespace CroMap.Controllers
         [HttpPost("{id}/join")]
         public async Task<IActionResult> JoinGroup(string id, [FromBody] JoinGroupRequest request)
         {
+            var userId = CurrentUserId;
+            if (userId is null) return Unauthorized();
+
             try
             {
                 using var connection = new NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                // Dohvati grupu
+                // request.UserName se namjerno ignorira — tko se pridružuje
+                // određuje token, ne tijelo zahtjeva.
+                var userName = await GetDisplayNameAsync(connection, userId.Value);
+                if (userName is null) return Unauthorized();
+
                 var group = await connection.QueryFirstOrDefaultAsync<ActivityGroup>(
                     "SELECT * FROM activity_groups WHERE id = @Id",
                     new { Id = id });
@@ -161,7 +211,7 @@ namespace CroMap.Controllers
 
                 var members = group.Members?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
 
-                if (members.Contains(request.UserName))
+                if (members.Contains(userName))
                 {
                     return BadRequest(new { error = "Već ste član grupe" });
                 }
@@ -171,7 +221,7 @@ namespace CroMap.Controllers
                     return BadRequest(new { error = "Grupa je puna" });
                 }
 
-                members.Add(request.UserName);
+                members.Add(userName);
                 var newMembers = string.Join(",", members);
 
                 await connection.ExecuteAsync(
@@ -180,9 +230,11 @@ namespace CroMap.Controllers
 
                 return Ok(new { success = true, message = "Pridružili ste se grupi" });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { error = ex.Message });
+                // Poruka iznimke se više ne vraća klijentu — otkrivala je
+                // strukturu baze i interne putanje.
+                return StatusCode(500, new { error = "Greška pri pridruživanju grupi" });
             }
         }
 
@@ -190,10 +242,18 @@ namespace CroMap.Controllers
         [HttpDelete("{id}/leave")]
         public async Task<IActionResult> LeaveGroup(string id, [FromQuery] string userName)
         {
+            var userId = CurrentUserId;
+            if (userId is null) return Unauthorized();
+
             try
             {
                 using var connection = new NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
+
+                // Parametar userName se ignorira — dosad je omogućavao da bilo
+                // tko izbaci bilo kojeg člana iz bilo koje grupe.
+                var callerName = await GetDisplayNameAsync(connection, userId.Value);
+                if (callerName is null) return Unauthorized();
 
                 var group = await connection.QueryFirstOrDefaultAsync<ActivityGroup>(
                     "SELECT * FROM activity_groups WHERE id = @Id",
@@ -206,12 +266,12 @@ namespace CroMap.Controllers
 
                 var members = group.Members?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
 
-                if (!members.Contains(userName))
+                if (!members.Contains(callerName))
                 {
                     return BadRequest(new { error = "Niste član grupe" });
                 }
 
-                members.Remove(userName);
+                members.Remove(callerName);
                 var newMembers = string.Join(",", members);
 
                 await connection.ExecuteAsync(
@@ -220,9 +280,9 @@ namespace CroMap.Controllers
 
                 return Ok(new { success = true, message = "Napustili ste grupu" });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { error = ex.Message });
+                return StatusCode(500, new { error = "Greška pri napuštanju grupe" });
             }
         }
 
@@ -230,12 +290,15 @@ namespace CroMap.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGroup(string id, [FromQuery] string creatorName)
         {
+            var userId = CurrentUserId;
+            if (userId is null) return Unauthorized();
+
             try
             {
                 using var connection = new NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                var group = await connection.QueryFirstOrDefaultAsync<ActivityGroup>(
+                var group = await connection.QueryFirstOrDefaultAsync<ActivityGroupWithAvatar>(
                     "SELECT * FROM activity_groups WHERE id = @Id",
                     new { Id = id });
 
@@ -244,9 +307,27 @@ namespace CroMap.Controllers
                     return NotFound(new { error = "Grupa ne postoji" });
                 }
 
-                if (group.CreatorName != creatorName)
+                // Vlasništvo se provjerava po id-u kreatora iz tokena. Prije se
+                // uspoređivalo s imenom iz query stringa, a ta su imena javna
+                // (vraća ih GET /api/activity-groups) — dakle bilo tko je mogao
+                // obrisati bilo čiju grupu zajedno sa svim porukama.
+                bool isOwner;
+                if (group.CreatorUserId.HasValue)
                 {
-                    return Forbid("Samo kreator može obrisati grupu");
+                    isOwner = group.CreatorUserId.Value == userId.Value;
+                }
+                else
+                {
+                    // Stari zapisi nastali prije nego što se spremao id kreatora:
+                    // usporedi s imenom iz BAZE za prijavljenog korisnika.
+                    var callerName = await GetDisplayNameAsync(connection, userId.Value);
+                    isOwner = callerName != null && group.CreatorName == callerName;
+                }
+
+                if (!isOwner)
+                {
+                    return StatusCode(403,
+                        new { error = "Samo kreator može obrisati grupu" });
                 }
 
                 // Prvo obriši sve poruke
@@ -261,9 +342,9 @@ namespace CroMap.Controllers
 
                 return Ok(new { success = true, message = "Grupa je obrisana" });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { error = ex.Message });
+                return StatusCode(500, new { error = "Greška pri brisanju grupe" });
             }
         }
 
@@ -272,12 +353,21 @@ namespace CroMap.Controllers
         public async Task<IActionResult> SendMessage(string id,
     [FromBody] GroupMessageRequest request)
         {
-            // NOVO: dohvati userId iz JWT
-            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int? senderId = int.TryParse(userIdStr, out int uid) ? uid : null;
+            var senderId = CurrentUserId;
+            if (senderId is null) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(request.Text))
+                return BadRequest(new { error = "Poruka je prazna" });
+            if (request.Text.Length > 2000)
+                return BadRequest(new { error = "Poruka je predugačka" });
 
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
+
+            // Pošiljatelj je onaj tko drži token — dosad se ime uzimalo iz
+            // tijela zahtjeva, pa je bilo tko mogao pisati u tuđe ime.
+            var senderName = await GetDisplayNameAsync(connection, senderId.Value);
+            if (senderName is null) return Unauthorized();
 
             var group = await connection.QueryFirstOrDefaultAsync<ActivityGroup>(
                 "SELECT * FROM activity_groups WHERE id = @Id", new { Id = id });
@@ -285,8 +375,9 @@ namespace CroMap.Controllers
 
             var members = group.Members?.Split(',',
                 StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
-            if (!members.Contains(request.UserName))
-                return BadRequest(new { error = "Morate biti član grupe" });
+            if (!members.Contains(senderName))
+                return StatusCode(403,
+                    new { error = "Morate biti član grupe" });
 
             // NOVO: spremi user_id uz poruku
             var sql = @"INSERT INTO group_messages 
@@ -297,10 +388,10 @@ namespace CroMap.Controllers
             {
                 Id = Guid.NewGuid().ToString(),
                 GroupId = id,
-                request.UserName,
+                UserName = senderName,
                 request.Text,
                 CreatedAt = DateTime.UtcNow,
-                UserId = senderId // NOVO
+                UserId = senderId
             });
 
             return Ok(new { success = true });

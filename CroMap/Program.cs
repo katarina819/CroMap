@@ -37,8 +37,22 @@ builder.Configuration["R2:PublicUrl"] = Environment.GetEnvironmentVariable("R2_P
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 // JWT Authentication
+//
+// Ključ za potpisivanje tokena MORA doći iz okoline (Jwt__Key na Renderu ili
+// user-secrets lokalno). Dosad je u appsettings.json stajala konkretna
+// vrijednost, a ta je datoteka u gitu — tko god vidi repozitorij mogao je
+// sam potpisati valjan token za bilo koji korisnički id, uključujući admina,
+// i time preuzeti svaki račun. Ako ključ nije postavljen ili je prekratak,
+// aplikacija se namjerno NE pokreće: tiho vraćanje na ugrađenu vrijednost je
+// gore od pada, jer izgleda kao da sve radi.
 var jwtKey = builder.Configuration["Jwt:Key"];
-var key = Encoding.ASCII.GetBytes(jwtKey);
+if (string.IsNullOrWhiteSpace(jwtKey) || Encoding.UTF8.GetByteCount(jwtKey) < 32)
+{
+    throw new InvalidOperationException(
+        "Jwt:Key nije postavljen ili je kraći od 32 bajta. Postavi varijablu " +
+        "okoline Jwt__Key (HS256 zahtijeva ključ od barem 256 bita).");
+}
+var key = Encoding.UTF8.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

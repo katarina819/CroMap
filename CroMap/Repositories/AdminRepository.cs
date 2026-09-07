@@ -16,9 +16,17 @@ namespace CroMap.Repositories
 
         public async Task SeedAdminUser()
         {
+            // Lozinka admina više nije zapisana u kodu. Dosad je stajala ovdje
+            // doslovno ("Admin@CroMap2024!@#"), a repozitorij je u gitu — tko
+            // god ga vidi mogao se prijaviti kao administrator. Sada dolazi iz
+            // varijable okoline ADMIN_SEED_PASSWORD; ako nije postavljena,
+            // admin se jednostavno ne kreira (postojeći ostaje netaknut).
+            var seedPassword = Environment.GetEnvironmentVariable("ADMIN_SEED_PASSWORD");
+
             using var connection = _dbConnection.CreateConnection();
 
-            var adminEmail = "admin@cromap.com";
+            var adminEmail = Environment.GetEnvironmentVariable("ADMIN_SEED_EMAIL")
+                             ?? "admin@cromap.com";
 
             // Provjeri postoji li admin
             var checkQuery = "SELECT COUNT(*) FROM users WHERE email = @Email";
@@ -26,8 +34,15 @@ namespace CroMap.Repositories
 
             if (exists == 0)
             {
-                // Hashiraj lozinku
-                var passwordHash = BCrypt.Net.BCrypt.HashPassword("Admin@CroMap2024!@#");
+                if (string.IsNullOrWhiteSpace(seedPassword) || seedPassword.Length < 12)
+                {
+                    Console.WriteLine(
+                        "[SeedAdminUser] ADMIN_SEED_PASSWORD nije postavljen (ili je kraći " +
+                        "od 12 znakova) — administrator nije kreiran.");
+                    return;
+                }
+
+                var passwordHash = BCrypt.Net.BCrypt.HashPassword(seedPassword);
 
                 var insertQuery = @"
             INSERT INTO users (email, username, first_name, last_name, password_hash, birth_date, is_admin, created_at)

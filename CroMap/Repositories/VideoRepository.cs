@@ -143,8 +143,8 @@ namespace CroMap.Repositories
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-        INSERT INTO videos (user_id, title, location, additional_description, file_path, created_at, media_type)
-        VALUES (@UserId, @Title, @Location, @AdditionalDescription, @FilePath, @CreatedAt, @MediaType)
+        INSERT INTO videos (user_id, title, location, additional_description, file_path, created_at, media_type, categories, age_groups)
+        VALUES (@UserId, @Title, @Location, @AdditionalDescription, @FilePath, @CreatedAt, @MediaType, @Categories, @AgeGroups)
         RETURNING id";
 
             video.Id = await connection.ExecuteScalarAsync<int>(sql, video);

@@ -13,6 +13,11 @@ namespace CroMap.Models
         public DateTime CreatedAt { get; set; }
         public string MediaType { get; set; } = "video";
 
+        /// <summary>Stabilne oznake kategorija ("club,cafe") — vidi VideoUploadRequest.</summary>
+        public string Categories { get; set; } = string.Empty;
+        /// <summary>Stabilne oznake dobnih skupina ("youth,students").</summary>
+        public string AgeGroups { get; set; } = string.Empty;
+
         // Dodatna polja za frontend
         public string UserName { get; set; }
 

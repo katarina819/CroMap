@@ -15,11 +15,22 @@ namespace CroMap.Controllers
     {
         private readonly IVideoRepository _videoRepository;
         private readonly IR2StorageService _storageService;
+        private readonly INotificationRepository _notifications;
+        private readonly IEmailService _emailService;
+        private readonly ILogger<VideoController> _logger;
 
-        public VideoController(IVideoRepository videoRepository, IR2StorageService storageService)
+        public VideoController(
+            IVideoRepository videoRepository,
+            IR2StorageService storageService,
+            INotificationRepository notifications,
+            IEmailService emailService,
+            ILogger<VideoController> logger)
         {
             _videoRepository = videoRepository;
             _storageService = storageService;
+            _notifications = notifications;
+            _emailService = emailService;
+            _logger = logger;
         }
 
         private int? GetCurrentUserId()
@@ -156,10 +167,18 @@ namespace CroMap.Controllers
                 Location = request.Location ?? "",
                 FilePath = mediaUrl,
                 UserId = request.UserId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                MediaType = mediaType,
+                Categories = request.Categories ?? "",
+                AgeGroups = request.AgeGroups ?? ""
             };
 
             await _videoRepository.CreateVideoAsync(video);
+
+            // Obavijesti pratiteljima. Namjerno NE blokira odgovor: objava je
+            // već spremljena i korisnik ne treba čekati razašiljanje, a ni
+            // greška u slanju e-pošte ne smije srušiti upload.
+            _ = NotifyFollowersAsync(video);
 
             return Ok(new
             {
@@ -168,6 +187,93 @@ namespace CroMap.Controllers
                 videoId = video.Id,
                 mediaType = mediaType
             });
+        }
+
+        /// <summary>
+        /// Obavijesti pratitelje o novoj objavi — u aplikaciji i, za one koji su
+        /// to tražili, e-poštom. Šalje se samo onima koji prate barem jednu od
+        /// kategorija ove objave.
+        /// </summary>
+        private async Task NotifyFollowersAsync(Video video)
+        {
+            try
+            {
+                var categories = (video.Categories ?? "")
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(c => c.Trim())
+                    .Where(c => c.Length > 0)
+                    .Distinct()
+                    .ToArray();
+
+                if (categories.Length == 0) return;
+
+                var title = string.IsNullOrWhiteSpace(video.Title) ? "Nova objava" : video.Title;
+                var body = video.Location ?? "";
+
+                await _notifications.FanOutNewActivityAsync(
+                    video.UserId, video.Id, title, body, categories);
+
+                var recipients = await _notifications.GetEmailRecipientsAsync(
+                    video.UserId, categories);
+
+                foreach (var recipient in recipients)
+                {
+                    try
+                    {
+                        await _emailService.SendEmailAsync(
+                            recipient.ToEmail,
+                            BuildEmailSubject(recipient.Language, title),
+                            BuildEmailBody(recipient.Language, recipient.FirstName, title, body));
+                    }
+                    catch (Exception ex)
+                    {
+                        // Jedna neuspjela adresa ne smije zaustaviti ostale.
+                        _logger.LogWarning(ex,
+                            "Notification email failed for user {UserId}", recipient.UserId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Notification fan-out failed for video {VideoId}", video.Id);
+            }
+        }
+
+        private static string BuildEmailSubject(string language, string title) => language switch
+        {
+            "en" => $"New activity on VARA: {title}",
+            "de" => $"Neue Aktivität auf VARA: {title}",
+            "fr" => $"Nouvelle activité sur VARA : {title}",
+            "it" => $"Nuova attività su VARA: {title}",
+            _ => $"Nova aktivnost na VARA-i: {title}",
+        };
+
+        private static string BuildEmailBody(string language, string firstName, string title, string location)
+        {
+            var (greeting, intro, whereLabel, footer) = language switch
+            {
+                "en" => ($"Hi {firstName},", "someone you follow has just posted something new:", "Location", "You are receiving this because you turned on e-mail notifications for this category in VARA."),
+                "de" => ($"Hallo {firstName},", "jemand, dem du folgst, hat gerade etwas Neues gepostet:", "Ort", "Du erhältst diese E-Mail, weil du in VARA E-Mail-Benachrichtigungen für diese Kategorie aktiviert hast."),
+                "fr" => ($"Bonjour {firstName},", "une personne que vous suivez vient de publier quelque chose :", "Lieu", "Vous recevez cet e-mail car vous avez activé les notifications par e-mail pour cette catégorie dans VARA."),
+                "it" => ($"Ciao {firstName},", "una persona che segui ha appena pubblicato qualcosa di nuovo:", "Luogo", "Ricevi questa e-mail perché hai attivato le notifiche via e-mail per questa categoria in VARA."),
+                _ => ($"Bok {firstName},", "korisnik kojeg pratiš upravo je objavio nešto novo:", "Lokacija", "Ovu poruku primaš jer si u VARA-i uključio/la obavijesti e-poštom za ovu kategoriju."),
+            };
+
+            var safeTitle = System.Net.WebUtility.HtmlEncode(title ?? "");
+            var safeLocation = System.Net.WebUtility.HtmlEncode(location ?? "");
+            var locationBlock = string.IsNullOrWhiteSpace(safeLocation)
+                ? ""
+                : $"<p style=\"margin:0 0 16px;color:#4a5a44;\">{whereLabel}: {safeLocation}</p>";
+
+            return $@"
+<div style=""font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:520px;margin:0 auto;padding:24px;"">
+  <p style=""margin:0 0 12px;font-size:16px;color:#1d2b18;"">{greeting}</p>
+  <p style=""margin:0 0 16px;color:#4a5a44;"">{intro}</p>
+  <h2 style=""margin:0 0 8px;font-size:20px;color:#2D6418;"">{safeTitle}</h2>
+  {locationBlock}
+  <hr style=""border:none;border-top:1px solid #d8e3d0;margin:24px 0;"">
+  <p style=""margin:0;font-size:12px;color:#8A9486;"">{footer}</p>
+</div>";
         }
     }
 }

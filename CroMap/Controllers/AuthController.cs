@@ -95,6 +95,18 @@ namespace CroMap.Controllers
                 return BadRequest(new { field = "password", code = "minLength" });
             if (string.IsNullOrWhiteSpace(userDto.Email))
                 return BadRequest(new { field = "email", code = "required" });
+            // Format e-maila dosad se uopće nije provjeravao — bilo koji niz
+            // znakova prolazio je kao adresa, pa je automatiziranu registraciju
+            // ništa nije koštalo: bot nije morao imati ni postojeći sandučić.
+            if (!IsValidEmail(userDto.Email))
+                return BadRequest(new { field = "email", code = "invalid" });
+            // Korisničko ime bez razmaka i posebnih znakova — imena se prikazuju
+            // drugim korisnicima i koriste za pretragu.
+            if (!IsValidUsername(userDto.Username))
+                return BadRequest(new { field = "username", code = "invalid" });
+            if (userDto.Username.Length > 30 || userDto.FirstName.Length > 60
+                || userDto.LastName.Length > 60 || userDto.Email.Length > 254)
+                return BadRequest(new { field = "unknown", code = "tooLong" });
             if (!userDto.BirthDate.HasValue)
                 return BadRequest(new { field = "birthDate", code = "required" });
 
@@ -109,10 +121,12 @@ namespace CroMap.Controllers
 
             var user = new User
             {
-                Username = userDto.Username.ToLower(),
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                Email = userDto.Email,
+                // Trim pri spremanju: validacija radi nad obrezanom vrijednošću,
+                // pa bi inače u bazu otišao razmak koji provjera nije vidjela.
+                Username = userDto.Username.Trim().ToLower(),
+                FirstName = userDto.FirstName.Trim(),
+                LastName = userDto.LastName.Trim(),
+                Email = userDto.Email.Trim(),
                 PasswordHash = userDto.Password,
                 BirthDate = userDto.BirthDate.Value,
                 Language = lang,
@@ -716,6 +730,52 @@ namespace CroMap.Controllers
                 _logger.LogError(ex, $"Error deleting user {id}");
                 return StatusCode(500, new { message = "Gre\u0161ka pri brisanju korisnika" });
             }
+        }
+
+        /// <summary>
+        /// Osnovna provjera formata e-mail adrese. Namjerno konzervativna:
+        /// treba odsjeći očite smeće-vrijednosti, ne biti potpuna RFC 5322
+        /// implementacija.
+        /// </summary>
+        private static bool IsValidEmail(string email)
+        {
+            email = email.Trim();
+            if (email.Length < 5 || email.Length > 254) return false;
+            if (email.Contains(' ') || email.Contains("..")) return false;
+
+            var at = email.IndexOf('@');
+            if (at <= 0 || at != email.LastIndexOf('@')) return false;
+            if (at == email.Length - 1) return false;
+
+            var local = email[..at];
+            var domain = email[(at + 1)..];
+            if (local.StartsWith('.') || local.EndsWith('.')) return false;
+
+            var dot = domain.LastIndexOf('.');
+            if (dot <= 0 || dot == domain.Length - 1) return false;
+            if (domain.StartsWith('.') || domain.StartsWith('-')) return false;
+
+            // Vršna domena: samo slova, barem dva znaka.
+            var tld = domain[(dot + 1)..];
+            if (tld.Length < 2) return false;
+            foreach (var c in tld)
+                if (!char.IsLetter(c)) return false;
+
+            foreach (var c in domain)
+                if (!char.IsLetterOrDigit(c) && c != '.' && c != '-') return false;
+
+            return true;
+        }
+
+        /// <summary>Slova, brojke, točka, donja crta i crtica; 3–30 znakova.</summary>
+        private static bool IsValidUsername(string username)
+        {
+            username = username.Trim();
+            if (username.Length < 3 || username.Length > 30) return false;
+            foreach (var c in username)
+                if (!char.IsLetterOrDigit(c) && c != '.' && c != '_' && c != '-')
+                    return false;
+            return true;
         }
 
         private string GenerateJwtToken(User user)

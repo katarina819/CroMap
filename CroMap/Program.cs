@@ -75,6 +75,8 @@ builder.Services.AddScoped<AdminRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IEmailServiceWithInlineImages, EmailService>();
 builder.Services.AddScoped<PasswordResetRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<CroMap.Services.INotificationService, CroMap.Services.NotificationService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

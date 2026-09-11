@@ -16,6 +16,7 @@ namespace CroMap.Controllers
         private readonly IVideoRepository _videoRepository;
         private readonly IR2StorageService _storageService;
         private readonly INotificationRepository _notifications;
+        private readonly IUserAreaRepository _userAreas;
         private readonly IEmailService _emailService;
         private readonly ILogger<VideoController> _logger;
 
@@ -23,12 +24,14 @@ namespace CroMap.Controllers
             IVideoRepository videoRepository,
             IR2StorageService storageService,
             INotificationRepository notifications,
+            IUserAreaRepository userAreas,
             IEmailService emailService,
             ILogger<VideoController> logger)
         {
             _videoRepository = videoRepository;
             _storageService = storageService;
             _notifications = notifications;
+            _userAreas = userAreas;
             _emailService = emailService;
             _logger = logger;
         }
@@ -44,16 +47,55 @@ namespace CroMap.Controllers
             return null;
         }
 
-        // GET: api/video?page=1&pageSize=15
+        // GET: api/video?page=1&pageSize=15&scope=local|global&radiusKm=50
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Video>>> GetAllVideos(
-            [FromQuery] int page = 1, [FromQuery] int pageSize = 15)
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 15,
+            [FromQuery] string scope = "global",
+            [FromQuery] double radiusKm = 50)
         {
             var currentUserId = GetCurrentUserId();
             pageSize = Math.Clamp(pageSize, 1, 50);
             page = Math.Max(page, 1);
-            var videos = await _videoRepository.GetAllVideosAsync(currentUserId, page, pageSize);
+            radiusKm = Math.Clamp(radiusKm, 1, 500);
+
+            List<(double Lat, double Lon)>? areas = null;
+            if (scope == "local" && currentUserId.HasValue)
+            {
+                var top = await _userAreas.GetTopAreasAsync(currentUserId.Value);
+                areas = top.Select(a => (a.CellLat, a.CellLon)).ToList();
+
+                // Korisnik kojeg aplikacija još nije nigdje vidjela nema
+                // krajeva. Vratiti prazno bi izgledalo kao da nema sadržaja,
+                // pa se u tom slučaju prikazuje sve — kao da je "svugdje".
+                if (areas.Count == 0) areas = null;
+            }
+
+            var videos = await _videoRepository.GetAllVideosAsync(
+                currentUserId, page, pageSize, areas, radiusKm);
             return Ok(videos);
+        }
+
+        /// <summary>
+        /// Javlja gdje je korisnik trenutno. Zove se kad aplikacija ionako
+        /// ima lokaciju (otvorena karta) — NE prati se u pozadini, jer bi to
+        /// tražilo posebnu dozvolu na Play Storeu i trošilo bateriju.
+        /// </summary>
+        // POST: api/video/area-ping
+        [HttpPost("area-ping")]
+        public async Task<IActionResult> RecordArea([FromBody] AreaPingRequest request)
+        {
+            var currentUserId = GetCurrentUserId();
+            if (currentUserId == null) return Unauthorized();
+
+            if (request == null
+                || request.Latitude is < -90 or > 90
+                || request.Longitude is < -180 or > 180)
+                return BadRequest(new { message = "Neispravne koordinate" });
+
+            await _userAreas.RecordAsync(currentUserId.Value, request.Latitude, request.Longitude);
+            return Ok(new { message = "ok" });
         }
 
         // GET: api/video/5
@@ -87,6 +129,20 @@ namespace CroMap.Controllers
 
             video.CreatedAt = DateTime.UtcNow;
             await _videoRepository.CreateVideoAsync(video);
+
+            // Objava s mjesta je sama po sebi znak da je autor tamo bio.
+            if (video.Latitude.HasValue && video.Longitude.HasValue)
+            {
+                try
+                {
+                    await _userAreas.RecordAsync(
+                        video.UserId, video.Latitude.Value, video.Longitude.Value);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Bilježenje područja korisnika nije uspjelo");
+                }
+            }
             return Ok(new { message = "Video created successfully.", videoId = video.Id });
         }
 
@@ -197,7 +253,14 @@ namespace CroMap.Controllers
                 MediaType = mediaType,
                 ThumbnailPath = thumbnailUrl,
                 Categories = request.Categories ?? "",
-                AgeGroups = request.AgeGroups ?? ""
+                AgeGroups = request.AgeGroups ?? "",
+                // Vrijeme početka ima smisla samo uz oznaku događaja —
+                // inače bi objava bez datuma završila kao "događaj" bez
+                // termina i visjela u popisu nadolazećeg.
+                IsEvent = request.IsEvent && request.EventStartAt.HasValue,
+                EventStartAt = request.IsEvent ? request.EventStartAt : null,
+                Latitude = request.Latitude,
+                Longitude = request.Longitude
             };
 
             await _videoRepository.CreateVideoAsync(video);

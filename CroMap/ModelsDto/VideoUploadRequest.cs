@@ -22,5 +22,19 @@
         public string Categories { get; set; } = "";
         /// <summary>Stabilne oznake dobnih skupina ("youth,students").</summary>
         public string AgeGroups { get; set; } = "";
+
+        /// <summary>Označio li autor objavu kao najavu događaja.</summary>
+        public bool IsEvent { get; set; }
+
+        /// <summary>Početak događaja (ISO 8601), ako je objava događaj.</summary>
+        public DateTime? EventStartAt { get; set; }
+
+        /// <summary>
+        /// Koordinate odabrane lokacije. Neobavezne: stariji klijent ih ne
+        /// šalje, a objava bez njih se i dalje prihvaća — samo ne može ući u
+        /// prikaz "blizu mene".
+        /// </summary>
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
     }
 }

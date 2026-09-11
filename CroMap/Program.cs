@@ -95,6 +95,7 @@ builder.Services.AddScoped<IGoldenFriendRepository, GoldenFriendRepository>();
 builder.Services.AddScoped<IBlockRepository, BlockRepository>();
 builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IUserAreaRepository, UserAreaRepository>();
 builder.Services.AddScoped<MediaRepository>();
 builder.Services.AddScoped<AdminRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();

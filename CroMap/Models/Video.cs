@@ -20,6 +20,23 @@ namespace CroMap.Models
         /// </summary>
         public string ThumbnailPath { get; set; } = "";
 
+        /// <summary>
+        /// Je li objava najava događaja (koncert, izlet…). Autor to označi
+        /// sam — ne pogađa se iz teksta, pa je datum pouzdan.
+        /// </summary>
+        public bool IsEvent { get; set; }
+
+        /// <summary>Početak događaja; null kad objava nije događaj.</summary>
+        public DateTime? EventStartAt { get; set; }
+
+        /// <summary>
+        /// Koordinate mjesta objave. Tekstualna lokacija se ne može
+        /// usporediti s korisnikovim krajem — "Čađavica" i
+        /// "Virovitičko-podravska županija" su isto mjesto, a različit tekst.
+        /// </summary>
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+
         /// <summary>Stabilne oznake kategorija ("club,cafe") — vidi VideoUploadRequest.</summary>
         public string Categories { get; set; } = string.Empty;
         /// <summary>Stabilne oznake dobnih skupina ("youth,students").</summary>

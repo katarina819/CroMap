@@ -14,7 +14,17 @@ namespace CroMap.Repositories
             _dbConnection = dbConnection;
         }
 
-        public async Task<IEnumerable<Video>> GetAllVideosAsync(int? currentUserId, int page = 1, int pageSize = 15)
+        /// <param name="areas">
+        /// Krajevi korisnika. Kad je predano barem jedno područje, vraćaju se
+        /// samo objave unutar <paramref name="radiusKm"/> od nekog od njih.
+        /// Prazno znači "sve objave" (prikaz "svugdje").
+        /// </param>
+        public async Task<IEnumerable<Video>> GetAllVideosAsync(
+            int? currentUserId,
+            int page = 1,
+            int pageSize = 15,
+            IEnumerable<(double Lat, double Lon)>? areas = null,
+            double radiusKm = 50)
         {
             using var connection = _dbConnection.CreateConnection();
 
@@ -50,12 +60,45 @@ namespace CroMap.Repositories
         ) cc ON v.id = cc.video_id
         LEFT JOIN likes ul ON v.id = ul.video_id AND ul.user_id = @CurrentUserId
         LEFT JOIN saved_videos sv ON v.id = sv.video_id AND sv.user_id = @CurrentUserId
+        /**WHERE**/
         ORDER BY v.created_at DESC
         LIMIT @PageSize OFFSET @Offset";
 
-            var videos = await connection.QueryAsync<Video>(
-                sql,
-                new { CurrentUserId = currentUserId, PageSize = pageSize, Offset = offset });
+            var areaList = areas?.ToList() ?? new List<(double Lat, double Lon)>();
+            if (areaList.Count > 0)
+            {
+                // Udaljenost se računa preko kvadrata razlike u stupnjevima,
+                // skalirane na kilometre: stupanj geografske širine je svugdje
+                // ~111 km, a dužine se skraćuje prema polovima (otud cos).
+                // Dovoljno točno za "je li ovo u mom kraju" i ne traži PostGIS.
+                var clauses = areaList.Select((_, i) => $@"
+                    (POWER((v.latitude - @Lat{i}) * 111.0, 2)
+                     + POWER((v.longitude - @Lon{i}) * 111.0 * COS(RADIANS(@Lat{i})), 2))
+                    <= POWER(@RadiusKm, 2)");
+
+                sql = sql.Replace(
+                    "/**WHERE**/",
+                    "WHERE v.latitude IS NOT NULL AND (" + string.Join(" OR ", clauses) + ")");
+            }
+            else
+            {
+                sql = sql.Replace("/**WHERE**/", "");
+            }
+
+            var parameters = new DynamicParameters(new
+            {
+                CurrentUserId = currentUserId,
+                PageSize = pageSize,
+                Offset = offset,
+                RadiusKm = radiusKm
+            });
+            for (var i = 0; i < areaList.Count; i++)
+            {
+                parameters.Add($"Lat{i}", areaList[i].Lat);
+                parameters.Add($"Lon{i}", areaList[i].Lon);
+            }
+
+            var videos = await connection.QueryAsync<Video>(sql, parameters);
             return videos;
         }
 
@@ -143,8 +186,8 @@ namespace CroMap.Repositories
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-        INSERT INTO videos (user_id, title, location, additional_description, file_path, created_at, media_type, thumbnail_path, categories, age_groups)
-        VALUES (@UserId, @Title, @Location, @AdditionalDescription, @FilePath, @CreatedAt, @MediaType, @ThumbnailPath, @Categories, @AgeGroups)
+        INSERT INTO videos (user_id, title, location, additional_description, file_path, created_at, media_type, thumbnail_path, categories, age_groups, is_event, event_start_at, latitude, longitude)
+        VALUES (@UserId, @Title, @Location, @AdditionalDescription, @FilePath, @CreatedAt, @MediaType, @ThumbnailPath, @Categories, @AgeGroups, @IsEvent, @EventStartAt, @Latitude, @Longitude)
         RETURNING id";
 
             video.Id = await connection.ExecuteScalarAsync<int>(sql, video);

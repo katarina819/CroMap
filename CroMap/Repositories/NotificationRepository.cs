@@ -1,4 +1,4 @@
-using CroMap.Data;
+﻿using CroMap.Data;
 using CroMap.Models;
 using Dapper;
 
@@ -81,7 +81,8 @@ namespace CroMap.Repositories
 
             var row = await connection.QueryFirstOrDefaultAsync<PreferencesRow>(@"
                 SELECT app_enabled AS AppEnabled, email_enabled AS EmailEnabled,
-                       email AS Email, categories AS Categories
+                       email AS Email, categories AS Categories,
+                       global_enabled AS GlobalEnabled
                 FROM notification_preferences
                 WHERE user_id = @UserId",
                 new { UserId = userId });
@@ -98,6 +99,7 @@ namespace CroMap.Repositories
                 EmailEnabled = row.EmailEnabled,
                 Email = row.Email,
                 Categories = SplitCategories(row.Categories),
+                GlobalEnabled = row.GlobalEnabled,
             };
         }
 
@@ -114,14 +116,15 @@ namespace CroMap.Repositories
 
             await connection.ExecuteAsync(@"
                 INSERT INTO notification_preferences
-                    (user_id, app_enabled, email_enabled, email, categories, updated_at)
-                VALUES (@UserId, @AppEnabled, @EmailEnabled, @Email, @Categories, CURRENT_TIMESTAMP)
+                    (user_id, app_enabled, email_enabled, email, categories, global_enabled, updated_at)
+                VALUES (@UserId, @AppEnabled, @EmailEnabled, @Email, @Categories, @GlobalEnabled, CURRENT_TIMESTAMP)
                 ON CONFLICT (user_id) DO UPDATE SET
-                    app_enabled   = EXCLUDED.app_enabled,
-                    email_enabled = EXCLUDED.email_enabled,
-                    email         = EXCLUDED.email,
-                    categories    = EXCLUDED.categories,
-                    updated_at    = CURRENT_TIMESTAMP",
+                    app_enabled    = EXCLUDED.app_enabled,
+                    email_enabled  = EXCLUDED.email_enabled,
+                    email          = EXCLUDED.email,
+                    categories     = EXCLUDED.categories,
+                    global_enabled = EXCLUDED.global_enabled,
+                    updated_at     = CURRENT_TIMESTAMP",
                 new
                 {
                     UserId = userId,
@@ -129,6 +132,7 @@ namespace CroMap.Repositories
                     prefs.EmailEnabled,
                     Email = string.IsNullOrWhiteSpace(prefs.Email) ? null : prefs.Email!.Trim(),
                     Categories = categories,
+                    prefs.GlobalEnabled,
                 });
         }
 
@@ -231,6 +235,7 @@ namespace CroMap.Repositories
             public bool EmailEnabled { get; set; }
             public string? Email { get; set; }
             public string? Categories { get; set; }
+            public bool GlobalEnabled { get; set; } = true;
         }
     }
 }

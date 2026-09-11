@@ -1,4 +1,4 @@
-namespace CroMap.Models
+﻿namespace CroMap.Models
 {
     /// <summary>Jedna obavijest kakvu aplikacija prikazuje u popisu.</summary>
     public class NotificationDto
@@ -29,6 +29,12 @@ namespace CroMap.Models
         public string? Email { get; set; }
         /// <summary>Stabilne oznake kategorija koje korisnik prati.</summary>
         public List<string> Categories { get; set; } = new();
+
+        /// <summary>
+        /// Prima li korisnik i sadržaj izvan svojih krajeva. Zadano uključeno
+        /// da aplikacija na početku ne izgleda prazno.
+        /// </summary>
+        public bool GlobalEnabled { get; set; } = true;
     }
 
     /// <summary>Primatelj obavijesti e-poštom, s podacima za jezik poruke.</summary>

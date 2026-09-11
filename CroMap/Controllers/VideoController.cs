@@ -160,6 +160,32 @@ namespace CroMap.Controllers
                 );
             }
 
+            // Sličica je neobavezna: stariji klijent je ne šalje, a slika je ne
+            // treba. Ako slanje sličice padne, objava svejedno prolazi —
+            // izgubi se samo pregled, ne i sam video.
+            var thumbnailUrl = "";
+            if (request.Thumbnail is { Length: > 0 } && mediaType != "image")
+            {
+                try
+                {
+                    var thumbExtension = Path.GetExtension(request.Thumbnail.FileName);
+                    if (string.IsNullOrEmpty(thumbExtension)) thumbExtension = ".jpg";
+
+                    var thumbName = $"{Guid.NewGuid()}_{DateTime.Now.Ticks}{thumbExtension}";
+                    using var thumbStream = request.Thumbnail.OpenReadStream();
+                    thumbnailUrl = await _storageService.UploadFileAsync(
+                        thumbStream,
+                        thumbName,
+                        request.Thumbnail.ContentType,
+                        "images"
+                    );
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Slanje sličice videa nije uspjelo");
+                }
+            }
+
             var video = new Video
             {
                 Title = request.Title,
@@ -169,6 +195,7 @@ namespace CroMap.Controllers
                 UserId = request.UserId,
                 CreatedAt = DateTime.UtcNow,
                 MediaType = mediaType,
+                ThumbnailPath = thumbnailUrl,
                 Categories = request.Categories ?? "",
                 AgeGroups = request.AgeGroups ?? ""
             };
@@ -184,6 +211,7 @@ namespace CroMap.Controllers
             {
                 message = $"{mediaType} uploaded successfully.",
                 mediaUrl,
+                thumbnailUrl,
                 videoId = video.Id,
                 mediaType = mediaType
             });

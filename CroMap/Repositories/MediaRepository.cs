@@ -22,7 +22,10 @@ namespace CroMap.Repositories
                 SELECT 
                     id, 
                     file_path AS Url, 
-                    'video' AS Type,
+                    -- Bilo je zakucano 'video', pa bi i slika bila označena
+                    -- kao video; media_type je stvarna vrijednost.
+                    COALESCE(NULLIF(media_type, ''), 'video') AS Type,
+                    thumbnail_path AS ThumbnailPath,
                     created_at AS CreatedAt,
                     title AS Title
                 FROM videos
@@ -67,6 +70,10 @@ namespace CroMap.Repositories
         public int Id { get; set; }
         public string Url { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
+
+        /// <summary>Sličica videa; prazno za slike i za starije videe.</summary>
+        public string ThumbnailPath { get; set; } = "";
+
         public DateTime CreatedAt { get; set; }
         public string? Title { get; set; }
     }

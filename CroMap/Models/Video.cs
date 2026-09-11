@@ -13,6 +13,13 @@ namespace CroMap.Models
         public DateTime CreatedAt { get; set; }
         public string MediaType { get; set; } = "video";
 
+        /// <summary>
+        /// Sličica videa (prvi kadar), koju telefon napravi pri objavi.
+        /// Prazno za slike — kod njih je sama datoteka sličica — i za videe
+        /// objavljene prije nego je ovo postojalo.
+        /// </summary>
+        public string ThumbnailPath { get; set; } = "";
+
         /// <summary>Stabilne oznake kategorija ("club,cafe") — vidi VideoUploadRequest.</summary>
         public string Categories { get; set; } = string.Empty;
         /// <summary>Stabilne oznake dobnih skupina ("youth,students").</summary>

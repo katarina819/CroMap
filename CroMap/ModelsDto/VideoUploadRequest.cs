@@ -3,6 +3,12 @@
     public class VideoUploadRequest
     {
         public IFormFile Video { get; set; }
+
+        /// <summary>
+        /// Sličica videa koju je telefon napravio iz prvog kadra. Nije
+        /// obavezna: stariji klijenti je ne šalju, a slike je ne trebaju.
+        /// </summary>
+        public IFormFile? Thumbnail { get; set; }
         public string Title { get; set; }
         public string Location { get; set; }
         public string Description { get; set; }

@@ -25,6 +25,7 @@ namespace CroMap.Repositories
                     sv.saved_at AS SavedAt, 
                     v.title AS Title, 
                     v.file_path AS FilePath,
+                    v.media_type AS MediaType,
                     u.username AS UserName
                 FROM saved_videos sv
                 JOIN videos v ON sv.video_id = v.id
@@ -99,6 +100,11 @@ namespace CroMap.Repositories
         public int VideoId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
+
+        // Bez ovoga je spremljeni sadržaj uvijek otvaran u video playeru, pa
+        // se spremljena SLIKA nije mogla prikazati ni reproducirati.
+        public string MediaType { get; set; } = "video";
+
         public DateTime SavedAt { get; set; }
         public string UserName { get; set; } = string.Empty;
     }

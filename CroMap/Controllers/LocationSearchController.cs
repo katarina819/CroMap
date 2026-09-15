@@ -33,12 +33,19 @@ namespace CroMap.Controllers
             // Nominatim traži User-Agent, inače baca 403
             client.DefaultRequestHeaders.Add("User-Agent", "VARA-App/1.0");
 
+            // Bez countrycodes: pretraga je dosad bila zaključana na Hrvatsku,
+            // pa upisani "Alaska" ili "Denali" nisu davali nijedan prijedlog —
+            // a objava se bez odabrane lokacije ne može dovršiti. Otkako feed
+            // ima i svjetski doseg, ograničenje nema smisla.
+            //
+            // Hrvatski rezultati se ispod blago podižu, jer je to i dalje
+            // najčešći slučaj; limit je veći da uz domaće stane i poneki
+            // strani rezultat.
             var url = $"https://nominatim.openstreetmap.org/search" +
                       $"?q={Uri.EscapeDataString(query)}" +
-                      $"&countrycodes=hr" +
                       $"&format=json" +
                       $"&addressdetails=1" +
-                      $"&limit=6";
+                      $"&limit=12";
 
             try
             {
@@ -51,14 +58,29 @@ namespace CroMap.Controllers
                 if (results == null || results.Count == 0)
                     return Ok(new List<object>());
 
-                var suggestions = results.Select(r => new
-                {
-                    displayName = r.DisplayName,
-                    lat = r.Lat,
-                    lon = r.Lon,
-                    osmClass = r.Class,
-                    osmType = r.Type
-                }).ToList();
+                // Nominatim već sortira po "importance" (koliko je mjesto
+                // poznato). Domaćim rezultatima se doda mali prirast umjesto da
+                // ih se bezuvjetno stavi na vrh: tako "Osijek" i dalje prvo
+                // ponudi Osijek u Hrvatskoj, ali neka hrvatska ulica imena
+                // "Berlin" ne pretekne sam Berlin.
+                const double croatiaBoost = 0.15;
+
+                var suggestions = results
+                    .OrderByDescending(r =>
+                        r.Importance +
+                        (string.Equals(r.Address?.CountryCode, "hr", StringComparison.OrdinalIgnoreCase)
+                            ? croatiaBoost
+                            : 0d))
+                    .Take(8)
+                    .Select(r => new
+                    {
+                        displayName = r.DisplayName,
+                        lat = r.Lat,
+                        lon = r.Lon,
+                        osmClass = r.Class,
+                        osmType = r.Type
+                    })
+                    .ToList();
 
                 return Ok(suggestions);
             }
@@ -85,5 +107,17 @@ namespace CroMap.Controllers
 
         [JsonPropertyName("type")]
         public string Type { get; set; } = "";
+
+        [JsonPropertyName("importance")]
+        public double Importance { get; set; }
+
+        [JsonPropertyName("address")]
+        public NominatimAddress? Address { get; set; }
+    }
+
+    public class NominatimAddress
+    {
+        [JsonPropertyName("country_code")]
+        public string? CountryCode { get; set; }
     }
 }

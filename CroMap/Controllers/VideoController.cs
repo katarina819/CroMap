@@ -1,4 +1,4 @@
-﻿using CroMap.Models;
+using CroMap.Models;
 using CroMap.ModelsDto;
 using CroMap.Repositories;
 using CroMap.Services;
@@ -281,9 +281,9 @@ namespace CroMap.Controllers
         }
 
         /// <summary>
-        /// Obavijesti pratitelje o novoj objavi — u aplikaciji i, za one koji su
-        /// to tražili, e-poštom. Šalje se samo onima koji prate barem jednu od
-        /// kategorija ove objave.
+        /// Obavijesti o novoj objavi sve koje ona zanima — u aplikaciji i, za
+        /// one koji su to tražili, e-poštom. Kriterij je kategorija koju su
+        /// odabrali, ograničena blizinom; praćenje autora više nije uvjet.
         /// </summary>
         private async Task NotifyFollowersAsync(Video video)
         {
@@ -301,11 +301,15 @@ namespace CroMap.Controllers
                 var title = string.IsNullOrWhiteSpace(video.Title) ? "Nova objava" : video.Title;
                 var body = video.Location ?? "";
 
+                // Položaj objave odlučuje kome je "blizu". Bez njega obavijest
+                // ide svima koje kategorija zanima — radije previše nego da
+                // objava bez koordinata nikome ne stigne.
                 await _notifications.FanOutNewActivityAsync(
-                    video.UserId, video.Id, title, body, categories);
+                    video.UserId, video.Id, title, body, categories,
+                    video.Latitude, video.Longitude);
 
                 var recipients = await _notifications.GetEmailRecipientsAsync(
-                    video.UserId, categories);
+                    video.UserId, categories, video.Latitude, video.Longitude);
 
                 foreach (var recipient in recipients)
                 {

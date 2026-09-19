@@ -1,4 +1,4 @@
-﻿namespace CroMap.Models
+namespace CroMap.Models
 {
     /// <summary>Jedna obavijest kakvu aplikacija prikazuje u popisu.</summary>
     public class NotificationDto
@@ -35,6 +35,14 @@
         /// da aplikacija na početku ne izgleda prazno.
         /// </summary>
         public bool GlobalEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Dokle za ovog korisnika seže "blizu mene", u kilometrima. Vrijedi i
+        /// za feed i za obavijesti — korisnik jednom kaže što mu je blizu, a ne
+        /// posebno za svaki dio aplikacije. Poslužitelj vrijednost ograničava
+        /// na 1–100.
+        /// </summary>
+        public int RadiusKm { get; set; } = 50;
     }
 
     /// <summary>Primatelj obavijesti e-poštom, s podacima za jezik poruke.</summary>

@@ -14,19 +14,25 @@ namespace CroMap.Repositories
         Task SavePreferencesAsync(int userId, NotificationPreferencesDto prefs);
 
         /// <summary>
-        /// Napravi obavijest svim pratiteljima koji su uključili obavijesti u
-        /// aplikaciji i prate barem jednu od kategorija ove objave.
+        /// Napravi obavijest svima koje objava zanima: onima koji su uključili
+        /// obavijesti i prate barem jednu od njezinih kategorija, uz uvjet da im
+        /// je objava blizu (ili da prate autora, ili primaju sadržaj odasvud).
         /// </summary>
+        /// <param name="latitude">Položaj objave; null kad ga nema.</param>
         Task<int> FanOutNewActivityAsync(
             int actorUserId,
             int videoId,
             string title,
             string body,
-            IEnumerable<string> categories);
+            IEnumerable<string> categories,
+            double? latitude = null,
+            double? longitude = null);
 
-        /// <summary>Pratitelji koji istu obavijest žele i e-poštom.</summary>
+        /// <summary>Isti krug ljudi, za one koji obavijest žele i e-poštom.</summary>
         Task<IEnumerable<NotificationEmailRecipient>> GetEmailRecipientsAsync(
             int actorUserId,
-            IEnumerable<string> categories);
+            IEnumerable<string> categories,
+            double? latitude = null,
+            double? longitude = null);
     }
 }

@@ -116,6 +116,11 @@ namespace CroMap.Controllers
             if (!string.IsNullOrWhiteSpace(prefs.Email) && prefs.Email.Length > 254)
                 return BadRequest(new { message = "Email je predugačak." });
 
+            // Radijus se ne odbija nego popravlja: klijent starije verzije ga
+            // uopće ne šalje (dođe 0), a odbiti cijelo spremanje zbog toga
+            // značilo bi da korisnik ne može spremiti ni kategorije.
+            prefs.RadiusKm = prefs.RadiusKm <= 0 ? 50 : Math.Clamp(prefs.RadiusKm, 1, 100);
+
             await _repository.SavePreferencesAsync(userId.Value, prefs);
             return Ok(new { success = true });
         }

@@ -1,4 +1,4 @@
-﻿using CroMap.Data;
+using CroMap.Data;
 using CroMap.Models;
 using Dapper;
 
@@ -82,7 +82,7 @@ namespace CroMap.Repositories
             var row = await connection.QueryFirstOrDefaultAsync<PreferencesRow>(@"
                 SELECT app_enabled AS AppEnabled, email_enabled AS EmailEnabled,
                        email AS Email, categories AS Categories,
-                       global_enabled AS GlobalEnabled
+                       global_enabled AS GlobalEnabled, radius_km AS RadiusKm
                 FROM notification_preferences
                 WHERE user_id = @UserId",
                 new { UserId = userId });
@@ -100,6 +100,7 @@ namespace CroMap.Repositories
                 Email = row.Email,
                 Categories = SplitCategories(row.Categories),
                 GlobalEnabled = row.GlobalEnabled,
+                RadiusKm = row.RadiusKm,
             };
         }
 
@@ -116,14 +117,15 @@ namespace CroMap.Repositories
 
             await connection.ExecuteAsync(@"
                 INSERT INTO notification_preferences
-                    (user_id, app_enabled, email_enabled, email, categories, global_enabled, updated_at)
-                VALUES (@UserId, @AppEnabled, @EmailEnabled, @Email, @Categories, @GlobalEnabled, CURRENT_TIMESTAMP)
+                    (user_id, app_enabled, email_enabled, email, categories, global_enabled, radius_km, updated_at)
+                VALUES (@UserId, @AppEnabled, @EmailEnabled, @Email, @Categories, @GlobalEnabled, @RadiusKm, CURRENT_TIMESTAMP)
                 ON CONFLICT (user_id) DO UPDATE SET
                     app_enabled    = EXCLUDED.app_enabled,
                     email_enabled  = EXCLUDED.email_enabled,
                     email          = EXCLUDED.email,
                     categories     = EXCLUDED.categories,
                     global_enabled = EXCLUDED.global_enabled,
+                    radius_km      = EXCLUDED.radius_km,
                     updated_at     = CURRENT_TIMESTAMP",
                 new
                 {
@@ -133,6 +135,9 @@ namespace CroMap.Repositories
                     Email = string.IsNullOrWhiteSpace(prefs.Email) ? null : prefs.Email!.Trim(),
                     Categories = categories,
                     prefs.GlobalEnabled,
+                    // Poslužitelj ima zadnju riječ o rasponu, bez obzira što
+                    // klijent pošalje.
+                    RadiusKm = Math.Clamp(prefs.RadiusKm, 1, 100),
                 });
         }
 
@@ -141,28 +146,25 @@ namespace CroMap.Repositories
             int videoId,
             string title,
             string body,
-            IEnumerable<string> categories)
+            IEnumerable<string> categories,
+            double? latitude = null,
+            double? longitude = null)
         {
             var list = NormalizeCategories(categories);
             if (list.Length == 0) return 0;
 
             using var connection = _dbConnection.CreateConnection();
 
-            // Jedan INSERT ... SELECT umjesto dohvaćanja pratitelja pa petlje —
-            // objava kluba s tisuću pratitelja inače bi značila tisuću zasebnih
+            // Jedan INSERT ... SELECT umjesto dohvaćanja korisnika pa petlje —
+            // objava koja zanima tisuću ljudi inače bi značila tisuću zasebnih
             // upisa.
             var sql = @"
                 INSERT INTO notifications
                     (user_id, actor_user_id, type, title, body, category, video_id)
-                SELECT f.follower_id, @ActorUserId, 'new_activity', @Title, @Body, @Category, @VideoId
-                FROM follows f
-                JOIN notification_preferences p ON p.user_id = f.follower_id
-                WHERE f.followed_id = @ActorUserId
-                  AND p.app_enabled = TRUE
-                  AND EXISTS (
-                      SELECT 1 FROM unnest(string_to_array(p.categories, ',')) AS c
-                      WHERE btrim(c) = ANY(@Categories)
-                  )";
+                SELECT p.user_id, @ActorUserId, 'new_activity', @Title, @Body, @Category, @VideoId
+                FROM notification_preferences p
+                WHERE p.app_enabled = TRUE
+                  AND " + InterestedUsersWhere;
 
             return await connection.ExecuteAsync(sql, new
             {
@@ -172,12 +174,16 @@ namespace CroMap.Repositories
                 Body = body ?? "",
                 Category = list[0],
                 Categories = list,
+                Latitude = latitude,
+                Longitude = longitude,
             });
         }
 
         public async Task<IEnumerable<NotificationEmailRecipient>> GetEmailRecipientsAsync(
             int actorUserId,
-            IEnumerable<string> categories)
+            IEnumerable<string> categories,
+            double? latitude = null,
+            double? longitude = null)
         {
             var list = NormalizeCategories(categories);
             if (list.Length == 0) return Array.Empty<NotificationEmailRecipient>();
@@ -185,24 +191,70 @@ namespace CroMap.Repositories
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-                SELECT f.follower_id                              AS UserId,
+                SELECT p.user_id                                  AS UserId,
                        COALESCE(NULLIF(p.email, ''), u.email)     AS ToEmail,
                        COALESCE(u.first_name, '')                 AS FirstName,
                        COALESCE(u.language, 'hr')                 AS Language
-                FROM follows f
-                JOIN notification_preferences p ON p.user_id = f.follower_id
-                JOIN users u                    ON u.id = f.follower_id
-                WHERE f.followed_id = @ActorUserId
-                  AND p.email_enabled = TRUE
+                FROM notification_preferences p
+                JOIN users u ON u.id = p.user_id
+                WHERE p.email_enabled = TRUE
                   AND COALESCE(NULLIF(p.email, ''), u.email) IS NOT NULL
+                  AND " + InterestedUsersWhere;
+
+            return await connection.QueryAsync<NotificationEmailRecipient>(
+                sql, new
+                {
+                    ActorUserId = actorUserId,
+                    Categories = list,
+                    Latitude = latitude,
+                    Longitude = longitude,
+                });
+        }
+
+
+        /// <summary>
+        /// Uvjet koji bira primatelje obavijesti o novoj objavi.
+        ///
+        /// Prije se gledalo samo prati li korisnik autora. Zbog toga odabir
+        /// kategorije u postavkama nije davao ništa: tko ne prati nikoga tko
+        /// objavljuje planinarske sadržaje, nije dobivao obavijesti o planinama
+        /// ma koliko ih puta odabrao. Kategorija je sada glavni kriterij, a
+        /// blizina ga ograničava da se ne pretvori u obavijesti o cijelom
+        /// svijetu.
+        ///
+        /// Redoslijed uvjeta je namjeran — od najjeftinijeg prema najskupljem.
+        /// </summary>
+        private const string InterestedUsersWhere = @"
+                  p.user_id <> @ActorUserId
                   AND EXISTS (
                       SELECT 1 FROM unnest(string_to_array(p.categories, ',')) AS c
                       WHERE btrim(c) = ANY(@Categories)
+                  )
+                  AND (
+                      -- prati autora: zanima ga bez obzira na udaljenost
+                      EXISTS (
+                          SELECT 1 FROM follows f
+                          WHERE f.follower_id = p.user_id
+                            AND f.followed_id = @ActorUserId
+                      )
+                      -- ili je rekao da želi sadržaj odasvud
+                      OR p.global_enabled = TRUE
+                      -- ili objava nema položaj, pa se blizina ne da provjeriti;
+                      -- tada je bolje javiti nego prešutjeti
+                      OR @Latitude IS NULL
+                      OR @Longitude IS NULL
+                      -- ili je objava unutar njegova radijusa od nekog kraja u
+                      -- kojem se inače kreće. Ista formula kao u feedu: stupanj
+                      -- širine je ~111 km, dužina se prema polovima skraćuje.
+                      OR EXISTS (
+                          SELECT 1 FROM user_areas a
+                          WHERE a.user_id = p.user_id
+                            AND (POWER((a.cell_lat - @Latitude) * 111.0, 2)
+                                 + POWER((a.cell_lon - @Longitude) * 111.0
+                                         * COS(RADIANS(a.cell_lat)), 2))
+                                <= POWER(p.radius_km, 2)
+                      )
                   )";
-
-            return await connection.QueryAsync<NotificationEmailRecipient>(
-                sql, new { ActorUserId = actorUserId, Categories = list });
-        }
 
         private static string[] NormalizeCategories(IEnumerable<string> categories)
         {
@@ -236,6 +288,7 @@ namespace CroMap.Repositories
             public string? Email { get; set; }
             public string? Categories { get; set; }
             public bool GlobalEnabled { get; set; } = true;
+            public int RadiusKm { get; set; } = 50;
         }
     }
 }

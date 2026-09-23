@@ -24,6 +24,10 @@ namespace CroMap.Controllers
         private readonly DatabaseConnection _dbConnection;
         private readonly IEmailService _emailService;
         private readonly PasswordResetRepository _resetRepo;
+        // Brisanje računa: redak u bazi ide kroz ProfileRepository, a medijske
+        // datoteke iz pohrane kroz R2.
+        private readonly IProfileRepository _profileRepository;
+        private readonly IR2StorageService _storageService;
 
         // ─── VARA logo: CID inline embedding ─────────────────────────────────
         private const string _logo80Cid = "vara_logo_80";
@@ -58,7 +62,8 @@ namespace CroMap.Controllers
         };
 
         public AuthController(UserRepository repo, IConfiguration configuration, ILogger<AuthController> logger,
-            DatabaseConnection dbConnection, IEmailService emailService, PasswordResetRepository resetRepo)
+            DatabaseConnection dbConnection, IEmailService emailService, PasswordResetRepository resetRepo,
+            IProfileRepository profileRepository, IR2StorageService storageService)
         {
             _repo = repo;
             _configuration = configuration;
@@ -66,6 +71,8 @@ namespace CroMap.Controllers
             _dbConnection = dbConnection;
             _emailService = emailService;
             _resetRepo = resetRepo;
+            _profileRepository = profileRepository;
+            _storageService = storageService;
         }
 
         // ─── Helper za slanje emaila s inline slikama ─────────────────────────
@@ -816,6 +823,84 @@ namespace CroMap.Controllers
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        /// <summary>
+        /// Trajno briše račun prijavljenog korisnika, sa svim njegovim sadržajem.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Aplikacija je ovu rutu pozivala otprije (gumb "Obriši račun" u profilu),
+        /// ali rute nije bilo. Poziv je vraćao 404, odgovor se nije provjeravao, a
+        /// aplikacija bi svejedno očistila pohranu i odvela korisnika na prijavu.
+        /// Korisnik je time bio uvjeren da je račun obrisan, dok su račun, objave,
+        /// fotografije i poruke ostajali na poslužitelju — mogao se ponovno
+        /// prijaviti i sve zateći.
+        /// </para>
+        /// <para>
+        /// Korisnik se uzima ISKLJUČIVO iz tokena, nikad iz tijela zahtjeva —
+        /// inače bi bilo tko mogao obrisati tuđi račun.
+        /// </para>
+        /// <para>
+        /// Redoslijed je namjeran: prvo se popišu datoteke, zatim se briše redak u
+        /// bazi (ostalo ide kaskadno), pa tek onda datoteke iz pohrane. Ako
+        /// brisanje datoteke padne, račun je ipak obrisan — zaostala datoteka u
+        /// kanti je manje zlo od računa koji je ostao pola obrisan.
+        /// </para>
+        /// </remarks>
+        [HttpDelete("delete-account")]
+        [Authorize]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized();
+
+            using var connection = _dbConnection.CreateConnection();
+
+            // Putanje do medija treba pokupiti PRIJE brisanja — nakon kaskade
+            // više nema iz čega.
+            var mediaPaths = new List<string>();
+            try
+            {
+                mediaPaths.AddRange(await connection.QueryAsync<string>(
+                    """
+                    SELECT avatar      FROM user_profiles WHERE user_id = @UserId AND avatar      IS NOT NULL AND avatar      <> ''
+                    UNION ALL
+                    SELECT file_path      FROM videos        WHERE user_id = @UserId AND file_path      IS NOT NULL AND file_path      <> ''
+                    UNION ALL
+                    SELECT thumbnail_path FROM videos        WHERE user_id = @UserId AND thumbnail_path IS NOT NULL AND thumbnail_path <> ''
+                    UNION ALL
+                    SELECT media_url      FROM stories       WHERE user_id = @UserId AND media_url      IS NOT NULL AND media_url      <> ''
+                    """,
+                    new { UserId = userId }));
+            }
+            catch (Exception ex)
+            {
+                // Popis medija ne smije spriječiti brisanje računa.
+                _logger.LogWarning(ex, "Popis medija za korisnika {UserId} nije uspio.", userId);
+            }
+
+            var deleted = await _profileRepository.DeleteAccountAsync(userId);
+            if (!deleted)
+                return NotFound(new { message = "Račun nije pronađen." });
+
+            _logger.LogInformation(
+                "Račun {UserId} obrisan; datoteka za brisanje: {Count}.", userId, mediaPaths.Count);
+
+            foreach (var path in mediaPaths.Distinct())
+            {
+                try
+                {
+                    await _storageService.DeleteFileAsync(path);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Datoteka {Path} nije obrisana iz pohrane.", path);
+                }
+            }
+
+            return Ok(new { message = "Račun je obrisan." });
         }
 
         [HttpPut("language")]

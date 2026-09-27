@@ -62,6 +62,16 @@ namespace CroMap.Repositories
 
 
         // Dohvati sve korisnike sa statistikama
+        //
+        // Uz brojače se vraća i datum rođenja (godina i izračunata dob), jer
+        // ga admin panel prikazuje uz korisnika — dosad je stajao u bazi, ali
+        // ga nijedan admin upit nije dohvaćao. Datum je nullable: korisnici
+        // prijavljeni preko Googlea ga ispune tek u "dovrši profil" koraku.
+        //
+        // LastActiveAt je zadnji dan na kojem se korisnik uopće pojavio —
+        // najnoviji od zapisa u activity_logs i vlastitih lajkova, komentara
+        // i objava. Bez toga se iz popisa nije vidjelo tko je još aktivan, a
+        // tko se registrirao pa nestao.
         public async Task<IEnumerable<AdminUserDto>> GetAllUsersWithStatsAsync()
         {
             using var connection = _dbConnection.CreateConnection();
@@ -74,12 +84,21 @@ namespace CroMap.Repositories
             u.username,
             u.email,
             u.created_at as CreatedAt,
+            u.birth_date as BirthDate,
+            EXTRACT(YEAR FROM u.birth_date)::int as BirthYear,
+            CASE
+                WHEN u.birth_date IS NULL THEN NULL
+                ELSE EXTRACT(YEAR FROM AGE(CURRENT_DATE, u.birth_date))::int
+            END as Age,
             COALESCE(video_stats.total_posts, 0) as TotalPosts,
             COALESCE(video_stats.total_likes, 0) as TotalLikes,
             COALESCE(video_stats.total_comments, 0) as TotalComments,
             COALESCE(SUM(a.session_minutes), 0) as TotalSessionMinutes,
             COALESCE(followers_count.cnt, 0) as FollowersCount,
-            COALESCE(following_count.cnt, 0) as FollowingCount
+            COALESCE(following_count.cnt, 0) as FollowingCount,
+            -- GREATEST u PostgreSQL-u preskače NULL-ove, pa je rezultat NULL
+            -- samo ako korisnik nema ni jedan trag aktivnosti.
+            GREATEST(MAX(a.date), last_content.last_date) as LastActiveAt
         FROM users u
         LEFT JOIN (
             SELECT 
@@ -103,30 +122,87 @@ namespace CroMap.Repositories
             FROM follows
             GROUP BY follower_id
         ) following_count ON following_count.follower_id = u.id
+        LEFT JOIN (
+            SELECT user_id, MAX(created_at)::date AS last_date
+            FROM (
+                SELECT user_id, created_at FROM likes
+                UNION ALL SELECT user_id, created_at FROM comments
+                UNION ALL SELECT user_id, created_at FROM videos
+            ) src
+            GROUP BY user_id
+        ) last_content ON last_content.user_id = u.id
         GROUP BY 
-            u.id, u.first_name, u.last_name, u.username, u.email, u.created_at,
+            u.id, u.first_name, u.last_name, u.username, u.email, u.created_at, u.birth_date,
             video_stats.total_posts, video_stats.total_likes, video_stats.total_comments,
-            followers_count.cnt, following_count.cnt
+            followers_count.cnt, following_count.cnt, last_content.last_date
         ORDER BY u.created_at DESC";
 
             return await connection.QueryAsync<AdminUserDto>(sql);
         }
 
         // Dohvati admin summary statistiku
+        //
+        // Uz ukupne brojeve vraća i raspodjelu korisnika po dobi (iz
+        // birth_date) te koliko ih je bilo aktivno u zadnjih 7 dana. Oboje
+        // služi admin panelu da se na prvi pogled vidi TKO je publika i koliko
+        // ih se još vraća, a ne samo koliko ih se ukupno registriralo.
         public async Task<AdminSummaryDto> GetAdminSummaryAsync()
         {
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-        SELECT 
-            COUNT(DISTINCT u.id) as TotalUsers,
-            COALESCE((SELECT COUNT(*) FROM likes), 0) as TotalLikes,
-            COALESCE((SELECT COUNT(*) FROM comments), 0) as TotalComments,
-            COALESCE(SUM(a.session_minutes), 0) as TotalMinutes
-        FROM users u
-        LEFT JOIN activity_logs a ON a.user_id = u.id";
+        WITH ages AS (
+            SELECT EXTRACT(YEAR FROM AGE(CURRENT_DATE, birth_date))::int AS age
+            FROM users
+        ),
+        active AS (
+            SELECT DISTINCT user_id FROM (
+                SELECT user_id FROM activity_logs
+                    WHERE date >= CURRENT_DATE - INTERVAL '7 days' AND session_minutes > 0
+                UNION ALL SELECT user_id FROM likes    WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'
+                UNION ALL SELECT user_id FROM comments WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'
+                UNION ALL SELECT user_id FROM videos   WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'
+            ) src
+        )
+        SELECT
+            (SELECT COUNT(*) FROM users)::int                                  AS TotalUsers,
+            (SELECT COUNT(*) FROM likes)::int                                  AS TotalLikes,
+            (SELECT COUNT(*) FROM comments)::int                               AS TotalComments,
+            (SELECT COALESCE(SUM(session_minutes), 0) FROM activity_logs)::int AS TotalMinutes,
+            (SELECT COUNT(*) FROM active)::int                                 AS ActiveLast7Days,
+            (SELECT ROUND(AVG(age), 1) FROM ages WHERE age IS NOT NULL)::float8 AS AverageAge,
+            (SELECT COUNT(*) FROM ages WHERE age IS NULL)::int                 AS UsersWithoutBirthDate,
+            (SELECT COUNT(*) FROM ages WHERE age < 18)::int                    AS AgeUnder18,
+            (SELECT COUNT(*) FROM ages WHERE age BETWEEN 18 AND 24)::int       AS Age18To24,
+            (SELECT COUNT(*) FROM ages WHERE age BETWEEN 25 AND 34)::int       AS Age25To34,
+            (SELECT COUNT(*) FROM ages WHERE age BETWEEN 35 AND 44)::int       AS Age35To44,
+            (SELECT COUNT(*) FROM ages WHERE age BETWEEN 45 AND 54)::int       AS Age45To54,
+            (SELECT COUNT(*) FROM ages WHERE age >= 55)::int                   AS Age55Plus";
 
-            return await connection.QueryFirstOrDefaultAsync<AdminSummaryDto>(sql);
+            var row = await connection.QueryFirstOrDefaultAsync<AdminSummaryRow>(sql);
+            if (row is null)
+                return new AdminSummaryDto();
+
+            return new AdminSummaryDto
+            {
+                TotalUsers = row.TotalUsers,
+                TotalLikes = row.TotalLikes,
+                TotalComments = row.TotalComments,
+                TotalMinutes = row.TotalMinutes,
+                ActiveLast7Days = row.ActiveLast7Days,
+                AverageAge = row.AverageAge,
+                UsersWithoutBirthDate = row.UsersWithoutBirthDate,
+                AgeGroups = new List<AgeGroupDto>
+                {
+                    new() { Label = "<18",      Count = row.AgeUnder18 },
+                    new() { Label = "18-24",    Count = row.Age18To24 },
+                    new() { Label = "25-34",    Count = row.Age25To34 },
+                    new() { Label = "35-44",    Count = row.Age35To44 },
+                    new() { Label = "45-54",    Count = row.Age45To54 },
+                    new() { Label = "55+",      Count = row.Age55Plus },
+                    new() { Label = "Nepoznato", Count = row.UsersWithoutBirthDate },
+                }
+            };
         }
 
         // Spremi ocjenu plana
@@ -184,6 +260,10 @@ ORDER BY created_at DESC";
         public string Username { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public DateOnly? BirthDate { get; set; }
+        public int? BirthYear { get; set; }
+        public int? Age { get; set; }
+        public DateOnly? LastActiveAt { get; set; }
         public int TotalPosts { get; set; }
         public int TotalLikes { get; set; }
         public int TotalComments { get; set; }
@@ -198,6 +278,35 @@ ORDER BY created_at DESC";
         public int TotalLikes { get; set; }
         public int TotalComments { get; set; }
         public int TotalMinutes { get; set; }
+        public int ActiveLast7Days { get; set; }
+        public double? AverageAge { get; set; }
+        public int UsersWithoutBirthDate { get; set; }
+        public List<AgeGroupDto> AgeGroups { get; set; } = new();
+    }
+
+    public class AgeGroupDto
+    {
+        public string Label { get; set; } = string.Empty;
+        public int Count { get; set; }
+    }
+
+    // Ravni oblik u koji Dapper mapira summary upit; javni DTO iz njega slaže
+    // listu dobnih skupina.
+    internal class AdminSummaryRow
+    {
+        public int TotalUsers { get; set; }
+        public int TotalLikes { get; set; }
+        public int TotalComments { get; set; }
+        public int TotalMinutes { get; set; }
+        public int ActiveLast7Days { get; set; }
+        public double? AverageAge { get; set; }
+        public int UsersWithoutBirthDate { get; set; }
+        public int AgeUnder18 { get; set; }
+        public int Age18To24 { get; set; }
+        public int Age25To34 { get; set; }
+        public int Age35To44 { get; set; }
+        public int Age45To54 { get; set; }
+        public int Age55Plus { get; set; }
     }
 
     public class PlanRatingDto

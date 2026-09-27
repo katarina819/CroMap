@@ -135,7 +135,7 @@ const lastSeenLabel = (value?: string | null) => {
   const diff = Math.round(
     (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) -
       Date.UTC(day.getFullYear(), day.getMonth(), day.getDate())) /
-      86400000,
+      86400000
   )
   if (diff <= 0) return 'Danas'
   if (diff === 1) return 'Jučer'
@@ -207,7 +207,7 @@ export default function Dashboard() {
   const handleToggleResolved = (id: number) => {
     setReports(prev => {
       const updated = prev.map(r =>
-        r.id === id ? { ...r, isResolved: !r.isResolved } : r,
+        r.id === id ? { ...r, isResolved: !r.isResolved } : r
       )
       const resolvedIds = updated.filter(r => r.isResolved).map(r => r.id)
       localStorage.setItem('resolvedReports', JSON.stringify(resolvedIds))
@@ -232,7 +232,7 @@ export default function Dashboard() {
         reportsRes.data.map((r: SupportReport) => ({
           ...r,
           isResolved: resolvedIds.includes(r.id),
-        })),
+        }))
       )
 
       setRatings(ratingsRes.data)
@@ -252,7 +252,7 @@ export default function Dashboard() {
     try {
       const res = await axios.get(
         `${API}/api/admin/users/${user.id}/daily-activity?days=30`,
-        { headers },
+        { headers }
       )
       setUserActivity(res.data)
     } catch {
@@ -271,7 +271,7 @@ export default function Dashboard() {
     setSort(prev =>
       prev.key === key
         ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' }
-        : { key, dir: key === 'name' || key === 'age' ? 'asc' : 'desc' },
+        : { key, dir: key === 'name' || key === 'age' ? 'asc' : 'desc' }
     )
 
   /* ── popis korisnika: pretraga → dobni filtar → sortiranje ── */
@@ -338,7 +338,7 @@ export default function Dashboard() {
 
   const chartData = useMemo(
     () => [...userActivity].slice(-CHART_DAYS).reverse(),
-    [userActivity],
+    [userActivity]
   )
 
   const periodTotals = useMemo(
@@ -350,9 +350,9 @@ export default function Dashboard() {
           comments: acc.comments + day.comments,
           posts: acc.posts + day.posts,
         }),
-        { sessionMinutes: 0, likes: 0, comments: 0, posts: 0 },
+        { sessionMinutes: 0, likes: 0, comments: 0, posts: 0 }
       ),
-    [userActivity],
+    [userActivity]
   )
 
   const hasActivity =
@@ -371,7 +371,7 @@ export default function Dashboard() {
 
   const maxAgeGroup = Math.max(
     ...(summary?.ageGroups ?? []).map(g => g.count),
-    1,
+    1
   )
 
   const visibleReports = reports.filter(r => {
@@ -384,7 +384,7 @@ export default function Dashboard() {
 
   const averageRating = ratings.length
     ? (ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length).toFixed(
-        1,
+        1
       )
     : null
 
@@ -520,7 +520,7 @@ export default function Dashboard() {
                             ...styles.ageBar,
                             height: Math.max(
                               4,
-                              (group.count / maxAgeGroup) * 70,
+                              (group.count / maxAgeGroup) * 70
                             ),
                             backgroundColor: selected ? '#1B3F0E' : '#8fae7e',
                           }}

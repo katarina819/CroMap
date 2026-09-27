@@ -199,22 +199,86 @@ DO UPDATE SET {columnName} = activity_logs.{columnName} + @Value";
         }
 
         // Dohvati detaljnu statistiku za zadnji N dana
+        //
+        // Dvije razlike u odnosu na raniju verziju, obje vidljive u admin
+        // panelu:
+        //
+        //  1. Lajkovi, komentari i objave broje se IZ IZVORNIH TABLICA
+        //     (likes / comments / videos), a ne iz brojača u activity_logs —
+        //     isto kao u GetActivityStatsAsync gore. Brojači ovise o okidačima
+        //     koje je jedna ranija migracija obrisala, pa je dnevni graf za
+        //     starije dane pokazivao nule iako je korisnik i lajkao i
+        //     komentirao.
+        //  2. Vraća se redak za SVAKI dan u prozoru, i za dane kojih u
+        //     activity_logs uopće nema. Prije su takvi dani jednostavno
+        //     nedostajali, pa je "zadnjih 30 dana" znalo biti tri retka bez
+        //     ikakve naznake da je ostatak prazan; graf je izgledao gusto
+        //     iako korisnik gotovo ništa nije radio.
+        //
+        // Vrijeme u aplikaciji i dalje dolazi iz activity_logs jer za njega
+        // izvorna tablica ne postoji.
         public async Task<IEnumerable<DailyActivity>> GetDailyStatsAsync(int userId, int days = 7)
         {
+            // Prozor je ograničen: ?days=100000 bi inače generirao stotine
+            // tisuća redaka po zahtjevu.
+            days = Math.Clamp(days, 1, 365);
+
             using var connection = _dbConnection.CreateConnection();
 
             var sql = @"
-                SELECT 
-                    TO_CHAR(date, 'YYYY-MM-DD') AS Date,
-                    session_minutes AS SessionMinutes,
-                    likes AS Likes,
-                    comments AS Comments,
-                    posts AS Posts,
-                    followers_count AS FollowersCount
-                FROM activity_logs
-                WHERE user_id = @UserId
-                AND date >= CURRENT_DATE - (@Days || ' days')::INTERVAL
-                ORDER BY date ASC";
+                WITH window_start AS (
+                    SELECT (CURRENT_DATE - (@Days - 1) * INTERVAL '1 day')::date AS day
+                ),
+                days AS (
+                    SELECT generate_series(
+                        (SELECT day FROM window_start),
+                        CURRENT_DATE,
+                        INTERVAL '1 day'
+                    )::date AS day
+                ),
+                sessions AS (
+                    SELECT date AS day,
+                           SUM(session_minutes)::int AS session_minutes,
+                           MAX(followers_count)::int AS followers_count
+                    FROM activity_logs
+                    WHERE user_id = @UserId
+                      AND date >= (SELECT day FROM window_start)
+                    GROUP BY date
+                ),
+                liked AS (
+                    SELECT created_at::date AS day, COUNT(*)::int AS cnt
+                    FROM likes
+                    WHERE user_id = @UserId
+                      AND created_at >= (SELECT day FROM window_start)
+                    GROUP BY 1
+                ),
+                commented AS (
+                    SELECT created_at::date AS day, COUNT(*)::int AS cnt
+                    FROM comments
+                    WHERE user_id = @UserId
+                      AND created_at >= (SELECT day FROM window_start)
+                    GROUP BY 1
+                ),
+                posted AS (
+                    SELECT created_at::date AS day, COUNT(*)::int AS cnt
+                    FROM videos
+                    WHERE user_id = @UserId
+                      AND created_at >= (SELECT day FROM window_start)
+                    GROUP BY 1
+                )
+                SELECT
+                    TO_CHAR(d.day, 'YYYY-MM-DD')   AS Date,
+                    COALESCE(s.session_minutes, 0) AS SessionMinutes,
+                    COALESCE(liked.cnt, 0)         AS Likes,
+                    COALESCE(commented.cnt, 0)     AS Comments,
+                    COALESCE(posted.cnt, 0)        AS Posts,
+                    COALESCE(s.followers_count, 0) AS FollowersCount
+                FROM days d
+                LEFT JOIN sessions  s         ON s.day = d.day
+                LEFT JOIN liked               ON liked.day = d.day
+                LEFT JOIN commented           ON commented.day = d.day
+                LEFT JOIN posted              ON posted.day = d.day
+                ORDER BY d.day";
 
             var stats = await connection.QueryAsync<DailyActivity>(sql, new { UserId = userId, Days = days });
             return stats;
